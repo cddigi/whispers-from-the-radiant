@@ -45,3 +45,8 @@ touch_tap={
 2d_physics/layer_1="Cards"
 2d_physics/layer_2="UI"
 2d_physics/layer_3="Effects"
+
+[rendering]
+
+renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
