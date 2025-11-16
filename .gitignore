@@ -129,3 +129,14 @@ pnpm-lock.yaml
 
 # Claude workspace
 .claude/
+
+# Godot 4.x
+.godot/
+.mono/
+*.import
+*.translation
+export_presets.cfg
+.import/
+android/
+ios/
+.build/
