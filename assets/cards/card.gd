@@ -25,6 +25,14 @@ var original_position: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
+	# Ensure the card can receive mouse input
+	mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Make sure all child labels ignore mouse events so parent receives them
+	value_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	aspect_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ability_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	# If card_data was set before _ready, update visuals
 	if card_data:
 		update_visuals()
@@ -97,6 +105,7 @@ func _gui_input(event: InputEvent) -> void:
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
 			if mouse_event.pressed:
 				# Start dragging
+				print("Card drag started: ", card_data.get_aspect_name() if card_data else "unknown", " ", card_data.value if card_data else "?")
 				is_dragging = true
 				original_position = global_position
 				drag_offset = get_global_mouse_position() - global_position
@@ -105,6 +114,7 @@ func _gui_input(event: InputEvent) -> void:
 				accept_event()
 			elif is_dragging:
 				# Stop dragging and return to original position
+				print("Card drag ended, returning to original position")
 				is_dragging = false
 				return_to_original_position()
 				accept_event()
