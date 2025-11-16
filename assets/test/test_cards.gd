@@ -72,7 +72,7 @@ func display_sample_cards() -> void:
 	# Mental 7 (has ability), Physical 5 (has ability), Temporal 9 (has ability)
 	# Plus a Mental 4 (no ability) and Temporal 2 (no ability)
 
-	var sample_configs := [
+	var sample_configs: Array[Dictionary] = [
 		{"aspect": CardData.Aspect.MENTAL, "value": 7},
 		{"aspect": CardData.Aspect.PHYSICAL, "value": 5},
 		{"aspect": CardData.Aspect.TEMPORAL, "value": 9},
@@ -80,7 +80,7 @@ func display_sample_cards() -> void:
 		{"aspect": CardData.Aspect.TEMPORAL, "value": 2},
 	]
 
-	for config in sample_configs:
+	for config: Dictionary in sample_configs:
 		# Find this card in the deck
 		var card_data := find_card_in_deck(config.aspect, config.value)
 		if card_data:
