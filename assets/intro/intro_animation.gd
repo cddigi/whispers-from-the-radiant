@@ -35,7 +35,14 @@ func _ready() -> void:
 	await get_tree().create_timer(INITIAL_DISPLAY_TIME).timeout
 
 	# Animate all cards to center
-	animate_cards_to_deck()
+	await animate_cards_to_deck()
+
+	# Wait a moment to show the completed deck
+	await get_tree().create_timer(0.5).timeout
+
+	# Transition to game scene
+	print("Intro complete - transitioning to game...")
+	get_tree().change_scene_to_file("res://assets/game/game_scene.tscn")
 
 
 ## Creates card instances and spreads them across the viewport
@@ -67,6 +74,8 @@ func create_and_position_cards() -> void:
 
 ## Animates all cards flying to the deck center with arcs and flips
 func animate_cards_to_deck() -> void:
+	var animation_tasks: Array = []
+
 	for i: int in range(animated_cards.size()):
 		var card := animated_cards[i] as Card
 
@@ -74,8 +83,13 @@ func animate_cards_to_deck() -> void:
 		var delay := i * CARD_ARRIVAL_STAGGER
 		var duration := ANIMATION_DURATION + randf_range(-0.2, 0.2)  # Slight variance
 
-		# Start animation after delay
-		animate_single_card(card, delay, duration, i)
+		# Start animation after delay and track it
+		var task := animate_single_card(card, delay, duration, i)
+		animation_tasks.append(task)
+
+	# Wait for all animations to complete
+	for task in animation_tasks:
+		await task
 
 
 ## Animates a single card along a bezier curve to the deck center
