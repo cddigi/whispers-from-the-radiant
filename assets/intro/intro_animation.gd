@@ -40,6 +40,14 @@ func _ready() -> void:
 	# Wait a moment to show the completed deck
 	await get_tree().create_timer(0.5).timeout
 
+	# Clean up all card instances before transitioning
+	for card: Node in animated_cards:
+		card.queue_free()
+	animated_cards.clear()
+
+	# Wait for Godot to process the free calls
+	await get_tree().process_frame
+
 	# Transition to game scene
 	print("Intro complete - transitioning to game...")
 	get_tree().change_scene_to_file("res://assets/game/game_scene.tscn")
