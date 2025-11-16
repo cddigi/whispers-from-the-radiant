@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpq4v5h8mr2wn"]
+[gd_scene load_steps=4 format=3 uid="uid://dpq4v5h8mr2wn"]
 
 [ext_resource type="Script" path="res://assets/cards/card_template.gd" id="1_template"]
 [ext_resource type="Texture2D" uid="uid://bc88nvnk3xwou" path="res://assets/cardbacks/default_cardback.png" id="2_cardback"]
+[ext_resource type="Texture2D" path="res://assets/cardfaces/default_border.png" id="3_border"]
 
 [node name="CardTemplate" type="Control"]
 custom_minimum_size = Vector2(200, 300)
@@ -20,6 +21,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("3_border")
 expand_mode = 1
 stretch_mode = 5
 
