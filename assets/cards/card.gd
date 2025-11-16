@@ -102,16 +102,11 @@ func return_to_original_position() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	print("_gui_input received event: ", event)
-
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
-		print("Mouse button event - button: ", mouse_event.button_index, " pressed: ", mouse_event.pressed)
-
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
 			if mouse_event.pressed:
 				# Start dragging
-				print("Card drag started: ", card_data.get_aspect_name() if card_data else "unknown", " ", card_data.value if card_data else "?")
 				is_dragging = true
 				original_position = global_position
 				drag_offset = get_global_mouse_position() - global_position
@@ -120,7 +115,6 @@ func _gui_input(event: InputEvent) -> void:
 				accept_event()
 			elif is_dragging:
 				# Stop dragging and return to original position
-				print("Card drag ended, returning to original position")
 				is_dragging = false
 				return_to_original_position()
 				accept_event()
@@ -133,13 +127,11 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _on_mouse_entered() -> void:
-	print("Mouse entered card: ", card_data.get_aspect_name() if card_data else "unknown")
 	set_highlighted(true)
 	card_hovered.emit(self)
 
 
 func _on_mouse_exited() -> void:
-	print("Mouse exited card")
 	set_highlighted(false)
 
 
