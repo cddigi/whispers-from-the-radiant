@@ -96,16 +96,16 @@ func set_selectable(selectable: bool) -> void:
 ## Updates visual appearance based on current state
 func update_visual_state() -> void:
 	if not is_selectable:
-		# Disabled state - dimmed and desaturated
-		modulate = Color(0.5, 0.5, 0.5, 0.7)
+		# Disabled state - heavily dimmed and grayed out
+		modulate = Color(0.4, 0.4, 0.4, 0.6)
 		z_index = 0
 	elif not is_playable:
-		# Unplayable but visible - slightly dimmed
-		modulate = Color(0.7, 0.7, 0.7, 0.85)
+		# Unplayable but visible - dimmed with red tint indicating invalid
+		modulate = Color(0.8, 0.5, 0.5, 0.8)
 		z_index = 0
 	else:
-		# Normal playable state
-		modulate = Color.WHITE
+		# Normal playable state - white with slight glow
+		modulate = Color(1.0, 1.0, 1.0, 1.0)
 		z_index = 0
 
 
@@ -115,16 +115,19 @@ func set_highlighted(highlighted: bool) -> void:
 		return  # Don't highlight unplayable/unselectable cards
 
 	if highlighted:
-		# Mentalic glow - slightly brighter with emphasis
-		modulate = Color(1.15, 1.15, 1.15)
+		# Mentalic glow - bright with significant emphasis and elevation
+		modulate = Color(1.3, 1.25, 1.4, 1.0)  # Slight blue-purple glow for psychic power
 		z_index = 10
-		# Subtle elevation effect
-		position.y -= 10
+		# Significant elevation effect for hover feedback
+		position.y -= 15
+		# Add a subtle scale up for additional feedback
+		scale = Vector2(1.08, 1.08)
 	else:
 		# Return to normal playable state
-		modulate = Color.WHITE
+		update_visual_state()
 		z_index = 0
-		position.y += 10
+		position.y += 15
+		scale = Vector2(1.0, 1.0)
 
 
 ## Sets whether the card is face-up or face-down
@@ -179,6 +182,8 @@ func _gui_input(event: InputEvent) -> void:
 				original_position = global_position
 				drag_offset = get_global_mouse_position() - global_position
 				z_index = 100  # Bring to front while dragging
+				# Show immediate visual feedback that card was selected
+				show_selection_feedback()
 				card_selected.emit(self)
 				accept_event()
 			elif is_dragging:
@@ -194,22 +199,35 @@ func _gui_input(event: InputEvent) -> void:
 			accept_event()
 
 
+## Shows visual feedback for card selection (when starting to drag)
+func show_selection_feedback() -> void:
+	# Pulse effect to show card was selected
+	var tween := create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_QUAD)
+
+	# Brief bright flash
+	var original_modulate := modulate
+	tween.tween_property(self, "modulate", Color(1.4, 1.35, 1.5), 0.1)
+	tween.tween_property(self, "modulate", Color(1.2, 1.15, 1.3), 0.15)
+
+
 ## Shows visual feedback when player tries to select an unplayable card
 func show_invalid_selection() -> void:
-	# Quick shake animation
+	# Quick shake animation with red tint to indicate rejection
 	var tween := create_tween()
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.set_trans(Tween.TRANS_SINE)
 
 	var original_pos := position
+	tween.tween_property(self, "position", original_pos + Vector2(8, 0), 0.05)
+	tween.tween_property(self, "position", original_pos - Vector2(8, 0), 0.05)
 	tween.tween_property(self, "position", original_pos + Vector2(5, 0), 0.05)
-	tween.tween_property(self, "position", original_pos - Vector2(5, 0), 0.05)
-	tween.tween_property(self, "position", original_pos + Vector2(3, 0), 0.05)
 	tween.tween_property(self, "position", original_pos, 0.05)
 
-	# Brief red tint
+	# Red flash to show rejection
 	var original_modulate := modulate
-	modulate = Color(1.2, 0.6, 0.6, 0.85)
+	modulate = Color(1.3, 0.6, 0.6, 1.0)
 	await tween.finished
 	modulate = original_modulate
 
