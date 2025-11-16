@@ -7,9 +7,10 @@ extends Control
 const CardScene := preload("res://assets/cards/card.tscn")
 
 ## Animation parameters
+const INITIAL_DISPLAY_TIME := 1.0  # Seconds to display cards face-up before animating
 const ANIMATION_DURATION := 2.5  # Total seconds for cards to reach center
-const FLIP_START_RATIO := 0.3  # When to start flip (0.0 to 1.0 of journey)
-const FLIP_END_RATIO := 0.7  # When to finish flip
+const FLIP_START_RATIO := 0.4  # When to start flip (0.0 to 1.0 of journey)
+const FLIP_END_RATIO := 0.6  # When to finish flip
 const CARD_ARRIVAL_STAGGER := 0.05  # Seconds between card arrivals
 const DECK_CENTER := Vector2(960, 540)  # Center of 1920x1080 viewport
 const VIEWPORT_SIZE := Vector2(1920, 1080)
@@ -30,8 +31,8 @@ func _ready() -> void:
 	# Create all card instances and position them randomly
 	create_and_position_cards()
 
-	# Wait a moment before starting animation
-	await get_tree().create_timer(0.5).timeout
+	# Wait to let player see the cards face-up
+	await get_tree().create_timer(INITIAL_DISPLAY_TIME).timeout
 
 	# Animate all cards to center
 	animate_cards_to_deck()
