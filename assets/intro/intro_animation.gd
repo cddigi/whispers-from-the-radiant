@@ -74,8 +74,12 @@ func create_and_position_cards() -> void:
 
 ## Animates all cards flying to the deck center with arcs and flips
 func animate_cards_to_deck() -> void:
-	var animation_tasks: Array = []
+	# Calculate total animation time
+	var last_card_delay := (animated_cards.size() - 1) * CARD_ARRIVAL_STAGGER
+	var max_duration := ANIMATION_DURATION + 0.2  # Max variance
+	var total_time := last_card_delay + max_duration
 
+	# Start all animations (they run in parallel)
 	for i: int in range(animated_cards.size()):
 		var card := animated_cards[i] as Card
 
@@ -83,13 +87,11 @@ func animate_cards_to_deck() -> void:
 		var delay := i * CARD_ARRIVAL_STAGGER
 		var duration := ANIMATION_DURATION + randf_range(-0.2, 0.2)  # Slight variance
 
-		# Start animation after delay and track it
-		var task := animate_single_card(card, delay, duration, i)
-		animation_tasks.append(task)
+		# Start animation (don't await - let them run in parallel)
+		animate_single_card(card, delay, duration, i)
 
 	# Wait for all animations to complete
-	for task in animation_tasks:
-		await task
+	await get_tree().create_timer(total_time).timeout
 
 
 ## Animates a single card along a bezier curve to the deck center
