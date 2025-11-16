@@ -15,6 +15,10 @@ const GameOverScene := preload("res://assets/ui/game_over.tscn")
 @onready var decree_display := %DecreeDisplay as Control
 @onready var score_label := %ScoreLabel as Label
 @onready var turn_indicator := %TurnIndicator as Label
+@onready var trick_progress := %TrickProgress as Label
+@onready var trick_winner_label := %TrickWinnerLabel as Label
+@onready var player1_hand_size := %Player1HandSize as Label
+@onready var player2_hand_size := %Player2HandSize as Label
 
 ## Game state resource
 var game_state: GameState = null
@@ -183,7 +187,7 @@ func update_score_display() -> void:
 	var p1_influence = game_state.mentalic1_total_score
 	var p2_influence = game_state.mentalic2_total_score
 
-	score_label.text = "Player 1: %d nodes won | %d round points | %d total | Player 2: %d nodes won | %d round points | %d total" % [
+	score_label.text = "Protagonist: %d tricks (%d pts | %d total) | Antagonist: %d tricks (%d pts | %d total)" % [
 		game_state.mentalic1_tricks,
 		game_state.mentalic1_round_score,
 		p1_influence,
@@ -191,6 +195,13 @@ func update_score_display() -> void:
 		game_state.mentalic2_round_score,
 		p2_influence
 	]
+
+	# Update trick progress
+	trick_progress.text = "Node %d of 13" % game_state.trick_number
+
+	# Update hand sizes
+	player1_hand_size.text = " [%d cards]" % game_state.mentalic1_hand.size()
+	player2_hand_size.text = " [%d cards]" % game_state.mentalic2_hand.size()
 
 
 ## Updates the turn indicator with clear player identification and context
@@ -401,10 +412,16 @@ func resolve_trick() -> void:
 	# TODO: Handle special abilities (7s, etc.)
 	# TODO: Update round score
 
+	# Show winner announcement
+	var winner_name := "Protagonist" if winner_id == 1 else "Antagonist"
+	trick_winner_label.text = "%s controls this node!" % winner_name
+	trick_winner_label.add_theme_color_override("font_color", Color.GOLD if winner_id == 1 else Color.ORANGE_RED)
+
 	update_score_display()
 
 	# Clear trick area after delay
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(2.5).timeout
+	trick_winner_label.text = ""  # Clear winner announcement
 	clear_trick_area()
 
 	# Start next trick with winner leading

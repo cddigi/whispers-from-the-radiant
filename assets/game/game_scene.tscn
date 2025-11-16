@@ -43,6 +43,12 @@ theme_type_variation = &"HeaderLarge"
 text = "Player 1's Turn"
 horizontal_alignment = 1
 
+[node name="TrickProgress" type="Label" parent="MainLayout/TopPanel/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Node 1 of 13"
+horizontal_alignment = 1
+
 [node name="ScoreLabel" type="Label" parent="MainLayout/TopPanel/TopInfo"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -57,9 +63,19 @@ size_flags_stretch_ratio = 1.0
 [node name="VBox" type="VBoxContainer" parent="MainLayout/Player2Section"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MainLayout/Player2Section/VBox"]
+[node name="Player2Info" type="HBoxContainer" parent="MainLayout/Player2Section/VBox"]
 layout_mode = 2
-text = "Player 2 (Opponent - Mental Shields Active)"
+alignment = 1
+
+[node name="Label" type="Label" parent="MainLayout/Player2Section/VBox/Player2Info"]
+layout_mode = 2
+text = "Antagonist (Opponent)"
+horizontal_alignment = 1
+
+[node name="Player2HandSize" type="Label" parent="MainLayout/Player2Section/VBox/Player2Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " [13 cards]"
 horizontal_alignment = 1
 
 [node name="Player2HandContainer" type="HBoxContainer" parent="MainLayout/Player2Section/VBox"]
@@ -102,6 +118,13 @@ layout_mode = 2
 text = "Current Calculation (Trick)"
 horizontal_alignment = 1
 
+[node name="TrickWinnerLabel" type="Label" parent="MainLayout/CenterSection/CenterLayout/TrickAreaSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="TrickArea" type="Control" parent="MainLayout/CenterSection/CenterLayout/TrickAreaSection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 180)
@@ -117,9 +140,19 @@ size_flags_stretch_ratio = 1.0
 [node name="VBox" type="VBoxContainer" parent="MainLayout/Player1Section"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MainLayout/Player1Section/VBox"]
+[node name="Player1Info" type="HBoxContainer" parent="MainLayout/Player1Section/VBox"]
 layout_mode = 2
-text = "Player 1 (You)"
+alignment = 1
+
+[node name="Label" type="Label" parent="MainLayout/Player1Section/VBox/Player1Info"]
+layout_mode = 2
+text = "Protagonist (You)"
+horizontal_alignment = 1
+
+[node name="Player1HandSize" type="Label" parent="MainLayout/Player1Section/VBox/Player1Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " [13 cards]"
 horizontal_alignment = 1
 
 [node name="Player1HandContainer" type="HBoxContainer" parent="MainLayout/Player1Section/VBox"]
