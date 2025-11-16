@@ -33,24 +33,14 @@ func update_visuals() -> void:
 	if not card_data:
 		return
 
-	# Set value
-	value_label.text = str(card_data.value)
+	# Load the full card face image
+	var card_face_path := card_data.get_card_face_path()
+	var card_face_texture := load(card_face_path) as Texture2D
 
-	# Set aspect color and name
-	var aspect_color := card_data.get_aspect_color()
-	aspect_border.color = aspect_color
-	aspect_label.text = card_data.get_aspect_name().to_upper()
-	aspect_label.add_theme_color_override("font_color", aspect_color)
-
-	# Show ability indicator for special cards
-	if card_data.has_ability:
-		ability_indicator.visible = true
-		ability_indicator.tooltip_text = card_data.ability_description
+	if card_face_texture:
+		card_face.texture = card_face_texture
 	else:
-		ability_indicator.visible = false
-
-	# Add subtle border effect
-	background.color = aspect_color.darkened(0.7)
+		push_error("Failed to load card face texture: " + card_face_path)
 
 
 ## Returns the card data this visual represents
