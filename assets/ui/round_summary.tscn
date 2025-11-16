@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://dq7hx0v3m0n8q"]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://assets/ui/round_summary.gd" id="1_summary"]
 
