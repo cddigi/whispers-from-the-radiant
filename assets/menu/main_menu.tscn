@@ -1,0 +1,270 @@
+[gd_scene load_steps=2 format=3 uid="uid://cj4k8m2n5p1q7"]
+
+[ext_resource type="Script" path="res://assets/menu/main_menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.04, 0.12, 1)
+mouse_filter = 2
+
+[node name="BackgroundPattern" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -600.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.08, 0.2, 0.3)
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 120.0
+offset_right = 500.0
+offset_bottom = 220.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.85, 0.8, 0.95, 1)
+theme_override_colors/font_shadow_color = Color(0.4, 0.2, 0.6, 0.5)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 64
+text = "Whispers from the Radiant"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 230.0
+offset_right = 400.0
+offset_bottom = 270.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.6, 0.55, 0.7, 1)
+theme_override_font_sizes/font_size = 24
+text = "A Crisis in the Seldon Plan"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tagline" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -350.0
+offset_top = 280.0
+offset_right = 350.0
+offset_bottom = 310.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.6, 0.8)
+theme_override_font_sizes/font_size = 16
+text = "Two mentalics. One calculation. The galaxy's fate hangs in the balance."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = 50.0
+offset_right = 250.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="StartButton" type="Button" parent="MenuPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Begin New Calculation"
+
+[node name="InstructionsButton" type="Button" parent="MenuPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Study the Prime Radiant"
+
+[node name="QuitButton" type="Button" parent="MenuPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Exit to Trantor"
+
+[node name="InstructionsPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DarkenBackground" type="ColorRect" parent="InstructionsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="InstructionsPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -600.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="InstructionsBackground" type="Panel" parent="InstructionsPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InstructionsPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="InstructionsTitle" type="Label" parent="InstructionsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.8, 0.95, 1)
+theme_override_font_sizes/font_size = 42
+text = "Understanding the Prime Radiant"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="InstructionsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InstructionsText" type="RichTextLabel" parent="InstructionsPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.8, 0.75, 0.9, 1)
+theme_override_font_sizes/normal_font_size = 20
+bbcode_enabled = true
+text = "[b]THE CRISIS[/b]
+
+The Prime Radiant has detected a crisis in the Seldon Plan. Two Second Foundation mentalics receive different interpretations of how to resolve it. Through careful manipulation of probability nodes (tricks), prove your calculation is correct.
+
+[b]OBJECTIVE[/b]
+
+Win tricks strategically to reach 21 points first. But beware - winning too many tricks (10+) reveals your meddling and scores zero!
+
+[b]THE THREE ASPECTS[/b]
+
+[color=#5588FF]Mental (Blue)[/color] - Psychic manipulation and control
+[color=#FFAA44]Physical (Gold)[/color] - Economic and military forces
+[color=#FF5555]Temporal (Red)[/color] - Historical momentum
+
+[b]GAMEPLAY[/b]
+
+• Each player receives 13 cards
+• One card becomes the Prime Radiant decree (trump)
+• Players must follow the lead aspect when able
+• Higher card of lead aspect wins, or trump beats all
+• Tricks won determine your score for the round
+
+[b]SCORING[/b]
+
+0-3 tricks = 6 points (Subtle Influence)
+4 tricks = 1 point (Detected)
+5 tricks = 2 points (Obvious)
+6 tricks = 3 points (Contested)
+7-9 tricks = 6 points (Calculated Dominance)
+10-13 tricks = 0 points (Exposed!)
+
+[b]SPECIAL ABILITIES[/b]
+
+[b]1[/b] - Whispered Redirection: If you lose, lead next trick
+[b]3[/b] - Mental Static: Exchange decree with hand card
+[b]5[/b] - Intuitive Leap: Draw 1, discard 1
+[b]7[/b] - Conversion Point: +1 point per 7 in trick
+[b]9[/b] - Mentalic Resonance: Only 9 becomes trump
+[b]11[/b] - Speaker's Command: Opponent plays 1 or highest
+
+First to 21 points determines the Plan's resolution!"
+
+[node name="CloseButton" type="Button" parent="InstructionsPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Return to Menu"
+
+[node name="Footer" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -80.0
+offset_right = 400.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.4, 0.35, 0.5, 0.6)
+theme_override_font_sizes/font_size = 14
+text = "\"From the shadows, we shape the light.\" - Second Foundation motto"
+horizontal_alignment = 1
+vertical_alignment = 1
