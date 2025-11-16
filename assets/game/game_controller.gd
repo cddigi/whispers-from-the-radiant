@@ -112,8 +112,13 @@ func display_player_hand(player_id: int) -> void:
 		# Connect signals only for local player's cards
 		if is_local_player:
 			card_instance.card_selected.connect(_on_player_card_selected.bind(card_instance))
+			card_instance.card_hovered.connect(_on_player_card_hovered.bind(card_instance))
 
 		hand_cards_array.append(card_instance)
+
+	# Update card playability states if it's the local player
+	if is_local_player:
+		update_hand_playability()
 
 	print("Displayed %d cards for Player %d (face-%s)" % [
 		hand_cards_array.size(),
@@ -159,6 +164,32 @@ func update_turn_indicator() -> void:
 		turn_indicator.text = "Player 1's Turn (Mental Manipulation)"
 	else:
 		turn_indicator.text = "Player 2's Turn (Mental Manipulation)"
+
+
+## Updates which cards in the local player's hand can be played
+func update_hand_playability() -> void:
+	var player_id := game_state.local_player_id
+	var hand_cards := player1_hand_cards if player_id == 1 else player2_hand_cards
+	var is_players_turn := game_state.is_local_players_turn()
+
+	for card in hand_cards:
+		var card_data := card.get_card_data()
+
+		# Cards are selectable only on player's turn
+		card.set_selectable(is_players_turn)
+
+		# Check if card is playable based on game rules
+		if is_players_turn:
+			var playable := can_play_card(card_data, player_id)
+			card.set_playable(playable)
+		else:
+			card.set_playable(false)
+
+
+## Handles when a player hovers over a card
+func _on_player_card_hovered(_card: Card) -> void:
+	# Could add tooltip or info display here in future
+	pass
 
 
 ## Handles when a player selects a card from their hand
@@ -214,16 +245,35 @@ func play_card_to_trick(card: Card, player_id: int) -> void:
 	else:
 		player2_hand_cards.erase(card)
 
+	# Store original position for animation
+	var start_pos := card.global_position
+
 	# Move card to trick area (visual)
 	card.reparent(trick_area)
 
-	# Position in trick area
+	# Set starting position (maintain visual continuity)
+	card.global_position = start_pos
+
+	# Determine target position in trick area
+	var target_position: Vector2
 	if player_id == 1:
 		player1_trick_card = card
-		card.position = Vector2(100, 0)
+		target_position = Vector2(100, 0)
 	else:
 		player2_trick_card = card
-		card.position = Vector2(300, 0)
+		target_position = Vector2(300, 0)
+
+	# Animate card to trick area
+	var tween := create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_parallel(true)
+	tween.tween_property(card, "position", target_position, 0.4)
+	tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.4)
+	tween.set_parallel(false)
+
+	# Ensure card is face-up when played
+	card.set_face_up(true)
 
 	print("Player %d played %s %d to trick" % [
 		player_id,
@@ -239,6 +289,7 @@ func play_card_to_trick(card: Card, player_id: int) -> void:
 		# Switch turns
 		game_state.active_mentalic = 3 - game_state.active_mentalic
 		update_turn_indicator()
+		update_hand_playability()
 
 		# If it's now AI opponent's turn, have them play after short delay
 		if not game_state.is_local_players_turn():
@@ -277,10 +328,16 @@ func resolve_trick() -> void:
 	game_state.active_mentalic = winner_id
 	game_state.clear_trick()
 	update_turn_indicator()
+	update_hand_playability()
 
 	# Check if round is over
 	if game_state.is_round_complete():
 		end_round()
+	else:
+		# If it's AI turn, have them play
+		if not game_state.is_local_players_turn():
+			await get_tree().create_timer(1.0).timeout
+			ai_play_card()
 
 
 ## Determines which player won the trick
