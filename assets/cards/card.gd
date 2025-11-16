@@ -28,7 +28,9 @@ func _ready() -> void:
 	# Ensure the card can receive mouse input
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# Make sure all child labels ignore mouse events so parent receives them
+	# Make sure all child elements ignore mouse events so parent receives them
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	aspect_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	value_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	aspect_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ability_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -100,8 +102,12 @@ func return_to_original_position() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	print("_gui_input received event: ", event)
+
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
+		print("Mouse button event - button: ", mouse_event.button_index, " pressed: ", mouse_event.pressed)
+
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
 			if mouse_event.pressed:
 				# Start dragging
@@ -119,18 +125,21 @@ func _gui_input(event: InputEvent) -> void:
 				return_to_original_position()
 				accept_event()
 
-	elif event is InputEventMouseMotion and is_dragging:
-		# Update position while dragging
-		global_position = get_global_mouse_position() - drag_offset
-		accept_event()
+	elif event is InputEventMouseMotion:
+		if is_dragging:
+			# Update position while dragging
+			global_position = get_global_mouse_position() - drag_offset
+			accept_event()
 
 
 func _on_mouse_entered() -> void:
+	print("Mouse entered card: ", card_data.get_aspect_name() if card_data else "unknown")
 	set_highlighted(true)
 	card_hovered.emit(self)
 
 
 func _on_mouse_exited() -> void:
+	print("Mouse exited card")
 	set_highlighted(false)
 
 
