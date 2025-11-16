@@ -4,14 +4,14 @@
 [ext_resource type="Texture2D" uid="uid://bc88nvnk3xwou" path="res://assets/cardbacks/default_cardback.png" id="2_cardback"]
 
 [node name="CardTemplate" type="Control"]
-custom_minimum_size = Vector2(120, 180)
+custom_minimum_size = Vector2(200, 300)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 120.0
-offset_bottom = 180.0
+offset_right = 200.0
+offset_bottom = 300.0
 script = ExtResource("1_template")
 
-[node name="CardFaceTexture" type="TextureRect" parent="."]
+[node name="BorderFrame" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -23,18 +23,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="AspectBorder" type="ColorRect" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.3, 0.4, 0.8, 0.3)
-
-[node name="RankLabel" type="Label" parent="."]
+[node name="PortraitArea" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -42,57 +31,129 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -30.0
-offset_top = -36.0
-offset_right = 30.0
-offset_bottom = 36.0
+offset_left = -70.0
+offset_top = -80.0
+offset_right = 70.0
+offset_bottom = 80.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RankTop" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 50.0
+offset_bottom = 50.0
+mouse_filter = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 64
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 32
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="AspectLabel" type="Label" parent="."]
+[node name="SuitTop" type="Label" parent="."]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 5.0
-offset_bottom = 28.0
-grow_horizontal = 2
+layout_mode = 0
+offset_left = 10.0
+offset_top = 45.0
+offset_right = 50.0
+offset_bottom = 75.0
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 14
-text = "MENTAL"
+theme_override_font_sizes/font_size = 24
+text = "🧠"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="AbilityText" type="Label" parent="."]
+[node name="RankBottom" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -50.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 32
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+rotation = 3.14159
+
+[node name="SuitBottom" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -75.0
+offset_right = -10.0
+offset_bottom = -45.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 24
+text = "🧠"
+horizontal_alignment = 1
+vertical_alignment = 1
+rotation = 3.14159
+
+[node name="AbilityPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = -40.0
-offset_right = -5.0
-offset_bottom = -5.0
+offset_left = 10.0
+offset_top = -80.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 10
+
+[node name="MarginContainer" type="MarginContainer" parent="AbilityPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AbilityPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="AbilityName" type="Label" parent="AbilityPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
 text = "Ability Name"
 horizontal_alignment = 1
-vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AbilityDescription" type="Label" parent="AbilityPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 9
+text = "Ability description text goes here and wraps to multiple lines as needed."
+horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="CardBack" type="TextureRect" parent="."]

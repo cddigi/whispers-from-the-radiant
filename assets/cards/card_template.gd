@@ -1,8 +1,9 @@
 class_name CardTemplate
 extends Control
 
-## Enhanced card template with support for custom card face textures.
-## Allows overlaying rank, aspect, and ability text on card face images.
+## Card template with ornate border, rank, suit, portrait area, and ability text.
+## Designed for Foundation universe card game with all 33 cards in deck.
+## Odd-numbered cards (1,3,5,7,9,11) display ability text; even cards show only rank/suit.
 
 signal card_selected(card: CardTemplate)
 signal card_hovered(card: CardTemplate)
@@ -16,18 +17,25 @@ var drag_offset: Vector2 = Vector2.ZERO
 var original_position: Vector2 = Vector2.ZERO
 
 ## Visual elements (scene-unique node references)
-@onready var card_face_texture := %CardFaceTexture as TextureRect
-@onready var aspect_border := %AspectBorder as ColorRect
-@onready var rank_label := %RankLabel as Label
-@onready var aspect_label := %AspectLabel as Label
-@onready var ability_text := %AbilityText as Label
+@onready var border_frame := %BorderFrame as TextureRect
+@onready var portrait_area := %PortraitArea as TextureRect
+@onready var rank_top := %RankTop as Label
+@onready var rank_bottom := %RankBottom as Label
+@onready var suit_top := %SuitTop as Label
+@onready var suit_bottom := %SuitBottom as Label
+@onready var ability_panel := %AbilityPanel as PanelContainer
+@onready var ability_name := %AbilityName as Label
+@onready var ability_description := %AbilityDescription as Label
 @onready var card_back := %CardBack as TextureRect
 
 ## Whether this card is currently face-up
 var is_face_up: bool = true
 
-## Optional custom card face texture
-var card_face: Texture2D = null
+## Optional custom portrait texture for this card
+var portrait_texture: Texture2D = null
+
+## Optional custom border texture (defaults to template border)
+var border_texture: Texture2D = null
 
 
 func _ready() -> void:
@@ -35,11 +43,15 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# Make sure all child elements ignore mouse events so parent receives them
-	card_face_texture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	aspect_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rank_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	aspect_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ability_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	border_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	portrait_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rank_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rank_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	suit_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	suit_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ability_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ability_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ability_description.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# If card_data was set before _ready, update visuals
@@ -57,11 +69,18 @@ func set_card_data(data: CardData) -> void:
 		update_visuals()
 
 
-## Sets a custom card face texture
-func set_card_face(texture: Texture2D) -> void:
-	card_face = texture
+## Sets a custom portrait texture for this card
+func set_portrait(texture: Texture2D) -> void:
+	portrait_texture = texture
 	if is_node_ready():
-		card_face_texture.texture = texture
+		portrait_area.texture = texture
+
+
+## Sets a custom border frame texture
+func set_border(texture: Texture2D) -> void:
+	border_texture = texture
+	if is_node_ready():
+		border_frame.texture = texture
 
 
 ## Updates all visual elements to match card_data
@@ -69,36 +88,56 @@ func update_visuals() -> void:
 	if not card_data:
 		return
 
-	# Set card face texture if available
-	if card_face:
-		card_face_texture.texture = card_face
-		card_face_texture.visible = true
-	else:
-		card_face_texture.visible = false
+	# Set border texture if available
+	if border_texture:
+		border_frame.texture = border_texture
 
-	# Set rank
-	rank_label.text = str(card_data.value)
+	# Set portrait texture if available
+	if portrait_texture:
+		portrait_area.texture = portrait_texture
 
-	# Set aspect color and name
+	# Set rank in both top-left and bottom-right corners
+	var rank_text := str(card_data.value)
+	rank_top.text = rank_text
+	rank_bottom.text = rank_text
+
+	# Set aspect/suit indicators
+	var suit_text := get_suit_symbol(card_data.aspect)
 	var aspect_color := card_data.get_aspect_color()
-	aspect_border.color = aspect_color
-	aspect_label.text = card_data.get_aspect_name().to_upper()
-	aspect_label.add_theme_color_override("font_color", aspect_color)
 
-	# Show ability text for special cards
+	suit_top.text = suit_text
+	suit_bottom.text = suit_text
+	suit_top.add_theme_color_override("font_color", aspect_color)
+	suit_bottom.add_theme_color_override("font_color", aspect_color)
+
+	# Color the rank labels with aspect color
+	rank_top.add_theme_color_override("font_color", aspect_color)
+	rank_bottom.add_theme_color_override("font_color", aspect_color)
+
+	# Show ability panel only for odd-numbered cards (1,3,5,7,9,11)
 	if card_data.has_ability:
-		ability_text.visible = true
-		ability_text.text = get_short_ability_text(card_data.value)
-		ability_text.tooltip_text = card_data.ability_description
+		ability_panel.visible = true
+		ability_name.text = get_ability_name(card_data.value)
+		ability_description.text = card_data.ability_description
 	else:
-		ability_text.visible = false
-
-	# Add subtle tint to rank label based on aspect
-	rank_label.add_theme_color_override("font_color", aspect_color)
+		ability_panel.visible = false
 
 
-## Returns abbreviated ability text for card display
-func get_short_ability_text(value: int) -> String:
+## Returns the suit symbol for the aspect
+func get_suit_symbol(aspect: CardData.Aspect) -> String:
+	match aspect:
+		CardData.Aspect.MENTAL:
+			return "🧠"  # Mental (Blue)
+		CardData.Aspect.PHYSICAL:
+			return "⚔️"  # Physical (Gold)
+		CardData.Aspect.TEMPORAL:
+			return "⏳"  # Temporal (Red)
+		_:
+			return "?"
+
+
+## Returns ability name for card display
+func get_ability_name(value: int) -> String:
 	match value:
 		1:
 			return "Whispered Redirection"
@@ -111,7 +150,7 @@ func get_short_ability_text(value: int) -> String:
 		9:
 			return "Mentalic Resonance"
 		11:
-			return "Speaker's Command"
+			return "Imperial Decree"
 		_:
 			return ""
 
@@ -146,11 +185,13 @@ func update_face_visibility() -> void:
 	card_back.visible = not is_face_up
 
 	# When face-up, show the card details
-	card_face_texture.visible = is_face_up and card_face != null
-	aspect_border.visible = is_face_up
-	rank_label.visible = is_face_up
-	aspect_label.visible = is_face_up
-	ability_text.visible = is_face_up and (card_data != null and card_data.has_ability)
+	border_frame.visible = is_face_up
+	portrait_area.visible = is_face_up
+	rank_top.visible = is_face_up
+	rank_bottom.visible = is_face_up
+	suit_top.visible = is_face_up
+	suit_bottom.visible = is_face_up
+	ability_panel.visible = is_face_up and (card_data != null and card_data.has_ability)
 
 
 ## Smoothly returns the card to its original position
