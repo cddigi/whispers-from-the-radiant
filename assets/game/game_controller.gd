@@ -154,7 +154,7 @@ func display_player_hand(player_id: int) -> void:
 	])
 
 
-## Displays the Prime Radiant decree card (trump indicator)
+## Displays the Prime Radiant decree card (trump indicator) with clear labeling
 func display_decree_card() -> void:
 	if not game_state.radiant_display_card:
 		return
@@ -169,28 +169,81 @@ func display_decree_card() -> void:
 	decree_card.set_card_data(game_state.radiant_display_card)
 	decree_card.set_face_up(true)
 
+	# Update decree label to show the dominant aspect clearly
+	update_decree_label()
+
 	print("Decree card displayed: %s %d (dominant aspect)" % [
 		game_state.radiant_display_card.get_aspect_name(),
 		game_state.radiant_display_card.value
 	])
 
 
-## Updates the score display
+## Updates the score display with clear, readable formatting
 func update_score_display() -> void:
-	score_label.text = "Player 1: %d tricks (%d points) | Player 2: %d tricks (%d points)" % [
+	var p1_influence = game_state.mentalic1_total_score
+	var p2_influence = game_state.mentalic2_total_score
+
+	score_label.text = "Player 1: %d nodes won | %d round points | %d total | Player 2: %d nodes won | %d round points | %d total" % [
 		game_state.mentalic1_tricks,
 		game_state.mentalic1_round_score,
+		p1_influence,
 		game_state.mentalic2_tricks,
-		game_state.mentalic2_round_score
+		game_state.mentalic2_round_score,
+		p2_influence
 	]
 
 
-## Updates the turn indicator
+## Updates the turn indicator with clear player identification and context
 func update_turn_indicator() -> void:
-	if game_state.active_mentalic == 1:
-		turn_indicator.text = "Player 1's Turn (Mental Manipulation)"
+	var is_local_turn := game_state.is_local_players_turn()
+	var trick_num = game_state.trick_number
+	var player_name = "Player 1 (You)" if game_state.active_mentalic == game_state.local_player_id else "Opponent (Player %d)" % game_state.active_mentalic
+
+	# Add urgency indicator based on tricks played
+	var urgency_text = ""
+	if game_state.trick_number > 10:
+		urgency_text = " - CRITICAL NODE"
+	elif game_state.trick_number > 6:
+		urgency_text = " - CONVERGENCE POINT"
+
+	if is_local_turn:
+		turn_indicator.text = "YOUR TURN - %s [Node %d/13]%s" % [player_name, trick_num, urgency_text]
+		turn_indicator.add_theme_color_override("font_color", Color.LIGHT_GREEN)
 	else:
-		turn_indicator.text = "Player 2's Turn (Mental Manipulation)"
+		turn_indicator.text = "%s is calculating... [Node %d/13]%s" % [player_name, trick_num, urgency_text]
+		turn_indicator.add_theme_color_override("font_color", Color.LIGHT_BLUE)
+
+
+## Updates the decree display label with dominant aspect information
+func update_decree_label() -> void:
+	if not game_state.radiant_display_card or not decree_display.is_node_ready():
+		return
+
+	# Find the label node in DecreeArea (parent of DecreeDisplay)
+	var decree_area = decree_display.get_parent()
+	if not decree_area:
+		return
+
+	# Look for existing label to update
+	for child in decree_area.get_children():
+		if child is Label and child.text.contains("Prime Radiant"):
+			var aspect_name = game_state.radiant_display_card.get_aspect_name()
+			child.text = "Prime Radiant Decree\n[%s Trump]" % aspect_name
+			child.add_theme_font_size_override("font_size", 16)
+			break
+
+
+## Updates visual indicators in the trick area showing cards that have been played
+func update_trick_area_display() -> void:
+	if trick_area.is_node_ready():
+		# Cards are displayed via play_card_to_trick() - this function
+		# is called to ensure visual state is consistent
+		# Add visual feedback for which player played which card
+		if player1_trick_card:
+			player1_trick_card.modulate = Color.WHITE
+
+		if player2_trick_card:
+			player2_trick_card.modulate = Color.WHITE
 
 
 ## Updates which cards in the local player's hand can be played
@@ -301,6 +354,9 @@ func play_card_to_trick(card: Card, player_id: int) -> void:
 
 	# Ensure card is face-up when played
 	card.set_face_up(true)
+
+	# Update trick area visuals
+	update_trick_area_display()
 
 	print("Player %d played %s %d to trick" % [
 		player_id,
