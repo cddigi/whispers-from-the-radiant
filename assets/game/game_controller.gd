@@ -1,0 +1,415 @@
+extends Control
+
+## Main game controller for Whispers from the Radiant.
+## Manages game flow, hand display, trick resolution, and scoring.
+## This is the primary gameplay scene.
+
+const CardScene := preload("res://assets/cards/card.tscn")
+
+## Scene-unique node references
+@onready var player1_hand_container := %Player1HandContainer as HBoxContainer
+@onready var player2_hand_container := %Player2HandContainer as HBoxContainer
+@onready var trick_area := %TrickArea as Control
+@onready var decree_display := %DecreeDisplay as Control
+@onready var score_label := %ScoreLabel as Label
+@onready var turn_indicator := %TurnIndicator as Label
+
+## Game state resource
+var game_state: GameState = null
+
+## Card instances in each player's hand UI
+var player1_hand_cards: Array[Card] = []
+var player2_hand_cards: Array[Card] = []
+
+## Cards played in current trick
+var player1_trick_card: Card = null
+var player2_trick_card: Card = null
+
+
+func _ready() -> void:
+	print("=== Whispers from the Radiant - Game Start ===")
+	initialize_new_round()
+
+
+## Initializes a new round: creates deck, shuffles, deals, displays
+func initialize_new_round() -> void:
+	# Create fresh game state
+	game_state = GameState.new()
+	game_state.local_player_id = 1  # For now, always player 1 is local
+
+	# Generate and shuffle deck
+	var deck := DeckGenerator.generate_full_deck()
+	DeckGenerator.shuffle_deck(deck)
+	print("Deck generated and shuffled: %d cards" % deck.size())
+
+	# Deal cards to both players
+	var deal_result := DeckGenerator.deal_cards(deck)
+	game_state.mentalic1_hand = deal_result.player1
+	game_state.mentalic2_hand = deal_result.player2
+	game_state.radiant_display_card = deal_result.decree
+
+	# Set dominant aspect based on decree card
+	game_state.dominant_aspect = deal_result.decree.aspect
+
+	print("Player 1 dealt %d cards" % game_state.mentalic1_hand.size())
+	print("Player 2 dealt %d cards" % game_state.mentalic2_hand.size())
+	print("Prime Radiant decree: %s %d" % [
+		game_state.radiant_display_card.get_aspect_name(),
+		game_state.radiant_display_card.value
+	])
+
+	# Sort hands for better display
+	DeckGenerator.sort_hand(game_state.mentalic1_hand)
+	DeckGenerator.sort_hand(game_state.mentalic2_hand)
+
+	# Display hands
+	display_player_hand(1)
+	display_player_hand(2)
+
+	# Display decree card
+	display_decree_card()
+
+	# Update UI
+	update_score_display()
+	update_turn_indicator()
+
+	# If AI goes first, have them play after short delay
+	if not game_state.is_local_players_turn():
+		await get_tree().create_timer(1.5).timeout
+		ai_play_card()
+
+
+## Displays a player's hand in their container
+func display_player_hand(player_id: int) -> void:
+	var hand_data: Array[CardData]
+	var hand_container: HBoxContainer
+	var hand_cards_array: Array[Card]
+	var is_local_player := (player_id == game_state.local_player_id)
+
+	if player_id == 1:
+		hand_data = game_state.mentalic1_hand
+		hand_container = player1_hand_container
+		hand_cards_array = player1_hand_cards
+	else:
+		hand_data = game_state.mentalic2_hand
+		hand_container = player2_hand_container
+		hand_cards_array = player2_hand_cards
+
+	# Clear existing cards
+	for card in hand_cards_array:
+		card.queue_free()
+	hand_cards_array.clear()
+
+	# Create card instances for each card in hand
+	for card_data in hand_data:
+		var card_instance := CardScene.instantiate() as Card
+		hand_container.add_child(card_instance)
+		card_instance.set_card_data(card_data)
+
+		# Set face-up for local player, face-down for opponent
+		card_instance.set_face_up(is_local_player)
+
+		# Connect signals only for local player's cards
+		if is_local_player:
+			card_instance.card_selected.connect(_on_player_card_selected.bind(card_instance))
+
+		hand_cards_array.append(card_instance)
+
+	print("Displayed %d cards for Player %d (face-%s)" % [
+		hand_cards_array.size(),
+		player_id,
+		"up" if is_local_player else "down"
+	])
+
+
+## Displays the Prime Radiant decree card (trump indicator)
+func display_decree_card() -> void:
+	if not game_state.radiant_display_card:
+		return
+
+	# Clear existing decree display
+	for child in decree_display.get_children():
+		child.queue_free()
+
+	# Create decree card instance
+	var decree_card := CardScene.instantiate() as Card
+	decree_display.add_child(decree_card)
+	decree_card.set_card_data(game_state.radiant_display_card)
+	decree_card.set_face_up(true)
+
+	print("Decree card displayed: %s %d (dominant aspect)" % [
+		game_state.radiant_display_card.get_aspect_name(),
+		game_state.radiant_display_card.value
+	])
+
+
+## Updates the score display
+func update_score_display() -> void:
+	score_label.text = "Player 1: %d tricks (%d points) | Player 2: %d tricks (%d points)" % [
+		game_state.mentalic1_tricks,
+		game_state.mentalic1_round_score,
+		game_state.mentalic2_tricks,
+		game_state.mentalic2_round_score
+	]
+
+
+## Updates the turn indicator
+func update_turn_indicator() -> void:
+	if game_state.active_mentalic == 1:
+		turn_indicator.text = "Player 1's Turn (Mental Manipulation)"
+	else:
+		turn_indicator.text = "Player 2's Turn (Mental Manipulation)"
+
+
+## Handles when a player selects a card from their hand
+func _on_player_card_selected(card: Card) -> void:
+	if not game_state.is_local_players_turn():
+		print("Not your turn!")
+		return
+
+	var card_data := card.get_card_data()
+	var player_id := game_state.local_player_id
+
+	# Validate card can be played
+	if not can_play_card(card_data, player_id):
+		print("Cannot play that card - must follow lead aspect!")
+		return
+
+	print("Player %d selected card: %s %d" % [player_id, card_data.get_aspect_name(), card_data.value])
+
+	# Play the card to the trick area
+	play_card_to_trick(card, player_id)
+
+
+## Validates if a card can be legally played
+func can_play_card(card_data: CardData, player_id: int) -> bool:
+	# First card of trick can always be played
+	if game_state.current_trick.is_empty():
+		return true
+
+	# Get player's hand
+	var hand := game_state.mentalic1_hand if player_id == 1 else game_state.mentalic2_hand
+
+	# Must follow lead aspect if possible
+	var has_lead_aspect := DeckGenerator.count_aspect_in_hand(hand, game_state.lead_aspect) > 0
+
+	if has_lead_aspect:
+		# Player has cards of lead aspect, must play one
+		return card_data.aspect == game_state.lead_aspect
+	else:
+		# Player doesn't have lead aspect, can play anything
+		return true
+
+
+## Plays a card to the trick area
+func play_card_to_trick(card: Card, player_id: int) -> void:
+	var card_data := card.get_card_data()
+
+	# Add to game state
+	game_state.play_card_to_trick(card_data, player_id)
+
+	# Remove from hand display
+	if player_id == 1:
+		player1_hand_cards.erase(card)
+	else:
+		player2_hand_cards.erase(card)
+
+	# Move card to trick area (visual)
+	card.reparent(trick_area)
+
+	# Position in trick area
+	if player_id == 1:
+		player1_trick_card = card
+		card.position = Vector2(100, 0)
+	else:
+		player2_trick_card = card
+		card.position = Vector2(300, 0)
+
+	print("Player %d played %s %d to trick" % [
+		player_id,
+		card_data.get_aspect_name(),
+		card_data.value
+	])
+
+	# Check if trick is complete
+	if game_state.current_trick.size() == 2:
+		# Both players have played - resolve trick
+		resolve_trick()
+	else:
+		# Switch turns
+		game_state.active_mentalic = 3 - game_state.active_mentalic
+		update_turn_indicator()
+
+		# If it's now AI opponent's turn, have them play after short delay
+		if not game_state.is_local_players_turn():
+			await get_tree().create_timer(1.0).timeout
+			ai_play_card()
+
+
+## Resolves the current trick and determines winner
+func resolve_trick() -> void:
+	if game_state.current_trick.size() != 2:
+		return
+
+	var card1 := game_state.current_trick[0]
+	var card2 := game_state.current_trick[1]
+
+	var winner_id := determine_trick_winner(card1, card2)
+
+	print("Trick %d resolved - Winner: Player %d" % [game_state.trick_number, winner_id])
+
+	# Award trick to winner
+	if winner_id == 1:
+		game_state.mentalic1_tricks += 1
+	else:
+		game_state.mentalic2_tricks += 1
+
+	# TODO: Handle special abilities (7s, etc.)
+	# TODO: Update round score
+
+	update_score_display()
+
+	# Clear trick area after delay
+	await get_tree().create_timer(2.0).timeout
+	clear_trick_area()
+
+	# Start next trick with winner leading
+	game_state.active_mentalic = winner_id
+	game_state.clear_trick()
+	update_turn_indicator()
+
+	# Check if round is over
+	if game_state.is_round_complete():
+		end_round()
+
+
+## Determines which player won the trick
+func determine_trick_winner(card1: CardData, card2: CardData) -> int:
+	# If aspects are the same, higher value wins
+	if card1.aspect == card2.aspect:
+		return 1 if card1.value > card2.value else 2
+
+	# If first card is lead aspect, it wins (second card didn't follow)
+	if card1.aspect == game_state.lead_aspect:
+		return 1
+
+	# If second card is lead aspect, it wins
+	if card2.aspect == game_state.lead_aspect:
+		return 2
+
+	# If first card is dominant aspect (trump), it wins
+	if card1.aspect == game_state.dominant_aspect:
+		return 1
+
+	# If second card is dominant aspect (trump), it wins
+	if card2.aspect == game_state.dominant_aspect:
+		return 2
+
+	# Neither followed suit or played trump - first player wins by default
+	return 1
+
+
+## Clears the trick area
+func clear_trick_area() -> void:
+	if player1_trick_card:
+		player1_trick_card.queue_free()
+		player1_trick_card = null
+
+	if player2_trick_card:
+		player2_trick_card.queue_free()
+		player2_trick_card = null
+
+
+## Ends the current round and calculates scores
+func end_round() -> void:
+	print("=== Round Complete ===")
+	print("Player 1 tricks: %d" % game_state.mentalic1_tricks)
+	print("Player 2 tricks: %d" % game_state.mentalic2_tricks)
+
+	# Calculate round scores based on trick count
+	game_state.mentalic1_round_score = calculate_round_score(game_state.mentalic1_tricks)
+	game_state.mentalic2_round_score = calculate_round_score(game_state.mentalic2_tricks)
+
+	# Add to total scores
+	game_state.mentalic1_total_score += game_state.mentalic1_round_score
+	game_state.mentalic2_total_score += game_state.mentalic2_round_score
+
+	print("Player 1 score: %d (total: %d)" % [
+		game_state.mentalic1_round_score,
+		game_state.mentalic1_total_score
+	])
+	print("Player 2 score: %d (total: %d)" % [
+		game_state.mentalic2_round_score,
+		game_state.mentalic2_total_score
+	])
+
+	# Check for game winner
+	var winner := game_state.check_game_winner()
+	if winner > 0:
+		print("=== GAME OVER - Player %d Wins! ===" % winner)
+		# TODO: Show game over screen
+	else:
+		print("=== Starting Next Round ===")
+		# TODO: Show round summary, then start new round
+		await get_tree().create_timer(3.0).timeout
+		initialize_new_round()
+
+
+## Calculates points based on tricks won
+func calculate_round_score(tricks_won: int) -> int:
+	match tricks_won:
+		0, 1, 2, 3:
+			return 6  # Subtle Influence
+		4:
+			return 1  # Detected Pressure
+		5:
+			return 2  # Obvious Manipulation
+		6:
+			return 3  # Contested Control
+		7, 8, 9:
+			return 6  # Calculated Dominance
+		_:
+			return 0  # Exposed Operation (10-13 tricks)
+
+
+## Simple AI logic for opponent's card play
+func ai_play_card() -> void:
+	var ai_player_id := 3 - game_state.local_player_id
+	var ai_hand := game_state.mentalic2_hand if ai_player_id == 2 else game_state.mentalic1_hand
+
+	if ai_hand.is_empty():
+		print("AI has no cards to play!")
+		return
+
+	# Simple AI: play first valid card from hand
+	var card_to_play: CardData = null
+
+	# If we need to follow suit, find a card of that aspect
+	if not game_state.current_trick.is_empty():
+		var valid_cards := DeckGenerator.get_cards_of_aspect(ai_hand, game_state.lead_aspect)
+		if not valid_cards.is_empty():
+			# Play lowest card of lead aspect
+			card_to_play = valid_cards[0]
+			for card in valid_cards:
+				if card.value < card_to_play.value:
+					card_to_play = card
+
+	# If we don't need to follow suit (or can't), play lowest card overall
+	if not card_to_play:
+		card_to_play = ai_hand[0]
+		for card in ai_hand:
+			if card.value < card_to_play.value:
+				card_to_play = card
+
+	print("AI (Player %d) choosing to play %s %d" % [
+		ai_player_id,
+		card_to_play.get_aspect_name(),
+		card_to_play.value
+	])
+
+	# Find the card instance in the UI
+	var ai_hand_cards := player2_hand_cards if ai_player_id == 2 else player1_hand_cards
+	for card_instance in ai_hand_cards:
+		if card_instance.get_card_data() == card_to_play:
+			play_card_to_trick(card_instance, ai_player_id)
+			break
