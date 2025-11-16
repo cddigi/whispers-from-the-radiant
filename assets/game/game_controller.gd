@@ -32,8 +32,8 @@ var ai_strategy: AIStrategy = null
 var ai_difficulty: AIStrategy.Difficulty = AIStrategy.Difficulty.MEDIUM
 
 ## UI overlays
-var round_summary: Control = null
-var game_over_screen: Control = null
+var round_summary: ColorRect = null
+var game_over_screen: ColorRect = null
 
 
 func _ready() -> void:
@@ -44,12 +44,12 @@ func _ready() -> void:
 	ai_strategy.difficulty = ai_difficulty
 
 	# Initialize UI overlays
-	round_summary = RoundSummaryScene.instantiate()
+	round_summary = RoundSummaryScene.instantiate() as ColorRect
 	round_summary.hide()
 	round_summary.continue_pressed.connect(_on_round_summary_continue)
 	add_child(round_summary)
 
-	game_over_screen = GameOverScene.instantiate()
+	game_over_screen = GameOverScene.instantiate() as ColorRect
 	game_over_screen.hide()
 	game_over_screen.new_game_pressed.connect(_on_new_game)
 	game_over_screen.main_menu_pressed.connect(_on_main_menu)
