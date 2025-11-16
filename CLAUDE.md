@@ -141,6 +141,110 @@ gameState = {
 - `resolveNode()`: Determine which mentalic controls this point in time
 - `pierceShield(mentalic, active)`: Toggle mental shield penetration
 
+## Development Environment & Testing
+
+### Godot Command-Line Interface
+
+**Godot Executable Location**: `/Applications/Godot.app/Contents/MacOS/Godot`
+
+**Godot Version**: 4.6-dev4
+
+When writing or modifying GDScript files, use the Godot command-line interface to validate your work incrementally. This prevents accumulating errors and ensures each change compiles correctly.
+
+### Essential Command-Line Patterns
+
+#### 1. Validate Script Syntax
+
+Check if a script has syntax errors without running it:
+
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot --headless --check-only --path /Volumes/Sidecar/FFAI/whispers-from-the-radiant
+```
+
+**When to use**: After editing any `.gd` file to verify syntax is valid.
+
+#### 2. Run a Specific Scene
+
+Test a scene directly from command line:
+
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot --path /Volumes/Sidecar/FFAI/whispers-from-the-radiant res://path/to/scene.tscn
+```
+
+**When to use**: After implementing scene-based features to verify behavior.
+
+#### 3. Run in Debug Mode
+
+Get detailed error output and stack traces:
+
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot -d --path /Volumes/Sidecar/FFAI/whispers-from-the-radiant res://path/to/scene.tscn
+```
+
+**When to use**: When debugging runtime errors or investigating unexpected behavior.
+
+#### 4. Headless Testing (No Window)
+
+Run tests or validation without opening the Godot window:
+
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot --headless -d --path /Volumes/Sidecar/FFAI/whispers-from-the-radiant
+```
+
+**When to use**: For automated validation during development, especially when checking multiple files.
+
+#### 5. Execute a Specific Script
+
+Run a GDScript that extends SceneTree or MainLoop:
+
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot -s res://path/to/script.gd -d --path /Volumes/Sidecar/FFAI/whispers-from-the-radiant
+```
+
+**When to use**: For testing utility scripts or running automated checks.
+
+#### 6. Run Unit Tests (with GUT framework, if installed)
+
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot -d -s --path /Volumes/Sidecar/FFAI/whispers-from-the-radiant addons/gut/gut_cmdln.gd -gdir=res://test -ginclude_subdirs -gexit
+```
+
+**When to use**: After implementing testable functionality to verify behavior with automated tests.
+
+### Validation Workflow for Claude Code
+
+When writing or modifying GDScript files, follow this incremental validation pattern:
+
+1. **After each file edit**: Run `--headless --check-only` to validate syntax
+2. **After implementing a feature**: Run the relevant scene with `-d` to test functionality
+3. **Before marking work complete**: Run all applicable tests to ensure nothing broke
+
+### Common Command-Line Flags Reference
+
+| Flag | Purpose | Example Use Case |
+|------|---------|------------------|
+| `--headless` | Run without GUI | CI/CD, automated testing, validation |
+| `-d` | Debug mode with verbose output | Investigating errors, seeing detailed logs |
+| `-s <script>` | Execute a specific script | Running utilities, automated tests |
+| `--path <dir>` | Set project root directory | Specifying which Godot project to work with |
+| `--check-only` | Validate and exit immediately | Quick syntax checking |
+| `-e` | Open editor | Launching Godot editor from terminal |
+| `--quit` | Quit after first iteration | One-shot validation tasks |
+
+### Error Handling
+
+- **Exit code 0**: Success, all operations completed without errors
+- **Exit code 1**: Failure, errors occurred during execution
+- Parse error output for specific file/line information to fix issues
+
+### Best Practices
+
+1. **Validate incrementally**: Don't accumulate multiple changes without validation
+2. **Use headless mode**: Faster feedback, no window management overhead
+3. **Debug mode by default**: The `-d` flag provides valuable context for errors
+4. **Check syntax before runtime**: Use `--check-only` first, then test behavior
+5. **Path specificity**: Always use `--path` to ensure Godot uses the correct project
+
 ## Development Priorities
 
 ### Phase 1: Core Mechanics (COMPLETE)
