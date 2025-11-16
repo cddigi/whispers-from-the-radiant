@@ -184,8 +184,8 @@ func display_decree_card() -> void:
 
 ## Updates the score display with clear, readable formatting
 func update_score_display() -> void:
-	var p1_influence = game_state.mentalic1_total_score
-	var p2_influence = game_state.mentalic2_total_score
+	var p1_influence: int = game_state.mentalic1_total_score
+	var p2_influence: int = game_state.mentalic2_total_score
 
 	score_label.text = "Protagonist: %d tricks (%d pts | %d total) | Antagonist: %d tricks (%d pts | %d total)" % [
 		game_state.mentalic1_tricks,
@@ -207,11 +207,11 @@ func update_score_display() -> void:
 ## Updates the turn indicator with clear player identification and context
 func update_turn_indicator() -> void:
 	var is_local_turn := game_state.is_local_players_turn()
-	var trick_num = game_state.trick_number
-	var player_name = "Player 1 (You)" if game_state.active_mentalic == game_state.local_player_id else "Opponent (Player %d)" % game_state.active_mentalic
+	var trick_num: int = game_state.trick_number
+	var player_name: String = "Player 1 (You)" if game_state.active_mentalic == game_state.local_player_id else "Opponent (Player %d)" % game_state.active_mentalic
 
 	# Add urgency indicator based on tricks played
-	var urgency_text = ""
+	var urgency_text: String = ""
 	if game_state.trick_number > 10:
 		urgency_text = " - CRITICAL NODE"
 	elif game_state.trick_number > 6:
@@ -231,17 +231,19 @@ func update_decree_label() -> void:
 		return
 
 	# Find the label node in DecreeArea (parent of DecreeDisplay)
-	var decree_area = decree_display.get_parent()
+	var decree_area: Node = decree_display.get_parent()
 	if not decree_area:
 		return
 
 	# Look for existing label to update
-	for child in decree_area.get_children():
-		if child is Label and child.text.contains("Prime Radiant"):
-			var aspect_name = game_state.radiant_display_card.get_aspect_name()
-			child.text = "Prime Radiant Decree\n[%s Trump]" % aspect_name
-			child.add_theme_font_size_override("font_size", 16)
-			break
+	for child: Node in decree_area.get_children():
+		if child is Label:
+			var label := child as Label
+			if label.text.contains("Prime Radiant"):
+				var aspect_name: String = game_state.radiant_display_card.get_aspect_name()
+				label.text = "Prime Radiant Decree\n[%s Trump]" % aspect_name
+				label.add_theme_font_size_override("font_size", 16)
+				break
 
 
 ## Updates visual indicators in the trick area showing cards that have been played
