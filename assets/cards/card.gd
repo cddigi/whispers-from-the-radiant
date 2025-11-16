@@ -34,10 +34,14 @@ func _ready() -> void:
 	value_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	aspect_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ability_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# If card_data was set before _ready, update visuals
 	if card_data:
 		update_visuals()
+
+	# Update face visibility
+	update_face_visibility()
 
 
 ## Sets the card data and updates the visual representation
@@ -85,6 +89,28 @@ func set_highlighted(highlighted: bool) -> void:
 	else:
 		modulate = Color.WHITE
 		z_index = 0
+
+
+## Sets whether the card is face-up or face-down
+func set_face_up(face_up: bool) -> void:
+	is_face_up = face_up
+	update_face_visibility()
+
+
+## Updates the visibility of card elements based on face-up state
+func update_face_visibility() -> void:
+	if not is_node_ready():
+		return
+
+	# When face-down, show only the card back
+	card_back.visible = not is_face_up
+
+	# When face-up, show the card details
+	background.visible = is_face_up
+	aspect_border.visible = is_face_up
+	value_label.visible = is_face_up
+	aspect_label.visible = is_face_up
+	ability_indicator.visible = is_face_up and (card_data != null and card_data.has_ability)
 
 
 ## Smoothly returns the card to its original position
