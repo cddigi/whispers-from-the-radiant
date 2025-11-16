@@ -25,9 +25,18 @@ var player2_hand_cards: Array[Card] = []
 var player1_trick_card: Card = null
 var player2_trick_card: Card = null
 
+## AI Strategy instance for opponent
+var ai_strategy: AIStrategy = null
+var ai_difficulty: AIStrategy.Difficulty = AIStrategy.Difficulty.MEDIUM
+
 
 func _ready() -> void:
 	print("=== Whispers from the Radiant - Game Start ===")
+
+	# Initialize AI strategy
+	ai_strategy = AIStrategy.new()
+	ai_strategy.difficulty = ai_difficulty
+
 	initialize_new_round()
 
 
@@ -429,7 +438,7 @@ func calculate_round_score(tricks_won: int) -> int:
 			return 0  # Exposed Operation (10-13 tricks)
 
 
-## Simple AI logic for opponent's card play
+## AI logic for antagonist's card play
 func ai_play_card() -> void:
 	var ai_player_id := 3 - game_state.local_player_id
 	var ai_hand := game_state.mentalic2_hand if ai_player_id == 2 else game_state.mentalic1_hand
@@ -438,30 +447,28 @@ func ai_play_card() -> void:
 		print("AI has no cards to play!")
 		return
 
-	# Simple AI: play first valid card from hand
-	var card_to_play: CardData = null
+	# Get AI's current trick count
+	var ai_tricks := game_state.mentalic2_tricks if ai_player_id == 2 else game_state.mentalic1_tricks
+	var protagonist_tricks := game_state.mentalic1_tricks if ai_player_id == 2 else game_state.mentalic2_tricks
 
-	# If we need to follow suit, find a card of that aspect
-	if not game_state.current_trick.is_empty():
-		var valid_cards := DeckGenerator.get_cards_of_aspect(ai_hand, game_state.lead_aspect)
-		if not valid_cards.is_empty():
-			# Play lowest card of lead aspect
-			card_to_play = valid_cards[0]
-			for card in valid_cards:
-				if card.value < card_to_play.value:
-					card_to_play = card
+	# Use AI strategy to choose best card
+	var card_to_play: CardData = ai_strategy.choose_card_to_play(
+		ai_hand,
+		game_state,
+		ai_tricks,
+		protagonist_tricks
+	)
 
-	# If we don't need to follow suit (or can't), play lowest card overall
 	if not card_to_play:
+		print("AI strategy failed to choose a card! Falling back to first card.")
 		card_to_play = ai_hand[0]
-		for card in ai_hand:
-			if card.value < card_to_play.value:
-				card_to_play = card
 
-	print("AI (Player %d) choosing to play %s %d" % [
+	print("AI (Player %d) [%s] choosing to play %s %d (strategy: %s)" % [
 		ai_player_id,
+		_get_difficulty_name(),
 		card_to_play.get_aspect_name(),
-		card_to_play.value
+		card_to_play.value,
+		ai_strategy.current_target_strategy
 	])
 
 	# Find the card instance in the UI
