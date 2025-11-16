@@ -11,12 +11,12 @@ signal card_hovered(card: Card)
 ## The data this card represents
 var card_data: CardData = null
 
-## Visual elements
-@onready var background := $Background as ColorRect
-@onready var aspect_border := $AspectBorder as ColorRect
-@onready var value_label := $ValueLabel as Label
-@onready var aspect_label := $AspectLabel as Label
-@onready var ability_indicator := $AbilityIndicator as Label
+## Visual elements (scene-unique node references)
+@onready var background := %CardBackground as ColorRect
+@onready var aspect_border := %AspectBorder as ColorRect
+@onready var value_label := %ValueLabel as Label
+@onready var aspect_label := %AspectLabel as Label
+@onready var ability_indicator := %AbilityIndicator as Label
 
 
 func _ready() -> void:

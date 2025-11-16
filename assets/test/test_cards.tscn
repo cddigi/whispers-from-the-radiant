@@ -50,6 +50,7 @@ text = "Testing card generation and display system"
 horizontal_alignment = 1
 
 [node name="CardContainer" type="HBoxContainer" parent="." unique_id=528072759]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -80,12 +81,14 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="DeckInfo" type="Label" parent="InfoPanel" unique_id=1071228637]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Total cards in deck: 33"
 horizontal_alignment = 1
 
 [node name="AspectCounts" type="Label" parent="InfoPanel" unique_id=20829086]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 14
@@ -93,6 +96,7 @@ text = "Mental: 11 | Physical: 11 | Temporal: 11"
 horizontal_alignment = 1
 
 [node name="AbilityCards" type="Label" parent="InfoPanel" unique_id=577179441]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_font_sizes/font_size = 14

@@ -10,7 +10,8 @@ offset_right = 120.0
 offset_bottom = 180.0
 script = ExtResource("1_a6w5o")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="CardBackground" type="ColorRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,6 +21,7 @@ grow_vertical = 2
 color = Color(0.2, 0.2, 0.3, 1)
 
 [node name="AspectBorder" type="ColorRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,6 +31,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="ValueLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -47,6 +50,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="AspectLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -58,6 +62,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="AbilityIndicator" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0

@@ -5,10 +5,11 @@ extends Control
 
 const CardScene := preload("res://assets/cards/card.tscn")
 
-@onready var card_container := $CardContainer as HBoxContainer
-@onready var deck_info := $InfoPanel/DeckInfo as Label
-@onready var aspect_counts := $InfoPanel/AspectCounts as Label
-@onready var ability_cards := $InfoPanel/AbilityCards as Label
+## Scene-unique node references
+@onready var card_container := %CardContainer as HBoxContainer
+@onready var deck_info := %DeckInfo as Label
+@onready var aspect_counts := %AspectCounts as Label
+@onready var ability_cards := %AbilityCards as Label
 
 var full_deck: Array[CardData] = []
 
