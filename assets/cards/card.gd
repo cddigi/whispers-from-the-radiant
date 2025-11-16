@@ -11,6 +11,11 @@ signal card_hovered(card: Card)
 ## The data this card represents
 var card_data: CardData = null
 
+## Drag-and-drop state
+var is_dragging: bool = false
+var drag_offset: Vector2 = Vector2.ZERO
+var original_position: Vector2 = Vector2.ZERO
+
 ## Visual elements (scene-unique node references)
 @onready var background := %CardBackground as ColorRect
 @onready var aspect_border := %AspectBorder as ColorRect
@@ -72,12 +77,42 @@ func set_highlighted(highlighted: bool) -> void:
 		z_index = 0
 
 
+## Smoothly returns the card to its original position
+func return_to_original_position() -> void:
+	# Create a tween for smooth animation
+	var tween := create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(self, "global_position", original_position, 0.3)
+
+	# Reset z_index after animation completes
+	tween.finished.connect(func() -> void:
+		z_index = 0
+	)
+
+
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
-		if mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT:
-			card_selected.emit(self)
-			accept_event()
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
+			if mouse_event.pressed:
+				# Start dragging
+				is_dragging = true
+				original_position = global_position
+				drag_offset = get_global_mouse_position() - global_position
+				z_index = 100  # Bring to front while dragging
+				card_selected.emit(self)
+				accept_event()
+			elif is_dragging:
+				# Stop dragging and return to original position
+				is_dragging = false
+				return_to_original_position()
+				accept_event()
+
+	elif event is InputEventMouseMotion and is_dragging:
+		# Update position while dragging
+		global_position = get_global_mouse_position() - drag_offset
+		accept_event()
 
 
 func _on_mouse_entered() -> void:
