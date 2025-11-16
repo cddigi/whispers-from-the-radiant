@@ -349,10 +349,12 @@ func play_card_to_trick(card: Card, player_id: int) -> void:
 	var target_position: Vector2
 	if player_id == 1:
 		player1_trick_card = card
-		target_position = Vector2(100, 0)
+		# Position in Player1CardSlot (left side)
+		target_position = Vector2(65, 95)  # Center of card slot
 	else:
 		player2_trick_card = card
-		target_position = Vector2(300, 0)
+		# Position in Player2CardSlot (right side)
+		target_position = Vector2(195, 95)  # Center of card slot
 
 	# Animate card to trick area
 	var tween := create_tween()
