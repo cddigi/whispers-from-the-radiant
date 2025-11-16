@@ -5,6 +5,8 @@ extends Control
 ## This is the primary gameplay scene.
 
 const CardScene := preload("res://assets/cards/card.tscn")
+const RoundSummaryScene := preload("res://assets/ui/round_summary.tscn")
+const GameOverScene := preload("res://assets/ui/game_over.tscn")
 
 ## Scene-unique node references
 @onready var player1_hand_container := %Player1HandContainer as HBoxContainer
@@ -29,6 +31,10 @@ var player2_trick_card: Card = null
 var ai_strategy: AIStrategy = null
 var ai_difficulty: AIStrategy.Difficulty = AIStrategy.Difficulty.MEDIUM
 
+## UI overlays
+var round_summary: Control = null
+var game_over_screen: Control = null
+
 
 func _ready() -> void:
 	print("=== Whispers from the Radiant - Game Start ===")
@@ -36,6 +42,18 @@ func _ready() -> void:
 	# Initialize AI strategy
 	ai_strategy = AIStrategy.new()
 	ai_strategy.difficulty = ai_difficulty
+
+	# Initialize UI overlays
+	round_summary = RoundSummaryScene.instantiate()
+	round_summary.hide()
+	round_summary.continue_pressed.connect(_on_round_summary_continue)
+	add_child(round_summary)
+
+	game_over_screen = GameOverScene.instantiate()
+	game_over_screen.hide()
+	game_over_screen.new_game_pressed.connect(_on_new_game)
+	game_over_screen.main_menu_pressed.connect(_on_main_menu)
+	add_child(game_over_screen)
 
 	initialize_new_round()
 
@@ -413,12 +431,23 @@ func end_round() -> void:
 	var winner := game_state.check_game_winner()
 	if winner > 0:
 		print("=== GAME OVER - Player %d Wins! ===" % winner)
-		# TODO: Show game over screen
+		# Show game over screen
+		game_over_screen.show_game_over(
+			winner,
+			game_state.mentalic1_total_score,
+			game_state.mentalic2_total_score
+		)
 	else:
 		print("=== Starting Next Round ===")
-		# TODO: Show round summary, then start new round
-		await get_tree().create_timer(3.0).timeout
-		initialize_new_round()
+		# Show round summary
+		round_summary.show_round_results(
+			game_state.mentalic1_tricks,
+			game_state.mentalic1_round_score,
+			game_state.mentalic1_total_score,
+			game_state.mentalic2_tricks,
+			game_state.mentalic2_round_score,
+			game_state.mentalic2_total_score
+		)
 
 
 ## Calculates points based on tricks won
