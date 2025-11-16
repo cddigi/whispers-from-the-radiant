@@ -1,3 +1,4 @@
+class_name RoundSummary
 extends ColorRect
 
 ## Round summary overlay showing tricks won and points scored

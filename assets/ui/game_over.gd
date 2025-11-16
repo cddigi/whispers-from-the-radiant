@@ -1,3 +1,4 @@
+class_name GameOver
 extends ColorRect
 
 ## Game over screen showing final winner and scores
