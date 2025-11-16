@@ -11,8 +11,8 @@ static func generate_full_deck() -> Array[CardData]:
 	var deck: Array[CardData] = []
 
 	# Create 11 cards for each of the 3 aspects
-	for aspect in CardData.Aspect.values():
-		for value in range(1, 12):  # 1 through 11
+	for aspect: int in CardData.Aspect.values():
+		for value: int in range(1, 12):  # 1 through 11
 			var card := CardData.new(value, aspect)
 			deck.append(card)
 
@@ -22,7 +22,7 @@ static func generate_full_deck() -> Array[CardData]:
 ## Shuffles a deck using Fisher-Yates algorithm
 static func shuffle_deck(deck: Array[CardData]) -> void:
 	var n := deck.size()
-	for i in range(n - 1, 0, -1):
+	for i: int in range(n - 1, 0, -1):
 		var j := randi() % (i + 1)
 		var temp := deck[i]
 		deck[i] = deck[j]
@@ -40,7 +40,7 @@ static func deal_cards(deck: Array[CardData]) -> Dictionary:
 	var player2_hand: Array[CardData] = []
 
 	# Deal 13 cards to each player alternately
-	for i in range(26):
+	for i: int in range(26):
 		if i % 2 == 0:
 			player1_hand.append(deck[i])
 		else:
@@ -68,7 +68,7 @@ static func sort_hand(hand: Array[CardData]) -> void:
 ## Counts cards of a specific aspect in a hand
 static func count_aspect_in_hand(hand: Array[CardData], aspect: CardData.Aspect) -> int:
 	var count := 0
-	for card in hand:
+	for card: CardData in hand:
 		if card.aspect == aspect:
 			count += 1
 	return count
@@ -77,7 +77,7 @@ static func count_aspect_in_hand(hand: Array[CardData], aspect: CardData.Aspect)
 ## Finds all cards of a specific aspect in a hand
 static func get_cards_of_aspect(hand: Array[CardData], aspect: CardData.Aspect) -> Array[CardData]:
 	var cards: Array[CardData] = []
-	for card in hand:
+	for card: CardData in hand:
 		if card.aspect == aspect:
 			cards.append(card)
 	return cards
@@ -90,7 +90,7 @@ static func get_highest_of_aspect(hand: Array[CardData], aspect: CardData.Aspect
 		return null
 
 	var highest := cards[0]
-	for card in cards:
+	for card: CardData in cards:
 		if card.value > highest.value:
 			highest = card
 
@@ -99,7 +99,7 @@ static func get_highest_of_aspect(hand: Array[CardData], aspect: CardData.Aspect
 
 ## Gets the card with value 1 from a hand (for Speaker's Command ability)
 static func get_card_with_value(hand: Array[CardData], value: int) -> CardData:
-	for card in hand:
+	for card: CardData in hand:
 		if card.value == value:
 			return card
 	return null

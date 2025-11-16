@@ -40,7 +40,7 @@ func validate_deck() -> void:
 	var physical_count := 0
 	var temporal_count := 0
 
-	for card in full_deck:
+	for card: CardData in full_deck:
 		match card.aspect:
 			CardData.Aspect.MENTAL:
 				mental_count += 1
@@ -57,7 +57,7 @@ func validate_deck() -> void:
 
 	# Validate ability cards
 	var ability_cards_count := 0
-	for card in full_deck:
+	for card: CardData in full_deck:
 		if card.has_ability:
 			ability_cards_count += 1
 
@@ -89,7 +89,7 @@ func display_sample_cards() -> void:
 
 ## Finds a specific card in the deck
 func find_card_in_deck(aspect: CardData.Aspect, value: int) -> CardData:
-	for card in full_deck:
+	for card: CardData in full_deck:
 		if card.aspect == aspect and card.value == value:
 			return card
 	return null
@@ -117,7 +117,7 @@ func update_info_panel() -> void:
 		CardData.Aspect.TEMPORAL: 0
 	}
 
-	for card in full_deck:
+	for card: CardData in full_deck:
 		counts[card.aspect] += 1
 
 	aspect_counts.text = "Mental: %d | Physical: %d | Temporal: %d" % [
@@ -128,7 +128,7 @@ func update_info_panel() -> void:
 
 	# Count ability cards
 	var ability_count := 0
-	for card in full_deck:
+	for card: CardData in full_deck:
 		if card.has_ability:
 			ability_count += 1
 
