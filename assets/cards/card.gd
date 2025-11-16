@@ -7,11 +7,14 @@ extends Control
 
 signal card_selected(card: Card)
 signal card_hovered(card: Card)
+signal card_unhovered(card: Card)
 
 ## The data this card represents
 var card_data: CardData = null
 
-## Drag-and-drop state
+## Interaction state
+var is_playable: bool = true
+var is_selectable: bool = true
 var is_dragging: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var original_position: Vector2 = Vector2.ZERO
@@ -77,14 +80,51 @@ func get_card_data() -> CardData:
 	return card_data
 
 
-## Highlights the card (for selection/hover)
-func set_highlighted(highlighted: bool) -> void:
-	if highlighted:
-		modulate = Color(1.2, 1.2, 1.2)
-		z_index = 10
+## Sets whether this card can be played (affects visual state)
+func set_playable(playable: bool) -> void:
+	is_playable = playable
+	update_visual_state()
+
+
+## Sets whether this card can be selected (interaction enabled/disabled)
+func set_selectable(selectable: bool) -> void:
+	is_selectable = selectable
+	mouse_filter = Control.MOUSE_FILTER_STOP if selectable else Control.MOUSE_FILTER_IGNORE
+	update_visual_state()
+
+
+## Updates visual appearance based on current state
+func update_visual_state() -> void:
+	if not is_selectable:
+		# Disabled state - dimmed and desaturated
+		modulate = Color(0.5, 0.5, 0.5, 0.7)
+		z_index = 0
+	elif not is_playable:
+		# Unplayable but visible - slightly dimmed
+		modulate = Color(0.7, 0.7, 0.7, 0.85)
+		z_index = 0
 	else:
+		# Normal playable state
 		modulate = Color.WHITE
 		z_index = 0
+
+
+## Highlights the card (for hover state)
+func set_highlighted(highlighted: bool) -> void:
+	if not is_selectable or not is_playable:
+		return  # Don't highlight unplayable/unselectable cards
+
+	if highlighted:
+		# Mentalic glow - slightly brighter with emphasis
+		modulate = Color(1.15, 1.15, 1.15)
+		z_index = 10
+		# Subtle elevation effect
+		position.y -= 10
+	else:
+		# Return to normal playable state
+		modulate = Color.WHITE
+		z_index = 0
+		position.y += 10
 
 
 ## Sets whether the card is face-up or face-down
@@ -120,10 +160,20 @@ func return_to_original_position() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	# Only respond to input if card is selectable
+	if not is_selectable:
+		return
+
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
 			if mouse_event.pressed:
+				if not is_playable:
+					# Visual feedback for unplayable card
+					show_invalid_selection()
+					accept_event()
+					return
+
 				# Start dragging
 				is_dragging = true
 				original_position = global_position
@@ -144,13 +194,36 @@ func _gui_input(event: InputEvent) -> void:
 			accept_event()
 
 
+## Shows visual feedback when player tries to select an unplayable card
+func show_invalid_selection() -> void:
+	# Quick shake animation
+	var tween := create_tween()
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.set_trans(Tween.TRANS_SINE)
+
+	var original_pos := position
+	tween.tween_property(self, "position", original_pos + Vector2(5, 0), 0.05)
+	tween.tween_property(self, "position", original_pos - Vector2(5, 0), 0.05)
+	tween.tween_property(self, "position", original_pos + Vector2(3, 0), 0.05)
+	tween.tween_property(self, "position", original_pos, 0.05)
+
+	# Brief red tint
+	var original_modulate := modulate
+	modulate = Color(1.2, 0.6, 0.6, 0.85)
+	await tween.finished
+	modulate = original_modulate
+
+
 func _on_mouse_entered() -> void:
-	set_highlighted(true)
-	card_hovered.emit(self)
+	if is_selectable:
+		set_highlighted(true)
+		card_hovered.emit(self)
 
 
 func _on_mouse_exited() -> void:
-	set_highlighted(false)
+	if is_selectable:
+		set_highlighted(false)
+		card_unhovered.emit(self)
 
 
 func _notification(what: int) -> void:
