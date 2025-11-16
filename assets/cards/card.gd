@@ -20,11 +20,7 @@ var drag_offset: Vector2 = Vector2.ZERO
 var original_position: Vector2 = Vector2.ZERO
 
 ## Visual elements (scene-unique node references)
-@onready var background := %CardBackground as ColorRect
-@onready var aspect_border := %AspectBorder as ColorRect
-@onready var value_label := %ValueLabel as Label
-@onready var aspect_label := %AspectLabel as Label
-@onready var ability_indicator := %AbilityIndicator as Label
+@onready var card_face := %CardFace as TextureRect
 @onready var card_back := %CardBack as TextureRect
 
 ## Whether this card is currently face-up
