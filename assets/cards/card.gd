@@ -17,6 +17,10 @@ var card_data: CardData = null
 @onready var value_label := %ValueLabel as Label
 @onready var aspect_label := %AspectLabel as Label
 @onready var ability_indicator := %AbilityIndicator as Label
+@onready var card_back := %CardBack as TextureRect
+
+## Whether this card is currently face-up
+var is_face_up: bool = true
 
 
 func _ready() -> void:
