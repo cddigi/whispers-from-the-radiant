@@ -784,9 +784,89 @@ Execute stages sequentially, marking complete only when all tests pass:
 
 ---
 
+---
+
+## Stage 9: AI Opponent Implementation (CURRENT)
+
+**Goal**: Create intelligent AI opponent (antagonist) to enable single-player gameplay against protagonist
+
+**Success Criteria**:
+- AI makes strategic decisions based on game context
+- AI understands optimal scoring ranges (0-3 or 7-9 tricks)
+- AI can use special card abilities effectively
+- Multiple difficulty levels provide appropriate challenge
+- AI feels like a Second Foundation mentalic (subtle, strategic)
+
+**Tests**:
+- [ ] AI follows suit rules correctly
+- [ ] AI makes strategic plays (not just random valid cards)
+- [ ] AI uses special abilities appropriately
+- [ ] AI avoids the 10-13 trick trap (0 points)
+- [ ] Easy difficulty is beatable, Hard difficulty is challenging
+
+**Implementation Details**:
+
+### AI Architecture
+
+#### Strategy Manager (`assets/game/ai/ai_strategy.gd`)
+- Card evaluation based on:
+  - Trick potential (can this win/lose the trick?)
+  - Scoring strategy (are we aiming for 0-3 or 7-9 tricks?)
+  - Special ability value
+  - Information gained/concealed
+- Trick prediction before playing
+- Adaptive strategy based on round progress
+
+#### Difficulty Levels
+1. **Easy (Random)**: Plays random valid cards
+   - No strategic evaluation
+   - Random special ability choices
+   - Target for beginners
+
+2. **Medium (Strategic)**: Basic card evaluation
+   - Considers trick potential
+   - Aims for optimal score ranges
+   - Simple special ability usage
+
+3. **Hard (Advanced)**: Full strategic evaluation
+   - Counts cards and probabilities
+   - Plans multi-trick sequences
+   - Optimal special ability timing
+   - Adapts to protagonist's play patterns
+
+### Terminology Update
+- Rename "player1/mentalic1" to "protagonist"
+- Rename "player2/mentalic2" to "antagonist"
+- Update game state variables
+- Update UI labels and messages
+- Maintain backward compatibility for save data
+
+### Special Ability AI Logic
+- **Card 1**: Evaluate if losing to gain lead is beneficial
+- **Card 3**: Choose best card to exchange with Prime Radiant
+- **Card 5**: Select optimal card to discard after draw
+- **Card 7**: Play when likely to win for bonus points
+- **Card 9**: Use wild aspect to maximum advantage
+- **Card 11**: Force protagonist into difficult position
+
+**Files to Create**:
+- `assets/game/ai/ai_strategy.gd` - Main AI decision engine
+- `assets/game/ai/card_evaluator.gd` - Card value assessment
+- `assets/game/ai/trick_predictor.gd` - Outcome prediction
+
+**Files to Modify**:
+- `assets/game/game_controller.gd` - Enhanced `ai_play_card()` function
+- `assets/game/game_state.gd` - Terminology updates
+- UI labels and text throughout
+
+**Status**: In Progress
+
+---
+
 ## Notes
 
 - Follow Godot 4.5 guidelines strictly (static typing, scene organization)
 - GitButler handles commits via MCP tool after each stage completion
 - Maintain IMPLEMENTATION_PLAN.md status as stages complete
 - Remove this file when all stages marked complete
+- Use Godot CLI for incremental validation after each file change
