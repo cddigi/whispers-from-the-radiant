@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cbgkyx1h2yjh7"]
+[gd_scene load_steps=3 format=3 uid="uid://cbgkyx1h2yjh7"]
 
 [ext_resource type="Script" path="res://assets/cards/card.gd" id="1_a6w5o"]
+[ext_resource type="Texture2D" uid="uid://bc88nvnk3xwou" path="res://assets/cardbacks/default_cardback.png" id="2_cardback"]
 
 [node name="Card" type="Control"]
 custom_minimum_size = Vector2(120, 180)
@@ -75,3 +76,15 @@ theme_override_font_sizes/font_size = 16
 text = "★"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CardBack" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_cardback")
+expand_mode = 1
+stretch_mode = 5
