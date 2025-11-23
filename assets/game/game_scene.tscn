@@ -1,0 +1,274 @@
+[gd_scene load_steps=3 format=3 uid="uid://cw8yxvj5qn7pa"]
+
+[ext_resource type="Script" path="res://assets/game/game_controller.gd" id="1_a3b4c"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty"]
+
+[node name="GameScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_a3b4c")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.08, 0.18, 1)
+
+[node name="MainLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopPanel" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.2
+
+[node name="TopInfo" type="VBoxContainer" parent="MainLayout/TopPanel"]
+layout_mode = 2
+
+[node name="TurnIndicator" type="Label" parent="MainLayout/TopPanel/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeaderLarge"
+text = "Player 1's Turn"
+horizontal_alignment = 1
+
+[node name="TrickProgress" type="Label" parent="MainLayout/TopPanel/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Node 1 of 13"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="MainLayout/TopPanel/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player 1: 0 tricks (0 points) | Player 2: 0 tricks (0 points)"
+horizontal_alignment = 1
+
+[node name="Player2Section" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty")
+
+[node name="Player2VBoxWrapper" type="ColorRect" parent="MainLayout/Player2Section"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.15, 0.3, 0.4)
+
+[node name="VBox" type="VBoxContainer" parent="MainLayout/Player2Section/Player2VBoxWrapper"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Player2Info" type="HBoxContainer" parent="MainLayout/Player2Section/Player2VBoxWrapper/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MainLayout/Player2Section/Player2VBoxWrapper/VBox/Player2Info"]
+layout_mode = 2
+text = "Antagonist (Opponent)"
+horizontal_alignment = 1
+
+[node name="Player2HandSize" type="Label" parent="MainLayout/Player2Section/Player2VBoxWrapper/VBox/Player2Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " [13 cards]"
+horizontal_alignment = 1
+
+[node name="Player2HandContainer" type="HBoxContainer" parent="MainLayout/Player2Section/Player2VBoxWrapper/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="CenterSection" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.5
+theme_override_styles/panel = SubResource("StyleBoxEmpty")
+
+[node name="CenterBgColor" type="ColorRect" parent="MainLayout/CenterSection"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.15, 0.3)
+
+[node name="CenterLayout" type="HBoxContainer" parent="MainLayout/CenterSection/CenterBgColor"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DecreeArea" type="VBoxContainer" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DecreeBg" type="ColorRect" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/DecreeArea"]
+layout_mode = 2
+color = Color(0.3, 0.15, 0.5, 0.3)
+custom_minimum_size = Vector2(150, 220)
+
+[node name="DecreeInner" type="VBoxContainer" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/DecreeArea/DecreeBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/DecreeArea/DecreeBg/DecreeInner"]
+layout_mode = 2
+text = "TRUMP"
+horizontal_alignment = 1
+add_theme_font_size_override("font_size", 14)
+
+[node name="DecreeDisplay" type="Control" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/DecreeArea/DecreeBg/DecreeInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 180)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TrickAreaSection" type="VBoxContainer" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Label" type="Label" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection"]
+layout_mode = 2
+text = "Current Calculation (Trick)"
+horizontal_alignment = 1
+
+[node name="TrickWinnerLabel" type="Label" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TrickAreaBg" type="ColorRect" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection"]
+layout_mode = 2
+color = Color(0.2, 0.25, 0.35, 0.4)
+custom_minimum_size = Vector2(450, 200)
+
+[node name="TrickAreaInner" type="HBoxContainer" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection/TrickAreaBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+separation = 20
+
+[node name="Player1CardSlot" type="ColorRect" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection/TrickAreaBg/TrickAreaInner"]
+layout_mode = 2
+color = Color(0.4, 0.2, 0.5, 0.5)
+custom_minimum_size = Vector2(130, 190)
+tooltip_text = "Player 1 (You)"
+
+[node name="Player1Label" type="Label" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection/TrickAreaBg/TrickAreaInner/Player1CardSlot"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_bottom = -4.0
+grow_horizontal = 1
+text = "You"
+horizontal_alignment = 1
+add_theme_font_size_override("font_size", 10)
+
+[node name="Player2CardSlot" type="ColorRect" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection/TrickAreaBg/TrickAreaInner"]
+layout_mode = 2
+color = Color(0.5, 0.25, 0.4, 0.5)
+custom_minimum_size = Vector2(130, 190)
+tooltip_text = "Player 2 (Opponent)"
+
+[node name="Player2Label" type="Label" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection/TrickAreaBg/TrickAreaInner/Player2CardSlot"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_bottom = -4.0
+grow_horizontal = 1
+text = "Opponent"
+horizontal_alignment = 1
+add_theme_font_size_override("font_size", 10)
+
+[node name="TrickArea" type="Control" parent="MainLayout/CenterSection/CenterBgColor/CenterLayout/TrickAreaSection/TrickAreaBg/TrickAreaInner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+visible = false
+
+[node name="Player1Section" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty")
+
+[node name="Player1VBoxWrapper" type="ColorRect" parent="MainLayout/Player1Section"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.2, 0.35, 0.4)
+
+[node name="VBox" type="VBoxContainer" parent="MainLayout/Player1Section/Player1VBoxWrapper"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Player1Info" type="HBoxContainer" parent="MainLayout/Player1Section/Player1VBoxWrapper/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MainLayout/Player1Section/Player1VBoxWrapper/VBox/Player1Info"]
+layout_mode = 2
+text = "Protagonist (You)"
+horizontal_alignment = 1
+
+[node name="Player1HandSize" type="Label" parent="MainLayout/Player1Section/Player1VBoxWrapper/VBox/Player1Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " [13 cards]"
+horizontal_alignment = 1
+
+[node name="Player1HandContainer" type="HBoxContainer" parent="MainLayout/Player1Section/Player1VBoxWrapper/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
