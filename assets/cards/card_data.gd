@@ -55,6 +55,12 @@ func get_card_id() -> String:
 	return "%s_%d" % [get_aspect_name(), value]
 
 
+## Returns the file path to the card face image
+func get_card_face_path() -> String:
+	var aspect_name := get_aspect_name().to_lower()
+	return "res://assets/cardfaces/deck/%s_%02d.png" % [aspect_name, value]
+
+
 ## Returns true if this card has a special ability based on its value
 func check_ability() -> bool:
 	return value in [1, 3, 5, 7, 9, 11]

@@ -20,11 +20,7 @@ var drag_offset: Vector2 = Vector2.ZERO
 var original_position: Vector2 = Vector2.ZERO
 
 ## Visual elements (scene-unique node references)
-@onready var background := %CardBackground as ColorRect
-@onready var aspect_border := %AspectBorder as ColorRect
-@onready var value_label := %ValueLabel as Label
-@onready var aspect_label := %AspectLabel as Label
-@onready var ability_indicator := %AbilityIndicator as Label
+@onready var card_face := %CardFace as TextureRect
 @onready var card_back := %CardBack as TextureRect
 
 ## Whether this card is currently face-up
@@ -59,24 +55,116 @@ func update_visuals() -> void:
 	if not card_data:
 		return
 
-	# Set value
-	value_label.text = str(card_data.value)
+	# Try to load the full card face image
+	var card_face_path := card_data.get_card_face_path()
+	var card_face_texture := load(card_face_path) as Texture2D
 
-	# Set aspect color and name
-	var aspect_color := card_data.get_aspect_color()
-	aspect_border.color = aspect_color
-	aspect_label.text = card_data.get_aspect_name().to_upper()
-	aspect_label.add_theme_color_override("font_color", aspect_color)
-
-	# Show ability indicator for special cards
-	if card_data.has_ability:
-		ability_indicator.visible = true
-		ability_indicator.tooltip_text = card_data.ability_description
+	if card_face_texture:
+		card_face.texture = card_face_texture
 	else:
-		ability_indicator.visible = false
+		# Fallback: Create programmatic card face
+		create_programmatic_card_face()
 
-	# Add subtle border effect
-	background.color = aspect_color.darkened(0.7)
+
+## Creates a programmatic card face when PNG is not available
+func create_programmatic_card_face() -> void:
+	# Clear existing children under CardFace
+	for child in card_face.get_children():
+		child.queue_free()
+
+	# Get aspect color
+	var aspect_color := card_data.get_aspect_color()
+
+	# Create background ColorRect
+	var background := ColorRect.new()
+	background.name = "Background"
+	background.color = aspect_color.darkened(0.3)
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	card_face.add_child(background)
+
+	# Create border
+	var border := ColorRect.new()
+	border.name = "Border"
+	border.color = aspect_color
+	border.set_anchors_preset(Control.PRESET_FULL_RECT)
+	border.offset_left = 4
+	border.offset_top = 4
+	border.offset_right = -4
+	border.offset_bottom = -4
+	card_face.add_child(border)
+
+	# Create inner background
+	var inner_bg := ColorRect.new()
+	inner_bg.name = "InnerBackground"
+	inner_bg.color = Color.WHITE.darkened(0.1)
+	inner_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	inner_bg.offset_left = 8
+	inner_bg.offset_top = 8
+	inner_bg.offset_right = -8
+	inner_bg.offset_bottom = -8
+	card_face.add_child(inner_bg)
+
+	# Create value label (large in center)
+	var value_label := Label.new()
+	value_label.name = "ValueLabel"
+	value_label.text = str(card_data.value)
+	value_label.add_theme_font_size_override("font_size", 48)
+	value_label.add_theme_color_override("font_color", aspect_color)
+	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	value_label.set_anchors_preset(Control.PRESET_CENTER)
+	value_label.offset_left = -30
+	value_label.offset_top = -30
+	value_label.offset_right = 30
+	value_label.offset_bottom = 30
+	card_face.add_child(value_label)
+
+	# Create aspect label (top)
+	var aspect_label := Label.new()
+	aspect_label.name = "AspectLabel"
+	aspect_label.text = card_data.get_aspect_name().substr(0, 3).to_upper()
+	aspect_label.add_theme_font_size_override("font_size", 14)
+	aspect_label.add_theme_color_override("font_color", aspect_color)
+	aspect_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	aspect_label.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	aspect_label.offset_top = 12
+	aspect_label.offset_bottom = 28
+	card_face.add_child(aspect_label)
+
+	# Create small value labels in corners
+	for corner: String in ["TopLeft", "BottomRight"]:
+		var corner_label := Label.new()
+		corner_label.name = corner + "Value"
+		corner_label.text = str(card_data.value)
+		corner_label.add_theme_font_size_override("font_size", 16)
+		corner_label.add_theme_color_override("font_color", aspect_color)
+
+		if corner == "TopLeft":
+			corner_label.set_anchors_preset(Control.PRESET_TOP_LEFT)
+			corner_label.offset_left = 8
+			corner_label.offset_top = 8
+		else:
+			corner_label.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+			corner_label.offset_right = -8
+			corner_label.offset_bottom = -8
+			corner_label.rotation = PI  # Upside down for bottom
+
+		corner_label.offset_right = corner_label.offset_left + 20
+		corner_label.offset_bottom = corner_label.offset_top + 20
+		card_face.add_child(corner_label)
+
+	# Add ability indicator if card has ability
+	if card_data.has_ability:
+		var ability_marker := Label.new()
+		ability_marker.name = "AbilityMarker"
+		ability_marker.text = "★"
+		ability_marker.add_theme_font_size_override("font_size", 20)
+		ability_marker.add_theme_color_override("font_color", Color.GOLD)
+		ability_marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ability_marker.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+		ability_marker.offset_bottom = -12
+		ability_marker.offset_top = -28
+		card_face.add_child(ability_marker)
 
 
 ## Returns the card data this visual represents

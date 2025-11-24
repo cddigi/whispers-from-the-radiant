@@ -583,3 +583,34 @@ func ai_play_card() -> void:
 		if card_instance.get_card_data() == card_to_play:
 			play_card_to_trick(card_instance, ai_player_id)
 			break
+
+
+## Gets a human-readable difficulty name for debug output
+func _get_difficulty_name() -> String:
+	match ai_difficulty:
+		AIStrategy.Difficulty.EASY:
+			return "EASY"
+		AIStrategy.Difficulty.MEDIUM:
+			return "MEDIUM"
+		AIStrategy.Difficulty.HARD:
+			return "HARD"
+		_:
+			return "UNKNOWN"
+
+
+## Callback when round summary continue button is pressed
+func _on_round_summary_continue() -> void:
+	print("=== Starting Next Round ===")
+	initialize_new_round()
+
+
+## Callback when new game is requested from game over screen
+func _on_new_game() -> void:
+	print("=== New Game Started ===")
+	initialize_new_round()
+
+
+## Callback when main menu is requested from game over screen
+func _on_main_menu() -> void:
+	print("=== Returning to Main Menu ===")
+	get_tree().change_scene_to_file("res://assets/menu/main_menu.tscn")
