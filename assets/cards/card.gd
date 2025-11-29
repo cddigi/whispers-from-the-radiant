@@ -299,7 +299,6 @@ func show_selection_feedback() -> void:
 	tween.set_trans(Tween.TRANS_QUAD)
 
 	# Brief bright flash
-	var original_modulate := modulate
 	tween.tween_property(self, "modulate", Color(1.4, 1.35, 1.5), 0.1)
 	tween.tween_property(self, "modulate", Color(1.2, 1.15, 1.3), 0.15)
 

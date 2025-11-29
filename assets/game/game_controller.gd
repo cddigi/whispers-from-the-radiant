@@ -9,16 +9,16 @@ const RoundSummaryScene := preload("res://assets/ui/round_summary.tscn")
 const GameOverScene := preload("res://assets/ui/game_over.tscn")
 
 ## Scene-unique node references
-@onready var player1_hand_container := %Player1HandContainer as HBoxContainer
-@onready var player2_hand_container := %Player2HandContainer as HBoxContainer
-@onready var trick_area := %TrickArea as Control
-@onready var decree_display := %DecreeDisplay as Control
-@onready var score_label := %ScoreLabel as Label
-@onready var turn_indicator := %TurnIndicator as Label
-@onready var trick_progress := %TrickProgress as Label
-@onready var trick_winner_label := %TrickWinnerLabel as Label
-@onready var player1_hand_size := %Player1HandSize as Label
-@onready var player2_hand_size := %Player2HandSize as Label
+var player1_hand_container: HBoxContainer = null
+var player2_hand_container: HBoxContainer = null
+var trick_area: Control = null
+var decree_display: Control = null
+var score_label: Label = null
+var turn_indicator: Label = null
+var trick_progress: Label = null
+var trick_winner_label: Label = null
+var player1_hand_size: Label = null
+var player2_hand_size: Label = null
 
 ## Game state resource
 var game_state: GameState = null
@@ -42,6 +42,61 @@ var game_over_screen: GameOver = null
 
 func _ready() -> void:
 	print("=== Whispers from the Radiant - Game Start ===")
+
+	# Find UI node references
+	player1_hand_container = get_node("%Player1HandContainer") as HBoxContainer
+	player2_hand_container = get_node("%Player2HandContainer") as HBoxContainer
+	score_label = get_node("%ScoreLabel") as Label
+	turn_indicator = get_node("%TurnIndicator") as Label
+	trick_progress = get_node("%TrickProgress") as Label
+	trick_winner_label = get_node("%TrickWinnerLabel") as Label
+	player1_hand_size = get_node("%Player1HandSize") as Label
+	player2_hand_size = get_node("%Player2HandSize") as Label
+
+	# Try to find TrickArea and DecreeDisplay using different methods
+	trick_area = find_child("TrickArea", true, false) as Control
+	if not trick_area:
+		# Try searching the entire tree manually
+		var trick_area_inner := find_child("TrickAreaInner", true, false)
+		if trick_area_inner:
+			trick_area = trick_area_inner.find_child("TrickArea", false, false) as Control
+		# If still not found, create a placeholder Control node
+		if not trick_area:
+			trick_area = Control.new()
+			trick_area.name = "TrickArea_Placeholder"
+			trick_area.custom_minimum_size = Vector2(300, 200)
+			# Try to add to trick area inner, or just add to self as fallback
+			if trick_area_inner:
+				trick_area_inner.add_child(trick_area)
+			else:
+				add_child(trick_area)
+			print("Created placeholder TrickArea")
+
+	decree_display = find_child("DecreeDisplay", true, false) as Control
+	if not decree_display:
+		# Try searching decree inner
+		var decree_inner := find_child("DecreeInner", true, false)
+		if decree_inner:
+			decree_display = decree_inner.find_child("DecreeDisplay", false, false) as Control
+		# If still not found, create a placeholder Control node
+		if not decree_display:
+			decree_display = Control.new()
+			decree_display.name = "DecreeDisplay_Placeholder"
+			decree_display.custom_minimum_size = Vector2(120, 180)
+			# Try to add to decree inner, or just add to self as fallback
+			if decree_inner:
+				decree_inner.add_child(decree_display)
+			else:
+				add_child(decree_display)
+			print("Created placeholder DecreeDisplay")
+
+	# Debug: Print which nodes were found
+	print("Node references found:")
+	print("  player1_hand_container: %s" % ("OK" if player1_hand_container else "NULL"))
+	print("  player2_hand_container: %s" % ("OK" if player2_hand_container else "NULL"))
+	print("  trick_area: %s" % ("OK" if trick_area else "NULL"))
+	print("  decree_display: %s" % ("OK" if decree_display else "NULL"))
+	print("  score_label: %s" % ("OK" if score_label else "NULL"))
 
 	# Initialize AI strategy
 	ai_strategy = AIStrategy.new()
@@ -142,8 +197,8 @@ func display_player_hand(player_id: int) -> void:
 
 		# Connect signals only for local player's cards
 		if is_local_player:
-			card_instance.card_selected.connect(_on_player_card_selected.bind(card_instance))
-			card_instance.card_hovered.connect(_on_player_card_hovered.bind(card_instance))
+			card_instance.card_selected.connect(_on_player_card_selected)
+			card_instance.card_hovered.connect(_on_player_card_hovered)
 
 		hand_cards_array.append(card_instance)
 
@@ -161,6 +216,10 @@ func display_player_hand(player_id: int) -> void:
 ## Displays the Prime Radiant decree card (trump indicator) with clear labeling
 func display_decree_card() -> void:
 	if not game_state.radiant_display_card:
+		return
+
+	if not decree_display:
+		print("ERROR: DecreeDisplay node not found in scene!")
 		return
 
 	# Clear existing decree display
