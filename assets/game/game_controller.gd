@@ -19,6 +19,8 @@ var trick_progress: Label = null
 var trick_winner_label: Label = null
 var player1_hand_size: Label = null
 var player2_hand_size: Label = null
+var action_prompt: Label = null
+var lead_aspect_hint: Label = null
 
 ## Game state resource
 var game_state: GameState = null
@@ -43,15 +45,17 @@ var game_over_screen: GameOver = null
 func _ready() -> void:
 	print("=== Whispers from the Radiant - Game Start ===")
 
-	# Find UI node references
-	player1_hand_container = get_node("%Player1HandContainer") as HBoxContainer
-	player2_hand_container = get_node("%Player2HandContainer") as HBoxContainer
-	score_label = get_node("%ScoreLabel") as Label
-	turn_indicator = get_node("%TurnIndicator") as Label
-	trick_progress = get_node("%TrickProgress") as Label
-	trick_winner_label = get_node("%TrickWinnerLabel") as Label
-	player1_hand_size = get_node("%Player1HandSize") as Label
-	player2_hand_size = get_node("%Player2HandSize") as Label
+	# Find UI node references with fallbacks for corrupted scene nodes
+	player1_hand_container = _find_or_create_hbox("%Player1HandContainer", "Player1HandContainer")
+	player2_hand_container = _find_or_create_hbox("%Player2HandContainer", "Player2HandContainer")
+	score_label = _find_or_create_label("%ScoreLabel", "ScoreLabel")
+	turn_indicator = _find_or_create_label("%TurnIndicator", "TurnIndicator")
+	trick_progress = _find_or_create_label("%TrickProgress", "TrickProgress")
+	trick_winner_label = _find_or_create_label("%TrickWinnerLabel", "TrickWinnerLabel")
+	player1_hand_size = _find_or_create_label("%Player1HandSize", "Player1HandSize")
+	player2_hand_size = _find_or_create_label("%Player2HandSize", "Player2HandSize")
+	action_prompt = _find_or_create_label("%ActionPrompt", "ActionPrompt")
+	lead_aspect_hint = _find_or_create_label("%LeadAspectHint", "LeadAspectHint")
 
 	# Try to find TrickArea and DecreeDisplay using different methods
 	trick_area = find_child("TrickArea", true, false) as Control
@@ -246,21 +250,53 @@ func update_score_display() -> void:
 	var p1_influence: int = game_state.mentalic1_total_score
 	var p2_influence: int = game_state.mentalic2_total_score
 
-	score_label.text = "Protagonist: %d tricks (%d pts | %d total) | Antagonist: %d tricks (%d pts | %d total)" % [
+	# Get scoring tier descriptions for both players
+	var p1_tier := _get_scoring_tier_info(game_state.mentalic1_tricks)
+	var p2_tier := _get_scoring_tier_info(game_state.mentalic2_tricks)
+
+	score_label.text = "You: %d tricks [%s → %d pts] (%d total) | Opponent: %d tricks [%s → %d pts] (%d total)" % [
 		game_state.mentalic1_tricks,
-		game_state.mentalic1_round_score,
+		p1_tier.name,
+		p1_tier.points,
 		p1_influence,
 		game_state.mentalic2_tricks,
-		game_state.mentalic2_round_score,
+		p2_tier.name,
+		p2_tier.points,
 		p2_influence
 	]
 
-	# Update trick progress
-	trick_progress.text = "Node %d of 13" % game_state.trick_number
+	# Color the score based on who's winning
+	if p1_influence > p2_influence:
+		score_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
+	elif p2_influence > p1_influence:
+		score_label.add_theme_color_override("font_color", Color(1.0, 0.7, 0.7))
+	else:
+		score_label.add_theme_color_override("font_color", Color.WHITE)
+
+	# Update trick progress with round context
+	var tricks_remaining := 13 - game_state.trick_number + 1
+	trick_progress.text = "Node %d of 13 (%d remaining)" % [game_state.trick_number, tricks_remaining]
 
 	# Update hand sizes
 	player1_hand_size.text = " [%d cards]" % game_state.mentalic1_hand.size()
 	player2_hand_size.text = " [%d cards]" % game_state.mentalic2_hand.size()
+
+
+## Returns scoring tier information for a given trick count
+func _get_scoring_tier_info(tricks: int) -> Dictionary:
+	match tricks:
+		0, 1, 2, 3:
+			return {"name": "Subtle", "points": 6, "color": Color.GOLD}
+		4:
+			return {"name": "Detected", "points": 1, "color": Color.ORANGE}
+		5:
+			return {"name": "Obvious", "points": 2, "color": Color.ORANGE}
+		6:
+			return {"name": "Contested", "points": 3, "color": Color.YELLOW}
+		7, 8, 9:
+			return {"name": "Dominant", "points": 6, "color": Color.GREEN}
+		_:
+			return {"name": "EXPOSED!", "points": 0, "color": Color.RED}
 
 
 ## Updates the turn indicator with clear player identification and context
@@ -282,6 +318,88 @@ func update_turn_indicator() -> void:
 	else:
 		turn_indicator.text = "%s is calculating... [Node %d/13]%s" % [player_name, trick_num, urgency_text]
 		turn_indicator.add_theme_color_override("font_color", Color.LIGHT_BLUE)
+
+	# Update action prompt alongside turn indicator
+	update_action_prompt()
+
+
+## Updates the action prompt to tell the player exactly what they can do
+func update_action_prompt() -> void:
+	if not action_prompt:
+		return
+
+	var is_local_turn := game_state.is_local_players_turn()
+
+	if not is_local_turn:
+		# Opponent's turn - show waiting message
+		action_prompt.text = "⏳ Waiting for opponent to play..."
+		action_prompt.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
+		if lead_aspect_hint:
+			lead_aspect_hint.text = ""
+		return
+
+	# It's the player's turn - show what they can do
+	var is_leading := game_state.current_trick.is_empty()
+
+	if is_leading:
+		# Player is leading the trick
+		action_prompt.text = "🎴 LEAD: Click any card from your hand to start this trick"
+		action_prompt.add_theme_color_override("font_color", Color.GOLD)
+		if lead_aspect_hint:
+			lead_aspect_hint.text = "You may play any card - your choice sets the lead aspect"
+			lead_aspect_hint.add_theme_color_override("font_color", Color(0.6, 0.8, 0.6))
+	else:
+		# Player must follow - check if they have the lead aspect
+		var player_hand := game_state.get_local_hand()
+		var lead_aspect := game_state.lead_aspect
+		var lead_aspect_name := _get_aspect_name(lead_aspect)
+		var lead_aspect_color := _get_aspect_color(lead_aspect)
+		var has_lead_aspect := DeckGenerator.count_aspect_in_hand(player_hand, lead_aspect) > 0
+
+		if has_lead_aspect:
+			# Must follow suit
+			action_prompt.text = "🎴 FOLLOW: You must play a %s card" % lead_aspect_name
+			action_prompt.add_theme_color_override("font_color", lead_aspect_color)
+			if lead_aspect_hint:
+				var count := DeckGenerator.count_aspect_in_hand(player_hand, lead_aspect)
+				lead_aspect_hint.text = "You have %d %s card%s - highlighted cards are playable" % [
+					count, lead_aspect_name, "s" if count != 1 else ""
+				]
+				lead_aspect_hint.add_theme_color_override("font_color", lead_aspect_color.lightened(0.3))
+		else:
+			# Can play anything (can't follow suit)
+			action_prompt.text = "🎴 FREE PLAY: No %s cards - play any card!" % lead_aspect_name
+			action_prompt.add_theme_color_override("font_color", Color.LIGHT_GREEN)
+			if lead_aspect_hint:
+				var trump_name := _get_aspect_name(game_state.dominant_aspect)
+				lead_aspect_hint.text = "Tip: Play %s (trump) to win, or discard a low card to lose" % trump_name
+				lead_aspect_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.9))
+
+
+## Returns human-readable name for an aspect
+func _get_aspect_name(aspect: CardData.Aspect) -> String:
+	match aspect:
+		CardData.Aspect.MENTAL:
+			return "Mental"
+		CardData.Aspect.PHYSICAL:
+			return "Physical"
+		CardData.Aspect.TEMPORAL:
+			return "Temporal"
+		_:
+			return "Unknown"
+
+
+## Returns the color associated with an aspect
+func _get_aspect_color(aspect: CardData.Aspect) -> Color:
+	match aspect:
+		CardData.Aspect.MENTAL:
+			return Color(0.4, 0.6, 1.0)  # Blue
+		CardData.Aspect.PHYSICAL:
+			return Color(1.0, 0.8, 0.3)  # Gold
+		CardData.Aspect.TEMPORAL:
+			return Color(1.0, 0.4, 0.4)  # Red
+		_:
+			return Color.WHITE
 
 
 ## Updates the decree display label with dominant aspect information
@@ -673,3 +791,85 @@ func _on_new_game() -> void:
 func _on_main_menu() -> void:
 	print("=== Returning to Main Menu ===")
 	get_tree().change_scene_to_file("res://assets/menu/main_menu.tscn")
+
+
+## Helper to find a Label node or create a placeholder if not found
+func _find_or_create_label(unique_path: String, fallback_name: String) -> Label:
+	var node := get_node_or_null(unique_path) as Label
+	if node:
+		return node
+
+	# Try searching by name
+	node = find_child(fallback_name, true, false) as Label
+	if node:
+		return node
+
+	# Create a placeholder label
+	print("Creating placeholder label: %s" % fallback_name)
+	var label := Label.new()
+	label.name = fallback_name + "_Placeholder"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 14)
+
+	# Add to a suitable parent container
+	var top_info := find_child("TopInfo", true, false)
+	if top_info:
+		top_info.add_child(label)
+	else:
+		add_child(label)
+
+	return label
+
+
+## Helper to find an HBoxContainer node or create a placeholder if not found
+func _find_or_create_hbox(unique_path: String, fallback_name: String) -> HBoxContainer:
+	var node := get_node_or_null(unique_path) as HBoxContainer
+	if node:
+		return node
+
+	# Try searching by name
+	node = find_child(fallback_name, true, false) as HBoxContainer
+	if node:
+		return node
+
+	# Create a placeholder HBoxContainer
+	print("Creating placeholder HBox: %s" % fallback_name)
+	var hbox := HBoxContainer.new()
+	hbox.name = fallback_name + "_Placeholder"
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	# Try to add to a sensible location
+	if fallback_name.contains("Player1"):
+		var p1_section := find_child("Player1VBoxWrapper", true, false)
+		if p1_section:
+			var vbox := p1_section.find_child("VBox", false, false)
+			if vbox:
+				vbox.add_child(hbox)
+			else:
+				p1_section.add_child(hbox)
+		else:
+			add_child(hbox)
+	elif fallback_name.contains("Player2"):
+		var p2_section := find_child("Player2VBoxWrapper", true, false)
+		if p2_section:
+			var vbox := p2_section.find_child("VBox", false, false)
+			if vbox:
+				vbox.add_child(hbox)
+			else:
+				p2_section.add_child(hbox)
+		else:
+			# Create a full Player2 section if missing
+			var main_layout := find_child("MainLayout", true, false)
+			if main_layout:
+				var p2_panel := PanelContainer.new()
+				p2_panel.name = "Player2Section_Placeholder"
+				main_layout.add_child(p2_panel)
+				main_layout.move_child(p2_panel, 1)  # Position after TopPanel
+				p2_panel.add_child(hbox)
+			else:
+				add_child(hbox)
+	else:
+		add_child(hbox)
+
+	return hbox

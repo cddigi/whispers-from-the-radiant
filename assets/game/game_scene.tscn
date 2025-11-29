@@ -57,6 +57,20 @@ layout_mode = 2
 text = "Player 1: 0 tricks (0 points) | Player 2: 0 tricks (0 points)"
 horizontal_alignment = 1
 
+[node name="ActionPrompt" type="Label" parent="MainLayout/TopPanel/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Click a card in your hand to play it"
+horizontal_alignment = 1
+add_theme_font_size_override("font_size", 18)
+
+[node name="LeadAspectHint" type="Label" parent="MainLayout/TopPanel/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+add_theme_font_size_override("font_size", 14)
+
 [node name="Player2Section" type="PanelContainer" parent="MainLayout"]
 layout_mode = 2
 size_flags_vertical = 3
