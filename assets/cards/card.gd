@@ -55,15 +55,9 @@ func update_visuals() -> void:
 	if not card_data:
 		return
 
-	# Try to load the full card face image
-	var card_face_path := card_data.get_card_face_path()
-	var card_face_texture := load(card_face_path) as Texture2D
-
-	if card_face_texture:
-		card_face.texture = card_face_texture
-	else:
-		# Fallback: Create programmatic card face
-		create_programmatic_card_face()
+	# Always use programmatic card face since image files are placeholders
+	# This creates a colored card with value, aspect name, and ability indicator
+	create_programmatic_card_face()
 
 
 ## Creates a programmatic card face when PNG is not available
@@ -153,18 +147,52 @@ func create_programmatic_card_face() -> void:
 		corner_label.offset_bottom = corner_label.offset_top + 20
 		card_face.add_child(corner_label)
 
-	# Add ability indicator if card has ability
+	# Add ability indicator and name if card has ability (odd values: 1,3,5,7,9,11)
 	if card_data.has_ability:
+		# Ability star marker
 		var ability_marker := Label.new()
 		ability_marker.name = "AbilityMarker"
 		ability_marker.text = "★"
-		ability_marker.add_theme_font_size_override("font_size", 20)
+		ability_marker.add_theme_font_size_override("font_size", 16)
 		ability_marker.add_theme_color_override("font_color", Color.GOLD)
 		ability_marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		ability_marker.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-		ability_marker.offset_bottom = -12
-		ability_marker.offset_top = -28
+		ability_marker.offset_bottom = -32
+		ability_marker.offset_top = -48
 		card_face.add_child(ability_marker)
+
+		# Ability name (short form)
+		var ability_name := Label.new()
+		ability_name.name = "AbilityName"
+		ability_name.text = _get_ability_short_name(card_data.value)
+		ability_name.add_theme_font_size_override("font_size", 9)
+		ability_name.add_theme_color_override("font_color", aspect_color.darkened(0.2))
+		ability_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ability_name.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+		ability_name.offset_left = 4
+		ability_name.offset_right = -4
+		ability_name.offset_bottom = -8
+		ability_name.offset_top = -28
+		card_face.add_child(ability_name)
+
+
+## Returns a short ability name for display on card face
+func _get_ability_short_name(value: int) -> String:
+	match value:
+		1:
+			return "Redirect"
+		3:
+			return "Static"
+		5:
+			return "Leap"
+		7:
+			return "Convert"
+		9:
+			return "Resonance"
+		11:
+			return "Command"
+		_:
+			return ""
 
 
 ## Returns the card data this visual represents
