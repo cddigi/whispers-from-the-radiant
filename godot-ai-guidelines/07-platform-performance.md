@@ -1,7 +1,7 @@
 # Platform Requirements and Performance Optimization
 
-**Purpose**: Platform-specific requirements and performance patterns for Godot 4.6
-**Focus**: Platform minimums (Windows 10+, Android API 24+), platform-specific features, performance optimization patterns
+**Purpose**: Platform-specific requirements and performance patterns for Godot 4.6-beta2
+**Focus**: Platform minimums, D3D12 default (Windows), Android SAF, Wayland parity, 2D batching improvements, profiler integration
 
 ---
 
@@ -12,15 +12,38 @@
 | Platform | Previous | 4.5+ Requirement | Impact |
 |----------|----------|------------------|--------|
 | **Windows** | Windows 7+ | **Windows 10+** | HIGH |
+| **Windows GPU** | Vulkan default | **D3D12 default** | Medium |
 | **Android** | API 21 (Android 5.0) | **API 24 (Android 7.0)** | Medium |
 | **Android NDK** | r23c | **r28b** | Medium |
 | **.NET (C#)** | .NET 6.0 | **.NET 8.0** | HIGH |
 | **Linux PowerPC** | 32-bit supported | **Dropped** | Low |
 
-**CRITICAL Changes**:
+**CRITICAL Changes (4.6 Beta)**:
 - **Windows 7/8/8.1 no longer supported** (minimum: Windows 10 version 1809)
+- **Windows: D3D12 is now default RenderingDevice driver** (was Vulkan)
 - **Android minimum raised to 7.0** (API level 24)
+- **Android: Storage Access Framework support** (no MANAGE_EXTERNAL_STORAGE needed)
+- **Linux: Wayland game embedding parity with X11**
 - **C# projects require .NET 8.0** (9.0 for Android in some cases)
+
+### Windows D3D12 Default (NEW in 4.6)
+
+```gdscript
+# 4.6: Direct3D 12 is now the default RenderingDevice driver on Windows
+# Replaces Vulkan as default for better compatibility
+
+# Why D3D12 over Vulkan:
+# - Better driver stability on Windows
+# - Fewer compatibility issues
+# - Better support for older hardware
+# - Vulkan still available via project settings
+
+# To use Vulkan instead:
+# Project Settings → Rendering → Rendering Device → Driver (Windows) → Vulkan
+
+# No code changes needed - this is automatic
+# Games work the same on either backend
+```
 
 ```csharp
 // C# Project file must target .NET 8.0:
@@ -85,6 +108,31 @@
 # - No code changes required
 ```
 
+### Android Storage Access Framework (NEW in 4.6)
+
+```gdscript
+# 4.6: Storage Access Framework (SAF) support
+# Eliminates need for MANAGE_EXTERNAL_STORAGE permission
+# Better privacy, more targeted file access
+
+# Benefits:
+# - No scary "manage all files" permission request
+# - Users grant access to specific folders
+# - Meets Google Play Store requirements
+# - Works on all Android versions
+
+# Enable in export settings:
+# Export → Android → Use SAF: ON
+
+# Request access to specific folder:
+# User picks folder via system file picker
+# App gets persistent permission to that folder
+
+# SAF vs Traditional:
+# Traditional: Request broad WRITE_EXTERNAL_STORAGE
+# SAF: Request access to user-selected folders only
+```
+
 ### Android Permissions
 
 ```gdscript
@@ -101,10 +149,36 @@ func check_permission(permission: String) -> bool:
 
 # Common permissions:
 # - android.permission.INTERNET
-# - android.permission.WRITE_EXTERNAL_STORAGE
-# - android.permission.READ_EXTERNAL_STORAGE
+# - android.permission.WRITE_EXTERNAL_STORAGE (consider SAF instead)
+# - android.permission.READ_EXTERNAL_STORAGE (consider SAF instead)
 # - android.permission.CAMERA
 # - android.permission.RECORD_AUDIO
+
+# 4.6: Gradle build via companion app
+# Allows building Android exports without Android Studio
+```
+
+---
+
+## Linux Platform (4.6 Improvements)
+
+### Wayland Game Embedding (NEW in 4.6)
+
+```gdscript
+# 4.6: Wayland game embedding now at parity with X11
+# Games can be embedded in other applications on Wayland
+
+# Previous limitation:
+# - Game embedding only worked on X11
+# - Wayland users had to use X11 compatibility layer
+
+# Now in 4.6:
+# - Native Wayland game embedding
+# - Same API as X11
+# - No workarounds needed
+
+# Beta 2 fix: X11 input delay regression corrected
+# Input responsiveness restored on X11
 ```
 
 ---
@@ -499,6 +573,37 @@ Performance.add_custom_monitor("game/enemies_alive", func(): return enemy_count)
 Performance.add_custom_monitor("game/memory_mb", func(): return OS.get_static_memory_usage() / 1024.0 / 1024.0)
 ```
 
+### Native Tracing Profilers (NEW in 4.6)
+
+```gdscript
+# 4.6: Native profiler integration with build system
+# Supports Tracy, Perfetto, and Apple Instruments
+
+# Available profilers:
+# - Tracy: Cross-platform, detailed visualization
+# - Perfetto: Android, Chrome DevTools integration
+# - Apple Instruments: macOS/iOS native profiling
+
+# Enable via build system (not runtime):
+# Build engine with profiler support enabled
+# Profiler automatically captures performance data
+
+# GDScript profiling:
+# Native GDScript profiler support in 4.6
+# Functions show up in profiler with proper names
+# Better than generic "script" time
+
+# Step-out debugging:
+# New in 4.6: Step out of functions in GDScript debugger
+# Improves debugging workflow significantly
+
+# Best practices for profiling:
+# 1. Use named functions (avoid anonymous lambdas in hot paths)
+# 2. Keep functions focused and small
+# 3. Use StringName for repeated string operations
+# 4. Profile both debug and release builds
+```
+
 ### Performance Debugging
 
 ```gdscript
@@ -630,6 +735,61 @@ func check_battery() -> void:
 
 ---
 
+## 2D Rendering Performance (4.6 Major Improvement)
+
+### 2D Batching Rewrite
+
+```gdscript
+# 4.6: Complete rewrite of 2D renderer batching
+# Performance gains: 1.1x to 7x in GPU-bound scenarios!
+
+# The new batching system:
+# - More aggressive draw call merging
+# - Better GPU utilization
+# - Reduced state changes
+# - Improved memory access patterns
+# - Especially beneficial on older devices
+
+# You don't need to change any code!
+# Improvements are automatic
+
+# To maximize benefits:
+# 1. Use texture atlases
+# 2. Share materials between sprites
+# 3. Minimize unique shaders
+# 4. Group similar sprites together
+# 5. Keep similar z-index values
+
+# TileMapLayer also improved:
+# - Reduces unnecessary redraws
+# - Only updates when tiles actually change
+# - Better for large static tilemaps
+```
+
+---
+
+## Known Issues (Beta 2)
+
+### Motion Vectors in Compatibility Renderer
+
+```gdscript
+# KNOWN ISSUE: Motion vectors broken in Compatibility renderer
+# Geometry may render predominantly as black
+
+# Affected:
+# - Compatibility/GLES3 renderer
+# - Projects using motion blur or TAA
+
+# Workarounds:
+# 1. Use Forward+/Mobile renderer instead
+# 2. Disable motion vectors temporarily
+# 3. Wait for Beta 3 or stable release
+
+# This will be fixed in upcoming releases
+```
+
+---
+
 ## Cross-Reference
 
 **Related Guidelines**:
@@ -638,10 +798,12 @@ func check_battery() -> void:
 - GDScript performance → `01-gdscript-modern-patterns.md#performance-patterns`
 - Rendering optimization → `04-2d-graphics-rendering.md#performance`
 - Physics optimization → `05-animation-physics-3d.md#physics-systems`
+- 2D batching improvements → `04-2d-graphics-rendering.md#2d-renderer-batching`
+- Native profilers → `00-version-and-migration.md#tracing-profiler-integration`
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
-**AI Optimization**: Maximum (platform requirements, 4.6 features, performance recipes)
+**Document Version**: 1.1
+**Last Updated**: 2025-12-22
+**Godot Version**: 4.6.0-beta2
+**AI Optimization**: Maximum (D3D12 default, SAF support, Wayland parity, 2D batching, profiler integration)

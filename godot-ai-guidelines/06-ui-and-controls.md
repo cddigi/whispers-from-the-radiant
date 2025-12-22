@@ -1,7 +1,7 @@
 # UI and Control Nodes
 
-**Purpose**: Comprehensive UI development patterns for Godot 4.6
-**Focus**: Control node hierarchy, layout containers, theming, FileDialog enhancements (4.5-4.6), input handling, Control pivot offset ratio (NEW 4.6)
+**Purpose**: Comprehensive UI development patterns for Godot 4.6-beta2
+**Focus**: Control node hierarchy, layout containers, theming, focus state decoupling (NEW 4.6), array inspector improvements, joypad customization
 
 ---
 
@@ -591,7 +591,7 @@ func show_editor_file_dialog() -> void:
 
 ## Input Handling
 
-### Focus Management (4.6 Improvements)
+### Focus Management (4.6 Major Improvements)
 
 ```gdscript
 # Focus system for keyboard/gamepad navigation:
@@ -623,9 +623,36 @@ func setup_focus() -> void:
 func _ready() -> void:
     button1.focus_entered.connect(_on_button1_focus_entered)
     button1.focus_exited.connect(_on_button1_focus_exited)
+```
 
-# NEW in 4.6: Improved focus navigation
-# Better tab order, gamepad D-pad navigation
+### Focus State Decoupling (NEW in 4.6)
+
+```gdscript
+# 4.6 MAJOR IMPROVEMENT: Focus logic now separates input methods
+# Mouse/touch focus handling is INDEPENDENT from keyboard/joypad focus
+# This enables granular UI styling for different input modes
+
+# Use cases:
+# - Controller-friendly menus (show focus highlight only on gamepad)
+# - Touch interfaces (no focus highlight needed)
+# - Hybrid input games (different visuals per input method)
+
+# New theme properties for input-specific styling:
+# Control nodes now support different focus visuals based on:
+# - Current input device
+# - Last active input type
+# - Platform defaults
+
+# Example: Style focus differently for controller vs mouse
+func setup_input_specific_focus() -> void:
+    # Check current input method (pseudocode - implementation varies)
+    if is_using_controller():
+        button.add_theme_stylebox_override("focus", controller_focus_style)
+    else:
+        button.add_theme_stylebox_override("focus", mouse_focus_style)
+
+# This is foundational - enables future accessibility features
+# Makes console/controller UI much easier to implement
 ```
 
 ### Mouse Input
@@ -724,6 +751,91 @@ func _on_viewport_size_changed() -> void:
 
 ---
 
+## Joypad Customization (NEW in 4.6)
+
+### Controller LED Support
+
+```gdscript
+# 4.6: Foundation for joypad customization
+# LED color support for DualSense, DualShock 4, and compatible controllers
+
+# Set controller LED color:
+func set_controller_color(device_id: int, color: Color) -> void:
+    # Check if controller supports LED colors
+    if Input.is_joy_led_color_valid(device_id):
+        Input.set_joy_led_color(device_id, color)
+
+# Example: Change LED based on player health
+func update_health_indicator(health_percent: float) -> void:
+    var color: Color
+    if health_percent > 0.5:
+        color = Color.GREEN
+    elif health_percent > 0.25:
+        color = Color.YELLOW
+    else:
+        color = Color.RED
+
+    # Apply to all connected controllers
+    for i in Input.get_connected_joypads().size():
+        set_controller_color(i, color)
+
+# Example: Team colors in multiplayer
+func set_player_team_color(device_id: int, team: int) -> void:
+    var team_colors = [Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW]
+    if team < team_colors.size():
+        set_controller_color(device_id, team_colors[team])
+```
+
+---
+
+## Editor UI Improvements (4.6)
+
+### Modern Theme
+
+```gdscript
+# 4.6: "Godot Minimal Theme" is now default "Modern Theme"
+# Previous default renamed to "Classic Theme"
+
+# Theme switching (Editor Settings → Interface → Theme → Preset):
+# - Modern (new default): Clean, minimal design
+# - Classic: Previous default theme
+# - Light: Light color scheme
+# - Custom: User-defined theme
+
+# LIVE THEME SWITCHING: Themes now update without editor restart!
+# Great for testing and customizing editor appearance
+```
+
+### Array Inspector Redesign
+
+```gdscript
+# 4.6: Array inspector has reduced visual clutter
+# Better performance with large arrays
+# Cleaner property editing
+
+# Benefits for developers:
+# - Faster navigation in arrays with many elements
+# - Clearer visual hierarchy
+# - Improved drag-and-drop for array reordering
+# - Better handling of nested arrays/dictionaries
+```
+
+### Editor Dock Improvements
+
+```gdscript
+# 4.6: New EditorDock class with flexible layouts
+# Better bottom panel integration
+# Custom dock creation for plugins
+
+# For plugin developers:
+# - EditorDock base class for custom docks
+# - Improved positioning API
+# - Better integration with editor layout system
+# - More control over dock behavior
+```
+
+---
+
 ## Cross-Reference
 
 **Related Guidelines**:
@@ -731,10 +843,12 @@ func _on_viewport_size_changed() -> void:
 - Theming resources → `02-scene-architecture.md#resources`
 - Input handling → `01-gdscript-modern-patterns.md#input`
 - Platform UI → `07-platform-performance.md#platform-specifics`
+- Focus state improvements → `00-version-and-migration.md#focus-state-improvements`
+- Modern theme → `00-version-and-migration.md#modern-theme`
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
-**AI Optimization**: Maximum (Control pivot ratio, FileDialog improvements, focus system enhancements)
+**Document Version**: 1.1
+**Last Updated**: 2025-12-22
+**Godot Version**: 4.6.0-beta2
+**AI Optimization**: Maximum (Focus state decoupling, joypad LED support, editor improvements, array inspector)

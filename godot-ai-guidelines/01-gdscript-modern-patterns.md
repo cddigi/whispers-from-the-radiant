@@ -1,7 +1,7 @@
 # GDScript 4.6 Modern Patterns
 
-**Purpose**: Comprehensive GDScript patterns for Godot 4.6, optimized for AI code generation
-**Focus**: Type safety, performance, modern idioms, and 4.6-specific features
+**Purpose**: Comprehensive GDScript patterns for Godot 4.6-beta2, optimized for AI code generation
+**Focus**: Type safety, performance, modern idioms, and 4.6-specific features (including native profiler support)
 
 ---
 
@@ -792,16 +792,74 @@ enemy.queue_free()
 
 ---
 
+## Native Profiler Support (NEW in 4.6)
+
+### GDScript Profiling
+
+```gdscript
+# GDScript now has native profiler support for:
+# - Tracy profiler (cross-platform)
+# - Perfetto (Android/Chrome DevTools)
+# - Apple Instruments signposts (macOS/iOS)
+
+# Profiling is enabled at build time, not runtime
+# Useful for production performance analysis
+
+# Best practices for profiling:
+# 1. Use explicit function names (no lambda confusion)
+# 2. Keep functions small and focused for clear traces
+# 3. Use StringName for repeated operations
+
+# Example: Profile-friendly code structure
+class_name ProfileFriendlyEntity extends Node2D
+
+# Named, focused functions are easier to profile:
+func update_position(delta: float) -> void:
+    position += velocity * delta
+
+func update_animation() -> void:
+    animation_player.play(current_anim)
+
+func update_collision() -> void:
+    check_collisions()
+
+# AVOID: Large monolithic functions
+# func update(delta):
+#     # 500 lines of mixed logic - hard to profile
+```
+
+### LSP Documentation Improvements
+
+```gdscript
+# GDScript LSP now converts BBCode to Markdown in docstrings
+# Better IDE hover documentation
+
+## This is a [b]bold[/b] docstring
+## It will render properly in supported editors
+##
+## [code]Example code[/code] blocks are converted too
+##
+## Use proper BBCode formatting for best results
+func documented_function() -> void:
+    pass
+
+# Step-out debugging now available in GDScript debugger
+# New debugging functionality to step out of current function
+```
+
+---
+
 ## Cross-References
 
 - Scene architecture → `02-scene-architecture.md`
 - Type migration from 4.5 → `00-version-and-migration.md#string-conversion-changes`
 - Performance optimization → `07-platform-performance.md#performance-patterns`
 - Abstract classes → `00-version-and-migration.md#abstract-classes`
+- Profiler integration → `00-version-and-migration.md#tracing-profiler-integration`
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
+**Document Version**: 1.1
+**Last Updated**: 2025-12-22
+**Godot Version**: 4.6.0-beta2
 **AI Optimization Level**: Maximum (pattern templates, decision trees, quick reference tables)

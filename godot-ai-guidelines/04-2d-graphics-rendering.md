@@ -1,7 +1,7 @@
 # 2D Graphics and Rendering
 
-**Purpose**: Comprehensive 2D rendering patterns for Godot 4.6, optimized for AI code generation
-**Focus**: Sprite management, TileMapLayer architecture (4.3+), animation, Camera2D, and rendering optimization
+**Purpose**: Comprehensive 2D rendering patterns for Godot 4.6-beta2, optimized for AI code generation
+**Focus**: Sprite management, TileMapLayer architecture (4.3+), animation, Camera2D, rendering optimization, and 4.6 batching improvements
 
 ---
 
@@ -631,20 +631,39 @@ func transition_to_camera(target_camera: Camera2D, duration: float) -> void:
 
 ## Rendering Performance
 
+### 2D Renderer Batching (MAJOR 4.6 IMPROVEMENT)
+
+```gdscript
+# 4.6 Beta 1: Complete rewrite of 2D renderer batching
+# Performance gains: 1.1x to 7x in GPU-bound scenarios
+# Especially beneficial on older devices
+
+# The new batching system:
+# - More aggressive draw call merging
+# - Better GPU utilization
+# - Reduced state changes
+# - Improved memory access patterns
+
+# You don't need to change code - improvements are automatic!
+# But you can maximize benefits by following these patterns:
+```
+
 ### Draw Call Optimization
 
 ```gdscript
-# Godot 4 automatically batches sprites with:
+# Godot 4.6 automatically batches sprites with:
 # - Same texture
 # - Same material
 # - Same z-index
 # - Sequential in tree
 
-# Maximize batching:
+# 4.6 is MORE aggressive about batching than 4.5
+# Performance gains are automatic, but maximize with:
 # 1. Use texture atlases (sprite sheets)
 # 2. Share materials between sprites
 # 3. Minimize unique shaders
 # 4. Group similar sprites under same parent
+# 5. NEW: TileMapLayer gets optimized redraws (fewer unnecessary updates)
 
 # Texture atlas example:
 const ATLAS_TEXTURE = preload("res://atlas.png")
@@ -657,6 +676,32 @@ func create_sprite(region: Rect2) -> Sprite2D:
     return sprite
 
 # All sprites share the same texture → single draw call
+# In 4.6, even more sprites can be batched together
+```
+
+### TileMapLayer Optimization (4.6)
+
+```gdscript
+# 4.6: TileMapLayer reduces unnecessary redraws
+# Significant performance improvement for large tilemaps
+
+# Best practices for tilemap performance:
+# 1. Separate layers by update frequency
+# 2. Static layers (terrain) separate from dynamic layers (objects)
+# 3. Use appropriate tile_set physics settings
+
+# Example: Optimized tilemap structure
+Level (Node2D)
+├── StaticLayers (Node2D)  # Never change at runtime
+│   ├── Background (TileMapLayer)
+│   └── Terrain (TileMapLayer)
+├── DynamicLayers (Node2D)  # May change at runtime
+│   └── Interactables (TileMapLayer)
+└── Entities (Node2D)
+    └── Player, Enemies, etc.
+
+# Static layers benefit most from 4.6 optimization
+# They're only redrawn when actually modified
 ```
 
 ### Culling and Visibility
@@ -713,6 +758,53 @@ func _process(delta: float) -> void:
 
 ---
 
+## Glow and Post-Processing (4.6 CHANGES)
+
+### Glow Rendering Changes (BREAKING)
+
+```gdscript
+# 4.6: Glow now renders BEFORE tonemapping
+# Default blend mode changed to "screen" (was additive)
+# This affects existing projects with glow effects!
+
+# Key changes:
+# 1. Glow appears more natural with tonemapping
+# 2. Screen blend mode integrates better with HDR
+# 3. Softlight glow behaves like HDR 2D on Viewport
+
+# If your glow looks different after upgrade:
+# 1. Open Project Settings → Environment → Glow
+# 2. Experiment with blend modes:
+#    - Screen (new default): natural integration
+#    - Additive: brighter, can blow out
+#    - Softlight: subtle, changed behavior
+#    - Replace: overwrites colors
+
+# HDR 2D users: softlight now appears consistent
+```
+
+### AgX Tonemapper Enhancements
+
+```gdscript
+# 4.6: AgX tonemapper gains new controls:
+# - White balance adjustment
+# - Contrast control
+# - Better HDR support
+
+# Access via Environment resource:
+# Environment → Tonemap → Tonemap Mode: AgX
+# New properties:
+# - tonemap_white_balance
+# - tonemap_contrast
+
+# AgX provides:
+# - More natural colors in extreme brightness
+# - Better hue preservation
+# - Film-like color response
+```
+
+---
+
 ## Cross-Reference
 
 **Related Guidelines**:
@@ -720,10 +812,11 @@ func _process(delta: float) -> void:
 - Animation system → `05-animation-physics-3d.md#animation-system`
 - Performance optimization → `07-platform-performance.md#rendering-performance`
 - UI rendering → `06-ui-and-controls.md`
+- Glow breaking changes → `00-version-and-migration.md#glow-rendering-changes`
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
-**AI Optimization**: Maximum (TileMapLayer migration, rendering patterns, camera recipes)
+**Document Version**: 1.1
+**Last Updated**: 2025-12-22
+**Godot Version**: 4.6.0-beta2
+**AI Optimization**: Maximum (TileMapLayer migration, 4.6 batching improvements, rendering patterns, camera recipes)
