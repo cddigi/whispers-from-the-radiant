@@ -147,9 +147,34 @@ gameState = {
 
 **Godot Executable Location**: `/Applications/Godot.app/Contents/MacOS/Godot`
 
-**Godot Version**: 4.6-dev4
+**Godot Version**: 4.6-dev6
 
 When writing or modifying GDScript files, use the Godot command-line interface to validate your work incrementally. This prevents accumulating errors and ensures each change compiles correctly.
+
+### Version 4.6 Notable Changes (dev5/dev6)
+
+**GDScript Improvements:**
+- **Tracy Profiler Support**: Native GDScript profiling with Tracy for detailed performance analysis
+- **Step Out Debugging**: New debugging functionality to step out of functions
+- **Directory Rules for Warnings**: New `debug/gdscript/warnings/directory_rules` project setting
+- **LSP Improvements**: Better BBCode to Markdown docstring conversion
+
+**Rendering Changes:**
+- **D3D12 Default on Windows**: New projects use Direct3D 12 by default instead of Vulkan (addresses Vulkan driver instability). Change via `rendering/rendering_device/driver.windows` setting
+- **2D Renderer Optimizations**: 1.1x to 7x performance improvements in GPU-bound scenarios
+- **AgX Tonemapper Enhancements**: White balance, contrast, and HDR support
+
+**Editor Improvements:**
+- Transform Mode renamed from Select Mode; new Select Mode without gizmos
+- Signals and Groups now in dedicated docks (separated from Node dock)
+- Group editing across multiple nodes
+- Tab menu button listing all opened scenes
+- Expression history in evaluator
+
+**Core Features:**
+- **OpenXR 1.1 Support**: Automatic detection with compatibility layer for 1.0 devices
+- **Delta Encoding for Patches**: Export only binary differences to dramatically reduce patch sizes
+- **Apple Instruments Profiler Support**: Native profiling on macOS
 
 ### Essential Command-Line Patterns
 
