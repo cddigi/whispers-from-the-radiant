@@ -2,8 +2,8 @@
 
 **Purpose**: Comprehensive, AI-optimized reference for Godot 4.6 game development
 **Target**: Claude Code (AI-assisted development)
-**Version**: Godot 4.6.0-dev4
-**Last Updated**: 2025-11-15
+**Version**: Godot 4.6.0-beta2
+**Last Updated**: 2025-12-22
 
 ---
 
@@ -105,9 +105,15 @@ Use this index to quickly locate relevant guidelines for your current task.
    - Separate TileMapLayer nodes
    - See: [04-2d-graphics-rendering.md#tilemaplayer-architecture](04-2d-graphics-rendering.md#tilemaplayer-architecture)
 
-### NEW FEATURES (4.6 Enhancements)
+4. **Glow Rendering** (NEW in Beta 1)
+   - Default blend mode changed to "screen"
+   - Glow now renders before tonemapping
+   - See: [00-version-and-migration.md#glow-rendering-changes](00-version-and-migration.md#glow-rendering-changes)
 
-1. **IKModifier3D** - Modern IK system
+### NEW FEATURES (4.6 Beta 2 Enhancements)
+
+1. **IKModifier3D** - Complete IK system
+   - 8 subclasses: CCDIK3D, FABRIK3D, JacobianIK3D, BoneTwistDisperser3D, etc.
    - Replaces SkeletonIK
    - See: [05-animation-physics-3d.md#ikmodifier3d-system](05-animation-physics-3d.md#ikmodifier3d-system)
 
@@ -115,13 +121,37 @@ Use this index to quickly locate relevant guidelines for your current task.
    - `Array.reserve()`, `Dictionary.reserve()`, `String.reserve()`
    - See: [01-gdscript-modern-patterns.md#collection-pre-allocation](01-gdscript-modern-patterns.md#collection-pre-allocation)
 
-3. **Jolt Physics Default** - Better performance
-   - Default for new projects
+3. **Jolt Physics Production-Ready** - Better performance
+   - Default for new 3D projects
+   - Moved from experimental to production status
    - See: [05-animation-physics-3d.md#jolt-physics](05-animation-physics-3d.md#jolt-physics)
 
-4. **Control Pivot Offset Ratio** - UI positioning
-   - Relative pivot positioning
-   - See: [06-ui-and-controls.md#control-pivot-offset-ratio](06-ui-and-controls.md#control-pivot-offset-ratio)
+4. **Modern Theme** - New editor look
+   - "Godot Minimal Theme" now default
+   - Live theme switching without restart
+   - See: [00-version-and-migration.md#modern-theme](00-version-and-migration.md#modern-theme)
+
+5. **Rendering Improvements**
+   - SSR: 2x quality at half performance cost
+   - 2D batching: 1.1x to 7x GPU performance gains
+   - AgX tonemapper: white balance, contrast, HDR support
+   - SSAO in Compatibility/GLES3 renderer
+   - See: [04-2d-graphics-rendering.md#rendering-performance](04-2d-graphics-rendering.md#rendering-performance)
+
+6. **Platform Updates**
+   - Windows: D3D12 as default RenderingDevice driver
+   - Linux/Wayland: Game embedding parity with X11
+   - Android: Storage Access Framework support
+   - See: [07-platform-performance.md#platform-specifics](07-platform-performance.md#platform-specifics)
+
+7. **LibGodot** - Engine as library
+   - New GodotInstance class for embedding
+   - See: [00-version-and-migration.md#libgodot](00-version-and-migration.md#libgodot)
+
+8. **OpenXR 1.1** - Enhanced VR/AR
+   - Spatial entities extensions
+   - Anchors, plane tracking, marker tracking
+   - See: [00-version-and-migration.md#xr-openxr-11-features](00-version-and-migration.md#xr-openxr-11-features)
 
 ---
 
@@ -352,8 +382,8 @@ Each guideline file follows this structure:
 
 ---
 
-**Document Version**: 1.0
-**Guidelines Version**: 4.6.0
-**Last Updated**: 2025-11-15
-**Total Documentation**: 170KB across 9 files
+**Document Version**: 1.1
+**Guidelines Version**: 4.6.0-beta2
+**Last Updated**: 2025-12-22
+**Total Documentation**: ~180KB across 9 files
 **Maintained By**: Claude Code (AI-assisted development system)

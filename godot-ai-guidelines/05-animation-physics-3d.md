@@ -1,7 +1,7 @@
 # Animation, Physics, and 3D Systems
 
-**Purpose**: Comprehensive animation and physics patterns for Godot 4.6
-**Focus**: AnimationPlayer/Tree, IKModifier3D (NEW), Jolt Physics (default 4.6), navigation, collision systems
+**Purpose**: Comprehensive animation and physics patterns for Godot 4.6-beta2
+**Focus**: AnimationPlayer/Tree, IKModifier3D (8 subclasses), Jolt Physics (production-ready), navigation, collision systems, SSR improvements
 
 ---
 
@@ -147,11 +147,21 @@ func _physics_process(delta: float) -> void:
 
 ---
 
-## IKModifier3D System (NEW in 4.6)
+## IKModifier3D System (MAJOR 4.6 FEATURE)
 
 ### IKModifier3D Replaces SkeletonIK
 
 **CRITICAL**: SkeletonIK is DEPRECATED. Use IKModifier3D in 4.6+
+
+4.6 introduces a comprehensive IK system with **8 IKModifier3D subclasses**:
+1. **CCDIK3D** - Cyclic Coordinate Descent IK (fast, iterative)
+2. **FABRIK3D** - Forward and Backward Reaching IK (chain solver)
+3. **JacobianIK3D** - Jacobian-based IK (smooth, accurate)
+4. **BoneTwistDisperser3D** - Distributes twist rotation across chain
+5. **LimitAngularVelocityModifier3D** - Constrains rotation speed
+6. **LookAtModifier3D** - Simple look-at constraint
+7. **TwoBoneIK3D** - Optimized for common two-bone chains (arms/legs)
+8. **SpringBoneSimulator3D** - Physics-based bone simulation
 
 ```gdscript
 # OLD SYSTEM (DEPRECATED - Don't use):
@@ -171,6 +181,43 @@ $Skeleton3D.add_child(ik_modifier)
 
 # Enable/disable:
 ik_modifier.enabled = true
+```
+
+### Choosing the Right IK Subclass
+
+```gdscript
+# TwoBoneIK3D - For arms and legs (2 bones + end effector)
+# Fastest, most stable for standard limb setups
+var arm_ik = TwoBoneIK3D.new()
+arm_ik.tip_bone = "Hand.R"
+arm_ik.root_bone = "UpperArm.R"
+# Automatically handles elbow/knee bending
+
+# FABRIK3D - For tentacles, tails, spines (many bones)
+# Good for long chains, organic movement
+var tail_ik = FABRIK3D.new()
+tail_ik.tip_bone = "Tail.5"
+tail_ik.root_bone = "Tail.1"
+tail_ik.chain_length = 5
+tail_ik.max_iterations = 10
+
+# CCDIK3D - For reaching/procedural animation
+# Fast iteration, good for real-time solving
+var reach_ik = CCDIK3D.new()
+reach_ik.tip_bone = "Finger.1.3"
+reach_ik.root_bone = "Finger.1.1"
+
+# LookAtModifier3D - For head/eye tracking
+# Simplest, just points bone at target
+var look_at = LookAtModifier3D.new()
+look_at.bone_name = "Head"
+look_at.target = player.head_look_target
+
+# JacobianIK3D - For smooth, natural movement
+# Most computationally expensive, best quality
+var precision_ik = JacobianIK3D.new()
+precision_ik.tip_bone = "Hand.L"
+precision_ik.root_bone = "Shoulder.L"
 ```
 
 ### IK Setup Patterns
@@ -255,23 +302,55 @@ func add_bone_constraint() -> void:
 
 ## Physics Systems
 
-### Jolt Physics (Default in 4.6+)
+### Jolt Physics (Production-Ready in 4.6)
 
-**CRITICAL**: New projects in 4.6 use Jolt Physics by default
+**CRITICAL**: Jolt Physics is now **production-ready** and **default for new 3D projects**
 
 ```gdscript
+# 4.6 Change: Jolt moved from experimental to production status
 # Project Settings → Physics/3D → Physics Engine:
 # - GodotPhysics3D (legacy, still available)
-# - Jolt (NEW DEFAULT in 4.6)
+# - Jolt (NEW DEFAULT in 4.6 - production-ready)
 
 # Jolt benefits:
 # - Better performance (10-100x faster for complex scenes)
 # - More accurate collision detection
 # - Better stability for ragdolls
 # - Better large-scale physics
+# - Multi-threaded physics simulation
 
 # API is the SAME - no code changes needed
 # Existing GodotPhysics code works with Jolt
+
+# Jolt is recommended for:
+# - All new 3D projects
+# - Performance-critical games
+# - Complex ragdoll systems
+# - Large open worlds
+
+# Stick with GodotPhysics if:
+# - 2D only project (Jolt is 3D only)
+# - Very simple physics needs
+# - Specific edge case behaviors
+```
+
+### Mesh Simplifier Improvements (4.6)
+
+```gdscript
+# 4.6: Mesh simplifier now optimizes topological components
+# Better LOD generation for complex meshes
+
+# Use in editor: Mesh → Generate LOD
+# Or in code for procedural meshes:
+var simplified = mesh.simplify(
+    0.5,  # target ratio (0.5 = 50% triangles)
+    3.0   # target error threshold
+)
+
+# New: Better handling of:
+# - Disconnected mesh parts
+# - UV seams
+# - Material boundaries
 ```
 
 ### 2D Physics (GodotPhysics)
@@ -642,6 +721,30 @@ func _on_target_reached() -> void:
 
 ---
 
+## Screen Space Reflections (4.6 Improvements)
+
+### SSR Quality and Performance
+
+```gdscript
+# 4.6: SSR completely rewritten for better quality and performance
+# - 2x quality improvement
+# - Half the performance cost
+# - Better on all devices
+
+# Enable SSR:
+# WorldEnvironment → Environment → SSR → Enabled = true
+
+# 4.6 SSR settings:
+# - Max Steps: Lower = faster, Higher = better quality
+# - Fade In/Out: Controls transition at edges
+# - Depth Tolerance: Handles depth discontinuities
+
+# Performance note: SSR is now viable for more devices
+# Previously costly, now competitive with other reflection methods
+```
+
+---
+
 ## Cross-Reference
 
 **Related Guidelines**:
@@ -649,10 +752,11 @@ func _on_target_reached() -> void:
 - 2D animation → `04-2d-graphics-rendering.md#animation`
 - Performance optimization → `07-platform-performance.md#physics-performance`
 - Version migration → `00-version-and-migration.md#ikmodifier3d`
+- IK subclasses → `00-version-and-migration.md#new-4.6-features`
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
-**AI Optimization**: Maximum (IKModifier3D migration, Jolt Physics setup, navigation patterns)
+**Document Version**: 1.1
+**Last Updated**: 2025-12-22
+**Godot Version**: 4.6.0-beta2
+**AI Optimization**: Maximum (IKModifier3D 8 subclasses, Jolt Physics production-ready, SSR improvements, navigation patterns)

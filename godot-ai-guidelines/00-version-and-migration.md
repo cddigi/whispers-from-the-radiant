@@ -1,6 +1,6 @@
 # Godot 4.6 Version Information and Migration Guide
 
-**Target Version**: Godot 4.6.0-dev4
+**Target Version**: Godot 4.6.0-beta2
 **Previous Baseline**: Godot 4.5.0
 **Document Purpose**: AI-optimized reference for version-specific changes and migration patterns
 
@@ -22,17 +22,77 @@
 - Platform-specific fixes (Android, iOS, macOS)
 - No breaking changes
 
-### Godot 4.6.0 (Current Target)
-- Jolt Physics as default for new projects
-- IKModifier3D system (replaces SkeletonIK)
-- Enhanced Control pivot positioning
-- Editor dock refactor
-- Glow rendering improvements
-- SSAO in Compatibility renderer
+### Godot 4.6.0 (Current Target - Beta 2)
+- **LibGodot**: Engine as standalone library via GodotInstance class
+- **Modern Theme**: New default editor theme (formerly "Godot Minimal Theme")
+- **IKModifier3D System**: 8 new IK modifier classes (CCDIK3D, FABRIK3D, JacobianIK3D, etc.)
+- **Jolt Physics**: Production-ready status, default for new 3D projects
+- **Enhanced Rendering**:
+  - Glow now renders before tonemapping with improved blend modes
+  - AgX tonemapper: white balance, contrast, HDR support
+  - Screen space reflections: 2x quality at half performance cost
+  - 2D renderer batching: 1.1x to 7x GPU performance gains
+  - SSAO in Compatibility/GLES3 renderer
+- **Editor Dock Refactor**: New EditorDock class with flexible layouts
+- **Array Inspector Redesign**: Reduced visual clutter
+- **XR**: OpenXR 1.1 with spatial entities extensions
+- **Platform Updates**:
+  - Windows: Direct3D 12 as default RenderingDevice driver
+  - Linux/Wayland: Game embedding parity with X11
+  - Android: Storage Access Framework support
+  - iOS: Auto-enable minimum performance tier for Forward+/Mobile
+- **Performance**: Decreased RAM use, faster array sorting, accelerated Object casts
+- **Tracing Profilers**: Tracy, Perfetto, Apple Instruments integration
 
 ---
 
 ## CRITICAL BREAKING CHANGES (4.5.0 → 4.6.0)
+
+### Glow Rendering Changes (BREAKING)
+
+**Impact**: Medium - Affects projects using glow effects
+
+```gdscript
+# CHANGE: Glow rendering now occurs BEFORE tonemapping
+# Default glow blend mode changed to "screen" (was additive)
+# Default glow levels have changed
+# Softlight glow blending behavior has changed
+
+# Action Required:
+# 1. Open Project Settings → Environment → Glow
+# 2. Review and adjust glow blend mode if needed
+# 3. Test HDR 2D viewports - softlight glow now appears as it did with HDR 2D
+
+# Projects with significant glow effects should verify visual output
+```
+
+### Quaternion Initialization (BREAKING)
+
+**Impact**: Low - Mostly affects GDExtension/C++ code
+
+```gdscript
+# CHANGE: Quaternion now correctly initializes with identity under Variant
+# Before: Uninitialized Quaternion in Variant could have undefined values
+# After: Quaternion in Variant defaults to identity (0, 0, 0, 1)
+
+# If your code relied on uninitialized quaternion behavior, update it:
+var q: Quaternion = Quaternion.IDENTITY  # Explicit is always better
+```
+
+### Project Upgrade Tool for 3D Assets
+
+**Impact**: Medium - Projects with 3D assets should run upgrade tool
+
+```bash
+# When upgrading 4.5 → 4.6 projects with 3D assets:
+# Use the project upgrade tool to ensure proper migration
+# Editor → Project → Tools → Upgrade Project
+
+# The upgrade tool handles:
+# - 3D asset reimport with new settings
+# - IKModifier3D migration from SkeletonIK
+# - Physics configuration updates
+```
 
 ### String Conversion Changes (BREAKING)
 
@@ -378,12 +438,23 @@ func check_version() -> void:
 | Abstract classes | ✅ | ✅ | ✅ | Use `@abstract` |
 | Variadic functions | ✅ | ✅ | ✅ | Array parameter |
 | Const constructors | ✅ | ✅ | ✅ | Arrays/Dicts |
-| IKModifier3D | ❌ | ❌ | ✅ | Replaces SkeletonIK |
-| Jolt Physics default | ❌ | ❌ | ✅ | New projects only |
+| IKModifier3D | ❌ | ❌ | ✅ | 8 subclasses (CCDIK3D, FABRIK3D, etc.) |
+| Jolt Physics default | ❌ | ❌ | ✅ | Production-ready, new 3D projects |
 | String implicit conversion | ❌ | ❌ | ❌ | Removed in 4.5 |
 | Array.reserve() | ❌ | ❌ | ✅ | 4.6+ only |
 | Dict.reserve() | ❌ | ❌ | ✅ | 4.6+ only |
-| SSAO in Compatibility | ❌ | ❌ | ✅ | Simple SSAO |
+| SSAO in Compatibility | ❌ | ❌ | ✅ | GLES3 renderer support |
+| LibGodot | ❌ | ❌ | ✅ | Engine as standalone library |
+| Modern Theme | ❌ | ❌ | ✅ | New default editor theme |
+| EditorDock class | ❌ | ❌ | ✅ | Flexible dock layouts |
+| OpenXR 1.1 | ❌ | ❌ | ✅ | Spatial entities extensions |
+| D3D12 default (Windows) | ❌ | ❌ | ✅ | More stable than Vulkan |
+| Wayland game embedding | ❌ | ❌ | ✅ | Parity with X11 |
+| Android SAF support | ❌ | ❌ | ✅ | No MANAGE_EXTERNAL_STORAGE needed |
+| Tracy/Perfetto profilers | ❌ | ❌ | ✅ | Native tracing support |
+| AgX white/contrast | ❌ | ❌ | ✅ | Enhanced HDR tonemapping |
+| SSR 2x quality | ❌ | ❌ | ✅ | Half performance cost |
+| 2D batching 1.1-7x | ❌ | ❌ | ✅ | GPU performance gains |
 
 ---
 
@@ -460,7 +531,180 @@ $Skeleton3D.add_child(ik)
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Target Godot Version**: 4.6.0-dev4
+## NEW 4.6 FEATURES (Detailed)
+
+### LibGodot - Engine as Library
+
+```gdscript
+# LibGodot enables embedding Godot in other applications
+# Access via new GodotInstance class
+
+# Use cases:
+# - Integrating Godot into existing applications
+# - Building specialized tools with Godot rendering
+# - Custom launchers and editors
+# - Embedding game engine in productivity apps
+
+# This is primarily a C++/GDExtension feature
+# GDScript developers typically won't interact directly with LibGodot
+```
+
+### Modern Theme (Default Editor Theme)
+
+```gdscript
+# The community-created "Godot Minimal Theme" is now default
+# Renamed to "Modern Theme"
+# Previous default renamed to "Classic Theme"
+
+# Theme switching:
+# Editor → Editor Settings → Interface → Theme → Preset
+# Options: Modern (new default), Classic, Light, Custom
+
+# Live theme switching now works without editor restart
+```
+
+### Editor Dock Improvements
+
+```gdscript
+# New EditorDock class enables:
+# - Flexible dock layouts
+# - Better bottom panel integration
+# - Custom dock creation for plugins
+
+# Array inspector redesign:
+# - Reduced visual clutter
+# - Cleaner property editing
+# - Better performance with large arrays
+
+# Focus state decoupling:
+# - Mouse/touch focus separate from keyboard/joypad
+# - Enables granular UI styling for different input modes
+```
+
+### Tracing Profiler Integration
+
+```gdscript
+# Native profiler support for performance analysis:
+# - Tracy profiler (cross-platform)
+# - Perfetto (Android/Chrome DevTools)
+# - Apple Instruments signposts (macOS/iOS)
+
+# Enable via build system (not runtime toggle)
+# Useful for deep performance analysis in production builds
+
+# GDScript also gains native profiler support for better debugging
+```
+
+### XR / OpenXR 1.1 Features
+
+```gdscript
+# OpenXR 1.1 automatically enabled on supporting devices
+# Compatibility layer for 1.0 devices
+
+# New spatial entities extensions:
+# - Spatial anchors for persistent world positioning
+# - Plane tracking for AR applications
+# - Marker tracking for fiducial detection
+
+# Improved interaction with real-world environment
+```
+
+### Focus State Improvements
+
+```gdscript
+# Focus logic now separates input methods:
+# - Mouse/touch focus handling
+# - Keyboard/joypad focus handling
+# - Independent styling per input mode
+
+# Useful for:
+# - Console/controller UI
+# - Accessibility features
+# - Hybrid input games
+
+# Control nodes gain new focus-related properties
+```
+
+### Joypad Customization Foundation
+
+```gdscript
+# New joypad customization features:
+# - LED color support (DualSense, DualShock 4)
+# - Foundation for future haptic improvements
+
+# Set controller LED color:
+Input.set_joy_led_color(device_id, color)
+
+# Check LED support:
+if Input.is_joy_led_color_valid(device_id):
+    Input.set_joy_led_color(device_id, Color.RED)
+```
+
+### Microphone Buffer Access
+
+```gdscript
+# AudioServer now allows direct microphone buffer access
+# Useful for:
+# - Real-time audio processing
+# - Voice chat implementations
+# - Audio visualization
+# - Voice-controlled games
+
+# Access via AudioServer methods (advanced usage)
+```
+
+### Unique Node IDs
+
+```gdscript
+# Nodes can now have unique IDs that persist across scene refactoring
+# Useful for:
+# - Save/load systems
+# - Network synchronization
+# - Editor plugins
+# - Scene versioning
+
+# Get unique ID:
+var uid = node.get_instance_id()  # Existing method
+# New: Scene-local unique IDs for stable references
+```
+
+---
+
+## BETA 2 SPECIFIC FIXES
+
+### Regressions Fixed from Beta 1
+
+- **Editor**: Tool button disabled for multiple selected nodes
+- **Editor**: Shader editor minimum size constraints fixed
+- **Editor**: FileSystem search now shows files when searched by UID
+- **GUI**: TextEdit auto-scroll works properly on all vertical sizes
+- **Linux/X11**: Input delay regression corrected
+- **Rendering**: Mesa NIR updated to 25.3.1
+- **Rendering**: SPIR-V to DXIL conversion threading improvements
+- **OpenGL**: Adreno GPU crash fixed (motion vector uniforms split)
+
+### Library Updates
+
+- `minimp3` replaced with `dr_mp3` for audio handling
+- SDL updated to version 3.2.28
+
+### Platform-Specific Fixes
+
+- **iOS**: Automatically enables `iphone-ipad-minimum-performance-a12` for Forward+/Mobile
+- **Linux**: X11 input responsiveness restored
+
+### Known Issues (Beta 2)
+
+```gdscript
+# Motion vectors currently broken in Compatibility renderer
+# Geometry may render predominantly black
+# Workaround: Use Forward+/Mobile renderer or disable motion vectors
+# Expected fix in Beta 3 or stable release
+```
+
+---
+
+**Document Version**: 1.1
+**Last Updated**: 2025-12-22
+**Target Godot Version**: 4.6.0-beta2
 **AI Optimization**: High (structured for rapid lookup and pattern matching)
