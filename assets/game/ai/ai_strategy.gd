@@ -152,11 +152,11 @@ func _choose_lead_card(
 	var target := current_target_strategy
 
 	# Lead with trump to apply pressure
-	var trump_cards := valid_cards.filter(func(c): return c.aspect == game_state.dominant_aspect)
+	var trump_cards := valid_cards.filter(func(c: CardData) -> bool: return c.aspect == game_state.dominant_aspect)
 
 	if target == "low":
 		# Want to lose - lead low value card of weak aspect
-		var non_trump := valid_cards.filter(func(c): return c.aspect != game_state.dominant_aspect)
+		var non_trump := valid_cards.filter(func(c: CardData) -> bool: return c.aspect != game_state.dominant_aspect)
 		if not non_trump.is_empty():
 			return CardEvaluator.get_lowest_of_aspect(non_trump, non_trump[0].aspect)
 		return CardEvaluator.get_lowest_of_aspect(valid_cards, valid_cards[0].aspect)

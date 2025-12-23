@@ -55,15 +55,9 @@ func update_visuals() -> void:
 	if not card_data:
 		return
 
-	# Try to load the full card face image
-	var card_face_path := card_data.get_card_face_path()
-	var card_face_texture := load(card_face_path) as Texture2D
-
-	if card_face_texture:
-		card_face.texture = card_face_texture
-	else:
-		# Fallback: Create programmatic card face
-		create_programmatic_card_face()
+	# Always use programmatic card face since image files are placeholders
+	# This creates a colored card with value, aspect name, and ability indicator
+	create_programmatic_card_face()
 
 
 ## Creates a programmatic card face when PNG is not available
@@ -153,18 +147,52 @@ func create_programmatic_card_face() -> void:
 		corner_label.offset_bottom = corner_label.offset_top + 20
 		card_face.add_child(corner_label)
 
-	# Add ability indicator if card has ability
+	# Add ability indicator and name if card has ability (odd values: 1,3,5,7,9,11)
 	if card_data.has_ability:
+		# Ability star marker
 		var ability_marker := Label.new()
 		ability_marker.name = "AbilityMarker"
 		ability_marker.text = "★"
-		ability_marker.add_theme_font_size_override("font_size", 20)
+		ability_marker.add_theme_font_size_override("font_size", 16)
 		ability_marker.add_theme_color_override("font_color", Color.GOLD)
 		ability_marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		ability_marker.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-		ability_marker.offset_bottom = -12
-		ability_marker.offset_top = -28
+		ability_marker.offset_bottom = -32
+		ability_marker.offset_top = -48
 		card_face.add_child(ability_marker)
+
+		# Ability name (short form)
+		var ability_name := Label.new()
+		ability_name.name = "AbilityName"
+		ability_name.text = _get_ability_short_name(card_data.value)
+		ability_name.add_theme_font_size_override("font_size", 9)
+		ability_name.add_theme_color_override("font_color", aspect_color.darkened(0.2))
+		ability_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ability_name.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+		ability_name.offset_left = 4
+		ability_name.offset_right = -4
+		ability_name.offset_bottom = -8
+		ability_name.offset_top = -28
+		card_face.add_child(ability_name)
+
+
+## Returns a short ability name for display on card face
+func _get_ability_short_name(value: int) -> String:
+	match value:
+		1:
+			return "Redirect"
+		3:
+			return "Static"
+		5:
+			return "Leap"
+		7:
+			return "Convert"
+		9:
+			return "Resonance"
+		11:
+			return "Command"
+		_:
+			return ""
 
 
 ## Returns the card data this visual represents
@@ -188,17 +216,46 @@ func set_selectable(selectable: bool) -> void:
 ## Updates visual appearance based on current state
 func update_visual_state() -> void:
 	if not is_selectable:
-		# Disabled state - heavily dimmed and grayed out
-		modulate = Color(0.4, 0.4, 0.4, 0.6)
+		# Not your turn - cards are dimmed and desaturated
+		modulate = Color(0.5, 0.5, 0.55, 0.7)
 		z_index = 0
+		# Stop any existing pulse animation
+		_stop_playable_pulse()
 	elif not is_playable:
-		# Unplayable but visible - dimmed with red tint indicating invalid
-		modulate = Color(0.8, 0.5, 0.5, 0.8)
-		z_index = 0
+		# Cannot play this card - show with red/gray overlay and slight offset down
+		modulate = Color(0.6, 0.45, 0.45, 0.75)
+		z_index = -1
+		# Stop any existing pulse animation
+		_stop_playable_pulse()
 	else:
-		# Normal playable state - white with slight glow
-		modulate = Color(1.0, 1.0, 1.0, 1.0)
-		z_index = 0
+		# Playable card - bright and ready with subtle green tint
+		modulate = Color(1.05, 1.1, 1.05, 1.0)
+		z_index = 1
+		# Start subtle pulse to draw attention
+		_start_playable_pulse()
+
+
+## Subtle pulsing glow for playable cards
+var _pulse_tween: Tween = null
+
+func _start_playable_pulse() -> void:
+	if _pulse_tween and _pulse_tween.is_valid():
+		return  # Already pulsing
+
+	_pulse_tween = create_tween()
+	_pulse_tween.set_loops()  # Loop forever
+	_pulse_tween.set_ease(Tween.EASE_IN_OUT)
+	_pulse_tween.set_trans(Tween.TRANS_SINE)
+
+	# Subtle brightness oscillation
+	_pulse_tween.tween_property(self, "modulate", Color(1.1, 1.15, 1.1, 1.0), 0.8)
+	_pulse_tween.tween_property(self, "modulate", Color(1.0, 1.05, 1.0, 1.0), 0.8)
+
+
+func _stop_playable_pulse() -> void:
+	if _pulse_tween and _pulse_tween.is_valid():
+		_pulse_tween.kill()
+		_pulse_tween = null
 
 
 ## Highlights the card (for hover state)
@@ -207,6 +264,8 @@ func set_highlighted(highlighted: bool) -> void:
 		return  # Don't highlight unplayable/unselectable cards
 
 	if highlighted:
+		# Stop pulse animation during hover
+		_stop_playable_pulse()
 		# Mentalic glow - bright with significant emphasis and elevation
 		modulate = Color(1.3, 1.25, 1.4, 1.0)  # Slight blue-purple glow for psychic power
 		z_index = 10
@@ -215,9 +274,9 @@ func set_highlighted(highlighted: bool) -> void:
 		# Add a subtle scale up for additional feedback
 		scale = Vector2(1.08, 1.08)
 	else:
-		# Return to normal playable state
+		# Return to normal playable state and restart pulse
 		update_visual_state()
-		z_index = 0
+		z_index = 1
 		position.y += 15
 		scale = Vector2(1.0, 1.0)
 
@@ -299,7 +358,6 @@ func show_selection_feedback() -> void:
 	tween.set_trans(Tween.TRANS_QUAD)
 
 	# Brief bright flash
-	var original_modulate := modulate
 	tween.tween_property(self, "modulate", Color(1.4, 1.35, 1.5), 0.1)
 	tween.tween_property(self, "modulate", Color(1.2, 1.15, 1.3), 0.15)
 
