@@ -203,6 +203,7 @@ func display_player_hand(player_id: int) -> void:
 		if is_local_player:
 			card_instance.card_selected.connect(_on_player_card_selected)
 			card_instance.card_hovered.connect(_on_player_card_hovered)
+			print("  -> Connected signals for card: %s %d" % [card_data.get_aspect_name(), card_data.value])
 
 		hand_cards_array.append(card_instance)
 
@@ -442,6 +443,12 @@ func update_hand_playability() -> void:
 	var hand_cards := player1_hand_cards if player_id == 1 else player2_hand_cards
 	var is_players_turn := game_state.is_local_players_turn()
 
+	print("=== update_hand_playability ===")
+	print("  player_id: %d, active_mentalic: %d, is_players_turn: %s" % [
+		player_id, game_state.active_mentalic, is_players_turn
+	])
+	print("  hand_cards count: %d" % hand_cards.size())
+
 	for card in hand_cards:
 		var card_data := card.get_card_data()
 
@@ -455,6 +462,8 @@ func update_hand_playability() -> void:
 		else:
 			card.set_playable(false)
 
+	print("=== update_hand_playability complete ===")
+
 
 ## Handles when a player hovers over a card
 func _on_player_card_hovered(_card: Card) -> void:
@@ -464,19 +473,22 @@ func _on_player_card_hovered(_card: Card) -> void:
 
 ## Handles when a player selects a card from their hand
 func _on_player_card_selected(card: Card) -> void:
+	print("=== _on_player_card_selected CALLED ===")
+	var card_data := card.get_card_data()
+	print("  Card: %s %d" % [card_data.get_aspect_name(), card_data.value])
+
 	if not game_state.is_local_players_turn():
-		print("Not your turn!")
+		print("  REJECTED: Not your turn!")
 		return
 
-	var card_data := card.get_card_data()
 	var player_id := game_state.local_player_id
 
 	# Validate card can be played
 	if not can_play_card(card_data, player_id):
-		print("Cannot play that card - must follow lead aspect!")
+		print("  REJECTED: Cannot play that card - must follow lead aspect!")
 		return
 
-	print("Player %d selected card: %s %d" % [player_id, card_data.get_aspect_name(), card_data.value])
+	print("  ACCEPTED: Player %d playing card: %s %d" % [player_id, card_data.get_aspect_name(), card_data.value])
 
 	# Play the card to the trick area
 	play_card_to_trick(card, player_id)

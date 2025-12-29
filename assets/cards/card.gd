@@ -42,6 +42,19 @@ func _ready() -> void:
 	# Update face visibility
 	update_face_visibility()
 
+	# Debug: Log card ready state
+	var card_name := _get_debug_card_name()
+	print("[Card %s] _ready: mouse_filter=%d, is_selectable=%s, is_playable=%s" % [
+		card_name, mouse_filter, is_selectable, is_playable
+	])
+
+
+## Returns a debug-friendly name for this card
+func _get_debug_card_name() -> String:
+	if card_data:
+		return "%s-%d" % [card_data.get_aspect_name().substr(0, 3), card_data.value]
+	return "unknown"
+
 
 ## Sets the card data and updates the visual representation
 func set_card_data(data: CardData) -> void:
@@ -208,9 +221,17 @@ func set_playable(playable: bool) -> void:
 
 ## Sets whether this card can be selected (interaction enabled/disabled)
 func set_selectable(selectable: bool) -> void:
+	var old_selectable := is_selectable
+	var old_mouse_filter := mouse_filter
 	is_selectable = selectable
 	mouse_filter = Control.MOUSE_FILTER_STOP if selectable else Control.MOUSE_FILTER_IGNORE
 	update_visual_state()
+
+	# Debug: Log state change
+	var card_name := _get_debug_card_name()
+	print("[Card %s] set_selectable: %s -> %s, mouse_filter: %d -> %d" % [
+		card_name, old_selectable, is_selectable, old_mouse_filter, mouse_filter
+	])
 
 
 ## Updates visual appearance based on current state
@@ -314,21 +335,36 @@ func return_to_original_position() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	var card_name := _get_debug_card_name()
+
+	# Debug: Log ALL input events received
+	if event is InputEventMouseButton or event is InputEventMouseMotion:
+		var event_type := "MouseButton" if event is InputEventMouseButton else "MouseMotion"
+		print("[Card %s] _gui_input received: %s, is_selectable=%s, is_playable=%s, mouse_filter=%d" % [
+			card_name, event_type, is_selectable, is_playable, mouse_filter
+		])
+
 	# Only respond to input if card is selectable
 	if not is_selectable:
+		print("[Card %s] _gui_input: REJECTED - not selectable" % card_name)
 		return
 
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
+		print("[Card %s] MouseButton: button=%d, pressed=%s" % [
+			card_name, mouse_event.button_index, mouse_event.pressed
+		])
 		if mouse_event.button_index == MOUSE_BUTTON_LEFT:
 			if mouse_event.pressed:
 				if not is_playable:
 					# Visual feedback for unplayable card
+					print("[Card %s] LEFT CLICK: not playable, showing invalid selection" % card_name)
 					show_invalid_selection()
 					accept_event()
 					return
 
 				# Start dragging
+				print("[Card %s] LEFT CLICK: starting drag, emitting card_selected" % card_name)
 				is_dragging = true
 				original_position = global_position
 				drag_offset = get_global_mouse_position() - global_position
@@ -339,6 +375,7 @@ func _gui_input(event: InputEvent) -> void:
 				accept_event()
 			elif is_dragging:
 				# Stop dragging and return to original position
+				print("[Card %s] LEFT RELEASE: stopping drag, returning to position" % card_name)
 				is_dragging = false
 				return_to_original_position()
 				accept_event()
@@ -383,12 +420,20 @@ func show_invalid_selection() -> void:
 
 
 func _on_mouse_entered() -> void:
+	var card_name := _get_debug_card_name()
+	print("[Card %s] MOUSE ENTERED: is_selectable=%s, is_playable=%s, mouse_filter=%d" % [
+		card_name, is_selectable, is_playable, mouse_filter
+	])
 	if is_selectable:
 		set_highlighted(true)
 		card_hovered.emit(self)
+	else:
+		print("[Card %s] MOUSE ENTERED: ignored - not selectable" % card_name)
 
 
 func _on_mouse_exited() -> void:
+	var card_name := _get_debug_card_name()
+	print("[Card %s] MOUSE EXITED: is_selectable=%s" % [card_name, is_selectable])
 	if is_selectable:
 		set_highlighted(false)
 		card_unhovered.emit(self)
