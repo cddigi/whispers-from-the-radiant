@@ -1,7 +1,7 @@
 # Core Systems: Memory, Resources, and Global Utilities
 
-**Purpose**: Core system patterns for memory management, resource handling, and global utilities in Godot 4.6
-**Focus**: Reference counting, object pooling, resource caching, groups, and SceneTree utilities
+**Purpose**: Core system patterns for memory management, resource handling, and global utilities in Godot 4.7-dev3
+**Focus**: Reference counting, object pooling, resource caching, groups, SceneTree utilities, signal thread safety (4.7)
 
 ---
 

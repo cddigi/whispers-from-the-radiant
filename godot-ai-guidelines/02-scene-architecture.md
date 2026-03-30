@@ -351,6 +351,24 @@ func _on_player_died() -> void:
 # - Double-click signal → select target node → select method
 ```
 
+### Signal Thread Safety (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-117511): Enhanced thread-safety of Object signals
+# Signal connections, emissions, and disconnections are now safer
+# when accessed from multiple threads simultaneously.
+
+# This is particularly relevant for:
+# - Animation callbacks that modify game state
+# - Background loading that emits completion signals
+# - Multi-threaded game logic with signal-based communication
+
+# No code changes needed — existing signal code is automatically safer.
+# However, best practices still apply:
+# - Prefer CONNECT_DEFERRED for cross-thread signal handling
+# - Use call_deferred() for thread-safe property modifications
+```
+
 ### Signal Connection Patterns
 
 ```gdscript

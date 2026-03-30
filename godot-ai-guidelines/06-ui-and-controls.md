@@ -1,7 +1,7 @@
 # UI and Control Nodes
 
-**Purpose**: Comprehensive UI development patterns for Godot 4.6-beta2
-**Focus**: Control node hierarchy, layout containers, theming, focus state decoupling (NEW 4.6), array inspector improvements, joypad customization
+**Purpose**: Comprehensive UI development patterns for Godot 4.7-dev3
+**Focus**: Control node hierarchy, layout containers, theming, Transform Offset (NEW 4.7), focus state decoupling (4.6), PopupMenu search (4.7), joypad customization
 
 ---
 
@@ -147,6 +147,70 @@ func pulse_button() -> void:
     var tween = create_tween()
     tween.tween_property(button, "scale", Vector2(1.2, 1.2), 0.2)
     tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.2)
+```
+
+### Transform Offset for Controls (NEW in 4.7 — MAJOR)
+
+```gdscript
+# NEW in 4.7 (GH-87081): Translate, rotate, or scale Control nodes
+# INDEPENDENTLY from container layout. The layout system sees the
+# original rect, but the visual transform is applied on top.
+#
+# This is transformative for card game UIs — you can animate cards
+# (fan, tilt, hover lift) without breaking container arrangements.
+
+@onready var card: Control = $Card
+
+# Animate a card lifting/tilting on hover without disrupting hand layout:
+func _on_card_mouse_entered() -> void:
+    var tween = create_tween().set_parallel(true)
+    tween.tween_property(card, "transform_offset:position", Vector2(0, -20), 0.15)
+    tween.tween_property(card, "transform_offset:rotation", deg_to_rad(-5), 0.15)
+    tween.tween_property(card, "transform_offset:scale", Vector2(1.1, 1.1), 0.15)
+
+func _on_card_mouse_exited() -> void:
+    var tween = create_tween().set_parallel(true)
+    tween.tween_property(card, "transform_offset:position", Vector2.ZERO, 0.15)
+    tween.tween_property(card, "transform_offset:rotation", 0.0, 0.15)
+    tween.tween_property(card, "transform_offset:scale", Vector2.ONE, 0.15)
+
+# Key properties:
+# - transform_offset.position: Visual offset (does NOT affect layout)
+# - transform_offset.rotation: Visual rotation (does NOT affect layout)
+# - transform_offset.scale: Visual scale (does NOT affect layout)
+
+# Use cases for card games:
+# - Card fan spread in hand (rotate each card differently)
+# - Hover/select lift effect
+# - Card play animation (fly to table)
+# - Mental shield pierce animation (shake/glow card)
+# - Dealing animation (cards slide in from deck)
+
+# IMPORTANT: Container layout still uses the ORIGINAL rect.
+# This means cards in an HBoxContainer stay properly spaced
+# while each card independently rotates/translates/scales visually.
+```
+
+### PopupMenu Search Bar (NEW in 4.7)
+
+```gdscript
+# NEW in 4.7 (GH-114236): PopupMenu now has a visible search bar
+# Useful for long popup menus — users can type to filter options
+# Enabled automatically when menu has many items
+
+# No code changes needed — this is automatic for PopupMenu nodes
+# Improves UX for card selection menus or aspect/suit filters
+```
+
+### RichTextLabel Improvements (NEW in 4.7)
+
+```gdscript
+# NEW in 4.7:
+# - Triple-click paragraph selection (GH-116868)
+# - Enhanced table rendering (GH-116277)
+#
+# Useful for game rules display, card descriptions, or
+# narrative text with complex formatting
 ```
 
 ---
