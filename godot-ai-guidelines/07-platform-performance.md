@@ -665,6 +665,11 @@ Performance.add_custom_monitor("game/memory_mb", func(): return OS.get_static_me
 # Functions show up in profiler with proper names
 # Better than generic "script" time
 
+# 4.7 (GH-117583): Tracy changed to TRACY_ON_DEMAND by default
+# - Lighter profiling overhead when Tracy is not actively connected
+# - Profiling data only collected when Tracy client attaches
+# - Better for development builds that don't always need profiling
+
 # Step-out debugging:
 # New in 4.6: Step out of functions in GDScript debugger
 # Improves debugging workflow significantly
