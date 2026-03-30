@@ -1,7 +1,7 @@
-# Godot 4.6 Version Information and Migration Guide
+# Godot Version Information and Migration Guide
 
-**Target Version**: Godot 4.6.0-beta2
-**Previous Baseline**: Godot 4.5.0
+**Target Version**: Godot 4.7-dev3
+**Previous Baseline**: Godot 4.5.0 → 4.6.0 → 4.7-dev
 **Document Purpose**: AI-optimized reference for version-specific changes and migration patterns
 
 ---
@@ -22,7 +22,7 @@
 - Platform-specific fixes (Android, iOS, macOS)
 - No breaking changes
 
-### Godot 4.6.0 (Current Target - Beta 2)
+### Godot 4.6.0 (Stable)
 - **LibGodot**: Engine as standalone library via GodotInstance class
 - **Modern Theme**: New default editor theme (formerly "Godot Minimal Theme")
 - **IKModifier3D System**: 8 new IK modifier classes (CCDIK3D, FABRIK3D, JacobianIK3D, etc.)
@@ -43,6 +43,25 @@
   - iOS: Auto-enable minimum performance tier for Forward+/Mobile
 - **Performance**: Decreased RAM use, faster array sorting, accelerated Object casts
 - **Tracing Profilers**: Tracy, Perfetto, Apple Instruments integration
+
+### Godot 4.7-dev3 (Current Target)
+- **Transform Offset for Controls** (GH-87081): Translate, rotate, or scale Control nodes independently without affecting container layout — ideal for card animations and UI effects
+- **Animation System Optimized** (GH-116394, GH-117277): Optimized Animation Resource, Library, Mixer, Player, and AnimationTree internals with improved thread group safety
+- **Signal Thread Safety** (GH-117511): Enhanced thread-safety of Object signals
+- **Polygon2D Fast Path** (GH-117334): Rendering optimization for Polygon2D nodes
+- **CSG Automatic Smoothing** (GH-116749): Automatic smoothing for CSG nodes
+- **PopupMenu Search Bar** (GH-114236): Visible search for long popup menus
+- **RichTextLabel Improvements** (GH-116868, GH-116277): Triple-click paragraph selection and enhanced table rendering
+- **AtlasTexture Tiling in TextureRect** (GH-113808): Support for tiling atlas textures
+- **HDR Output on Apple Platforms** (GH-106814): Full EDR display support across all Apple platforms
+- **HDR Output on Linux/BSD** (GH-102987): HDR support for Wayland display server
+- **Android Picture-in-Picture** (GH-114505): PiP mode with `DisplayServer.pip_mode_enter()` and auto-enter
+- **Android Joypad Unfocus** (GH-115119): New project setting to ignore joypad events when app unfocused
+- **Device IDs for Input** (GH-116274): Keyboard/mouse input events now include device identifiers
+- **wasm64 Web Builds** (GH-102378): Extended WebAssembly compatibility
+- **Tracy On-Demand** (GH-117583): Changed to `TRACY_ON_DEMAND` by default for lighter profiling overhead
+- **Editor**: 3D vertex snapping (GH-117235), MeshLibrary editor (GH-117376), Scene Painter (GH-109360), autocomplete fix (GH-117464), remote inspector improvements (GH-115738, GH-117357)
+- **Statistics**: dev2 had 248 fixes from 105 contributors; dev3 had 297 fixes from 113 contributors
 
 ---
 
@@ -433,28 +452,32 @@ func check_version() -> void:
 
 ## COMPATIBILITY MATRIX
 
-| Feature | 4.5.0 | 4.5.1 | 4.6.0 | Notes |
-|---------|-------|-------|-------|-------|
+| Feature | 4.5.0 | 4.6.0 | 4.7-dev | Notes |
+|---------|-------|-------|---------|-------|
 | Abstract classes | ✅ | ✅ | ✅ | Use `@abstract` |
 | Variadic functions | ✅ | ✅ | ✅ | Array parameter |
 | Const constructors | ✅ | ✅ | ✅ | Arrays/Dicts |
-| IKModifier3D | ❌ | ❌ | ✅ | 8 subclasses (CCDIK3D, FABRIK3D, etc.) |
-| Jolt Physics default | ❌ | ❌ | ✅ | Production-ready, new 3D projects |
 | String implicit conversion | ❌ | ❌ | ❌ | Removed in 4.5 |
-| Array.reserve() | ❌ | ❌ | ✅ | 4.6+ only |
-| Dict.reserve() | ❌ | ❌ | ✅ | 4.6+ only |
-| SSAO in Compatibility | ❌ | ❌ | ✅ | GLES3 renderer support |
-| LibGodot | ❌ | ❌ | ✅ | Engine as standalone library |
-| Modern Theme | ❌ | ❌ | ✅ | New default editor theme |
-| EditorDock class | ❌ | ❌ | ✅ | Flexible dock layouts |
-| OpenXR 1.1 | ❌ | ❌ | ✅ | Spatial entities extensions |
-| D3D12 default (Windows) | ❌ | ❌ | ✅ | More stable than Vulkan |
-| Wayland game embedding | ❌ | ❌ | ✅ | Parity with X11 |
-| Android SAF support | ❌ | ❌ | ✅ | No MANAGE_EXTERNAL_STORAGE needed |
-| Tracy/Perfetto profilers | ❌ | ❌ | ✅ | Native tracing support |
-| AgX white/contrast | ❌ | ❌ | ✅ | Enhanced HDR tonemapping |
-| SSR 2x quality | ❌ | ❌ | ✅ | Half performance cost |
-| 2D batching 1.1-7x | ❌ | ❌ | ✅ | GPU performance gains |
+| Array/Dict.reserve() | ❌ | ✅ | ✅ | 4.6+ only |
+| IKModifier3D | ❌ | ✅ | ✅ | 8 subclasses |
+| Jolt Physics default | ❌ | ✅ | ✅ | Production-ready |
+| LibGodot | ❌ | ✅ | ✅ | Engine as library |
+| D3D12 default (Windows) | ❌ | ✅ | ✅ | More stable than Vulkan |
+| 2D batching 1.1-7x | ❌ | ✅ | ✅ | GPU performance gains |
+| Tracy/Perfetto profilers | ❌ | ✅ | ✅ | Native tracing support |
+| Transform Offset Controls | ❌ | ❌ | ✅ | Animate Controls without layout impact |
+| Animation Resource Opt. | ❌ | ❌ | ✅ | Optimized Player/Mixer/Library |
+| AnimationTree Thread Safety | ❌ | ❌ | ✅ | Improved thread group safety |
+| Signal Thread Safety | ❌ | ❌ | ✅ | Enhanced Object signal threading |
+| Polygon2D Fast Path | ❌ | ❌ | ✅ | Rendering optimization |
+| HDR on Apple Platforms | ❌ | ❌ | ✅ | Full EDR display support |
+| HDR on Linux Wayland | ❌ | ❌ | ✅ | Wayland HDR output |
+| Android PiP | ❌ | ❌ | ✅ | Picture-in-Picture mode |
+| Device IDs for Input | ❌ | ❌ | ✅ | Keyboard/mouse device IDs |
+| wasm64 Web Builds | ❌ | ❌ | ✅ | Extended WASM compat |
+| PopupMenu Search | ❌ | ❌ | ✅ | Search bar in popups |
+| AtlasTexture Tiling | ❌ | ❌ | ✅ | Tiling in TextureRect |
+| Tracy On-Demand | ❌ | ❌ | ✅ | Lighter profiling default |
 
 ---
 
@@ -704,7 +727,7 @@ var uid = node.get_instance_id()  # Existing method
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-12-22
-**Target Godot Version**: 4.6.0-beta2
+**Document Version**: 1.2
+**Last Updated**: 2026-03-30
+**Target Godot Version**: 4.7-dev3
 **AI Optimization**: High (structured for rapid lookup and pattern matching)

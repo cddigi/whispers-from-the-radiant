@@ -1,7 +1,7 @@
 # Scene Architecture and Communication Patterns
 
-**Purpose**: Comprehensive scene design patterns for Godot 4.6, optimized for AI code generation
-**Focus**: Scene composition, parent-child communication, signals, resources, and 4.6-specific improvements
+**Purpose**: Comprehensive scene design patterns for Godot 4.7-dev3, optimized for AI code generation
+**Focus**: Scene composition, parent-child communication, signals (thread-safe in 4.7), resources, and 4.6/4.7-specific improvements
 
 ---
 
@@ -856,7 +856,7 @@ func show_pause_menu() -> void:
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
-**AI Optimization**: Maximum (code patterns, decision tables, anti-patterns)
+**Document Version**: 1.1
+**Last Updated**: 2026-03-30
+**Godot Version**: 4.7-dev3
+**AI Optimization**: Maximum (signal thread safety, code patterns, decision tables, anti-patterns)

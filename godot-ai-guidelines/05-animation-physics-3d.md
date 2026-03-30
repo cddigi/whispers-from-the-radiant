@@ -1,7 +1,7 @@
 # Animation, Physics, and 3D Systems
 
-**Purpose**: Comprehensive animation and physics patterns for Godot 4.6-beta2
-**Focus**: AnimationPlayer/Tree, IKModifier3D (8 subclasses), Jolt Physics (production-ready), navigation, collision systems, SSR improvements
+**Purpose**: Comprehensive animation and physics patterns for Godot 4.7-dev3
+**Focus**: AnimationPlayer/Tree (optimized in 4.7), IKModifier3D (8 subclasses), Jolt Physics (production-ready), navigation, collision systems, SSR improvements
 
 ---
 
@@ -116,6 +116,30 @@ func _physics_process(delta: float) -> void:
 # - Blend trees (mathematical blending)
 # - IK (inverse kinematics)
 # - Root motion
+```
+
+### Animation System Optimizations (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-116394, GH-117277): Major internal optimizations to:
+# - Animation Resource (leaner memory, faster access)
+# - AnimationLibrary (optimized lookup)
+# - AnimationMixer (faster blending)
+# - AnimationPlayer (reduced overhead per frame)
+# - AnimationTree (improved internals, editor, thread group safety)
+
+# No code changes needed — these are automatic performance improvements.
+# Particularly beneficial for:
+# - Scenes with many simultaneous AnimationPlayers
+# - Complex AnimationTree state machines
+# - Multi-threaded animation processing
+
+# AnimationTree is now safer for threaded use:
+# Thread group safety improvements mean fewer race conditions
+# when animations interact with signals or property changes.
+
+# For card games: Multiple card animations running simultaneously
+# (dealing, playing, shuffling) will have lower CPU overhead.
 ```
 
 ### Animation Blending
@@ -756,7 +780,7 @@ func _on_target_reached() -> void:
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-12-22
-**Godot Version**: 4.6.0-beta2
-**AI Optimization**: Maximum (IKModifier3D 8 subclasses, Jolt Physics production-ready, SSR improvements, navigation patterns)
+**Document Version**: 1.2
+**Last Updated**: 2026-03-30
+**Godot Version**: 4.7-dev3
+**AI Optimization**: Maximum (Animation optimizations, IKModifier3D 8 subclasses, Jolt Physics production-ready, SSR improvements, navigation patterns)
