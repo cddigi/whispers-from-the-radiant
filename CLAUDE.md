@@ -147,34 +147,61 @@ gameState = {
 
 **Godot Executable Location**: `/Applications/Godot.app/Contents/MacOS/Godot`
 
-**Godot Version**: 4.6-dev6
+**Godot Version**: 4.7-dev3
 
 When writing or modifying GDScript files, use the Godot command-line interface to validate your work incrementally. This prevents accumulating errors and ensures each change compiles correctly.
 
-### Version 4.6 Notable Changes (dev5/dev6)
+### Version 4.7 Notable Changes (dev1 → dev3)
 
-**GDScript Improvements:**
-- **Tracy Profiler Support**: Native GDScript profiling with Tracy for detailed performance analysis
-- **Step Out Debugging**: New debugging functionality to step out of functions
-- **Directory Rules for Warnings**: New `debug/gdscript/warnings/directory_rules` project setting
-- **LSP Improvements**: Better BBCode to Markdown docstring conversion
+**GUI / Control Nodes (High relevance for card game UI):**
+- **Transform Offset for Controls** (GH-87081): Translate, rotate, or scale Control nodes independently without affecting container layout — ideal for card play animations and mental shield effects
+- **PopupMenu Search Bar** (GH-114236): Visible search for long popup menus
+- **RichTextLabel Triple-Click Selection** (GH-116868): Paragraph selection support
+- **RichTextLabel Table Improvements** (GH-116277): Enhanced table rendering
+- **AtlasTexture Tiling in TextureRect** (GH-113808): Support for tiling atlas textures
+- **Copy/Paste Section Properties** (GH-111469): Copy entire property sections as single actions
 
-**Rendering Changes:**
-- **D3D12 Default on Windows**: New projects use Direct3D 12 by default instead of Vulkan (addresses Vulkan driver instability). Change via `rendering/rendering_device/driver.windows` setting
-- **2D Renderer Optimizations**: 1.1x to 7x performance improvements in GPU-bound scenarios
-- **AgX Tonemapper Enhancements**: White balance, contrast, and HDR support
+**Rendering & Graphics:**
+- **HDR Output on Apple Platforms** (GH-106814): Full EDR display support across all Apple platforms
+- **Linux/BSD HDR Output** (GH-102987): HDR support for Wayland display server
+- **CSG Automatic Smoothing** (GH-116749): Automatic smoothing for CSG nodes
+- **Polygon2D Fast Path** (GH-117334): Rendering optimization for Polygon2D
+- **Particle 3D Scale/Rotation** (GH-112447): 3D scale and rotation support in particle processing
+- **MipMaps and rd_textures Editor** (GH-109004): Enhanced rendering editor capabilities
 
 **Editor Improvements:**
-- Transform Mode renamed from Select Mode; new Select Mode without gizmos
-- Signals and Groups now in dedicated docks (separated from Node dock)
-- Group editing across multiple nodes
-- Tab menu button listing all opened scenes
-- Expression history in evaluator
+- **3D Vertex Snapping** (GH-117235, GH-117380): Hold B to snap to nearby mesh vertices in 3D editor
+- **MeshLibrary Editor** (GH-117376): Dedicated editor for GridMap MeshLibrary with grid view, search, zoom, undo/redo
+- **Scene Painter Tool** (GH-109360): New 2D painting tool
+- **"Follow Selection" in 3D** (GH-99499): Center and follow selected objects
+- **Monospaced Font for Code Names** (GH-112219): Code-like data displays in monospaced fonts
+- **Remote Inspector Class Names** (GH-115738, GH-108208): Display class names instead of Object IDs
+- **Remote Inspector Folding** (GH-117357): Support for folding, groups, and subgroups
+- **Animation Track Group Collapse** (GH-113479): Collapsible animation track groups
+- **Autocomplete Fix** (GH-117464): Prevented autocomplete from consuming words by default
+- **Autoload Creation Revamp** (GH-91124): Improved autoload workflow
+- **Output Dock Reorganization** (GH-112690): Restructured output interface
+- **Project Manager Version Indicators** (GH-111528): Version discrepancy warnings
+- **PropertyListHelper Docs** (GH-115253): Documentation for dynamic properties
 
-**Core Features:**
-- **OpenXR 1.1 Support**: Automatic detection with compatibility layer for 1.0 devices
-- **Delta Encoding for Patches**: Export only binary differences to dramatically reduce patch sizes
-- **Apple Instruments Profiler Support**: Native profiling on macOS
+**Animation System:**
+- **Animation Resource Optimization** (GH-116394): Optimized Animation Resource, Library, Mixer, and Player
+- **AnimationTree Optimization** (GH-117277): Improved internals, editor, and thread group safety
+
+**Core Systems:**
+- **Signal Thread Safety** (GH-117511): Enhanced thread-safety of Object signals
+- **Tracy `TRACY_ON_DEMAND`** (GH-117583): Changed to on-demand by default for lighter profiling
+
+**Platform & Input:**
+- **Android Picture-in-Picture** (GH-114505): PiP mode with `DisplayServer.pip_mode_enter()` and auto-enter
+- **Android Script Editor Portrait Mode** (GH-117109): Portrait orientation support
+- **Android Joypad Unfocus Setting** (GH-115119): Ignore joypad events when app is unfocused
+- **Device IDs for Keyboard/Mouse** (GH-116274): Input events now include device identifiers
+- **SDL3 Joystick for iOS** (GH-114316): Enhanced mobile input handling
+- **Haptic Feedback** (GH-117198): Long-press right-click haptic feedback in editor
+- **wasm64 Web Builds** (GH-102378): Extended WebAssembly compatibility
+
+**Statistics:** dev2 had 248 fixes from 105 contributors; dev3 had 297 fixes from 113 contributors.
 
 ### Essential Command-Line Patterns
 
