@@ -146,6 +146,10 @@ var parent_ref: Node  # Circular reference!
 func _exit_tree() -> void:
     parent_ref = null  # Break cycle
 
+# NOTE: 4.7 (GH-117511) improved signal thread safety, making
+# signal operations safer across threads. However, memory leak
+# prevention patterns are still necessary.
+
 # LEAK 2: Forgotten signal connections
 var timer: Timer
 
@@ -886,7 +890,7 @@ func on_enemy_defeated() -> void:
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
-**AI Optimization**: Maximum (memory patterns, pooling templates, group strategies)
+**Document Version**: 1.1
+**Last Updated**: 2026-03-30
+**Godot Version**: 4.7-dev3
+**AI Optimization**: Maximum (memory patterns, pooling templates, group strategies, signal thread safety)

@@ -1,6 +1,6 @@
 # Quick Reference Guide
 
-**Purpose**: Fast lookup tables, common patterns, and decision trees for Godot 4.6
+**Purpose**: Fast lookup tables, common patterns, and decision trees for Godot 4.7-dev3
 **Focus**: Rapid reference for AI code generation, pattern matching, common gotchas
 
 ---
@@ -553,7 +553,7 @@ func _process(delta):
 
 ---
 
-## Breaking Changes Summary (4.5-4.6)
+## Breaking Changes Summary (4.5-4.6) and New Features (4.7)
 
 | Change | Old | New | Impact |
 |--------|-----|-----|--------|
@@ -566,6 +566,13 @@ func _process(delta):
 | Physics default (new) | GodotPhysics | Jolt | LOW (compatible) |
 | Scene change (new) | N/A | `change_scene_to_node()` | N/A (addition) |
 | Array reserve (new) | N/A | `array.reserve()` | N/A (addition) |
+| **4.7: Transform Offset** | N/A | `transform_offset` on Controls | N/A (addition) |
+| **4.7: Animation optimized** | N/A | Automatic perf improvement | N/A (automatic) |
+| **4.7: Signal thread safety** | N/A | Automatic safety improvement | N/A (automatic) |
+| **4.7: Polygon2D fast path** | N/A | Automatic rendering optimization | N/A (automatic) |
+| **4.7: HDR Apple platforms** | N/A | EDR display output | N/A (addition) |
+| **4.7: Android PiP** | N/A | `DisplayServer.pip_mode_enter()` | N/A (addition) |
+| **4.7: wasm64** | N/A | 64-bit web builds | N/A (addition) |
 
 ---
 
@@ -589,6 +596,17 @@ func _process(delta):
 - [ ] Use `change_scene_to_node()` for pre-configured scenes
 - [ ] Review pivot_offset for pivot_offset_ratio where appropriate
 - [ ] Test FileDialog improvements
+- [ ] Update export templates
+
+### Upgrading from 4.6 to 4.7
+
+- [ ] Use `transform_offset` for Control animations (replaces custom transform hacks)
+- [ ] Leverage Animation Resource/Tree optimizations (no code changes, automatic)
+- [ ] Consider `Polygon2D` fast path for 2D-heavy scenes (automatic)
+- [ ] Test HDR output on Apple platforms if targeting iPad/macOS
+- [ ] Consider Android PiP (`DisplayServer.pip_mode_enter()`) for tablet games
+- [ ] Test wasm64 if targeting web exports
+- [ ] Note: Signal thread safety is automatic (no migration needed)
 - [ ] Update export templates
 
 ---
@@ -640,7 +658,7 @@ project/
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-15
-**Godot Version**: 4.6.0-dev4
+**Document Version**: 1.1
+**Last Updated**: 2026-03-30
+**Godot Version**: 4.7-dev3
 **AI Optimization**: Maximum (quick lookup, decision trees, pattern matching, gotcha prevention)

@@ -1,7 +1,7 @@
 # 2D Graphics and Rendering
 
-**Purpose**: Comprehensive 2D rendering patterns for Godot 4.6-beta2, optimized for AI code generation
-**Focus**: Sprite management, TileMapLayer architecture (4.3+), animation, Camera2D, rendering optimization, and 4.6 batching improvements
+**Purpose**: Comprehensive 2D rendering patterns for Godot 4.7-dev3, optimized for AI code generation
+**Focus**: Sprite management, TileMapLayer architecture (4.3+), animation, Camera2D, rendering optimization, 4.6 batching improvements, 4.7 Polygon2D fast path and AtlasTexture tiling
 
 ---
 
@@ -648,10 +648,45 @@ func transition_to_camera(target_camera: Camera2D, duration: float) -> void:
 # But you can maximize benefits by following these patterns:
 ```
 
+### Polygon2D Fast Path (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-117334): Polygon2D rendering optimization
+# Adds a fast path for common Polygon2D use cases
+# Reduces GPU overhead for scenes with many Polygon2D nodes
+
+# No code changes needed — automatic optimization
+# Particularly useful for:
+# - Custom card shapes drawn with Polygon2D
+# - Prime Radiant equation particle effects
+# - Mental shield visual overlays
+# - Any 2D scene with multiple polygon-based visuals
+```
+
+### AtlasTexture Tiling in TextureRect (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-113808): AtlasTexture now supports tiling in TextureRect
+# Previously, atlas textures could not tile — only full textures could
+
+# Useful for:
+# - Repeating card back patterns from an atlas
+# - Tiled backgrounds extracted from sprite sheets
+# - Repeating UI borders from atlas textures
+
+# Setup: TextureRect with AtlasTexture and stretch_mode TILE
+var tex_rect: TextureRect = $Background
+var atlas = AtlasTexture.new()
+atlas.atlas = preload("res://spritesheet.png")
+atlas.region = Rect2(0, 0, 64, 64)  # Select tile from atlas
+tex_rect.texture = atlas
+tex_rect.stretch_mode = TextureRect.STRETCH_TILE  # Now works with AtlasTexture!
+```
+
 ### Draw Call Optimization
 
 ```gdscript
-# Godot 4.6 automatically batches sprites with:
+# Godot 4.6+ automatically batches sprites with:
 # - Same texture
 # - Same material
 # - Same z-index
@@ -816,7 +851,7 @@ func _process(delta: float) -> void:
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-12-22
-**Godot Version**: 4.6.0-beta2
-**AI Optimization**: Maximum (TileMapLayer migration, 4.6 batching improvements, rendering patterns, camera recipes)
+**Document Version**: 1.2
+**Last Updated**: 2026-03-30
+**Godot Version**: 4.7-dev3
+**AI Optimization**: Maximum (TileMapLayer migration, Polygon2D fast path, AtlasTexture tiling, 4.6 batching improvements, rendering patterns, camera recipes)

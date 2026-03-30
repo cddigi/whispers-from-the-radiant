@@ -1,7 +1,7 @@
 # Platform Requirements and Performance Optimization
 
-**Purpose**: Platform-specific requirements and performance patterns for Godot 4.6-beta2
-**Focus**: Platform minimums, D3D12 default (Windows), Android SAF, Wayland parity, 2D batching improvements, profiler integration
+**Purpose**: Platform-specific requirements and performance patterns for Godot 4.7-dev3
+**Focus**: Platform minimums, D3D12 default (Windows), Android SAF/PiP (4.7), Wayland parity, HDR Apple/Linux (4.7), 2D batching, wasm64 (4.7), profiler integration
 
 ---
 
@@ -158,9 +158,37 @@ func check_permission(permission: String) -> bool:
 # Allows building Android exports without Android Studio
 ```
 
+### Android Picture-in-Picture (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-114505): PiP mode for Android with auto-enter support
+# Useful for tablet-optimized games that want quick status checking
+
+# Enter PiP mode:
+func enter_pip() -> void:
+    if OS.get_name() == "Android":
+        DisplayServer.pip_mode_enter()
+
+# Auto-enter PiP when app goes to background:
+# Project Settings → Display → Window → Android → Auto Enter PiP: ON
+
+# Use cases for card games:
+# - Player can briefly check another app during opponent's turn
+# - Game state remains visible in small window
+# - Returns to full screen on tap
+```
+
+### Android Joypad Unfocus (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-115119): New project setting to ignore joypad events
+# when app is unfocused. Prevents phantom input from controllers.
+# Project Settings → Input → Android → Ignore Joypad When Unfocused: ON
+```
+
 ---
 
-## Linux Platform (4.6 Improvements)
+## Linux Platform (4.6-4.7 Improvements)
 
 ### Wayland Game Embedding (NEW in 4.6)
 
@@ -181,6 +209,19 @@ func check_permission(permission: String) -> bool:
 # Input responsiveness restored on X11
 ```
 
+### HDR Output on Linux/BSD (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-102987): HDR support for Wayland display server on Linux
+# Complements the Windows HDR support added in 4.6
+# and Apple HDR support added in 4.7-dev2
+
+# No code changes needed — automatic when:
+# 1. Running on Wayland (not X11)
+# 2. HDR-capable display connected
+# 3. Compositor supports HDR (e.g., KDE 6+)
+```
+
 ---
 
 ## iOS / macOS Platform
@@ -198,6 +239,22 @@ func check_permission(permission: String) -> bool:
 
 # No code changes required for existing games
 # New export template automatically uses SwiftUI
+```
+
+### HDR Output on Apple Platforms (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-106814): Full EDR (Extended Dynamic Range) display support
+# across ALL Apple platforms — macOS, iOS, visionOS
+# Enables HDR rendering output on supported displays
+
+# Relevant for this project:
+# - iPad Pro and newer iPads support EDR
+# - Prime Radiant glow effects could leverage HDR for enhanced visuals
+# - Mathematical equation particles with true HDR brightness
+
+# No code changes needed for basic HDR output
+# Environment settings control HDR rendering pipeline
 ```
 
 ### Liquid Glass Icons (macOS 15+)
@@ -253,6 +310,21 @@ func create_native_window() -> void:
 # - Firefox 89+
 # - Safari 16.4+
 # - Edge 91+
+```
+
+### wasm64 Web Builds (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-102378): Extended WebAssembly compatibility with wasm64
+# Enables 64-bit memory addressing in web builds
+
+# Benefits:
+# - Larger memory space for complex games
+# - Better compatibility with 64-bit browser engines
+# - No code changes needed
+
+# Export settings:
+# Export → Web → Use wasm64: ON (optional)
 ```
 
 ### SharedArrayBuffer and Multithreading
@@ -705,6 +777,26 @@ func setup_based_on_features() -> void:
         setup_keyboard_mouse()
 ```
 
+### Device IDs for Input Events (NEW in 4.7)
+
+```gdscript
+# 4.7 (GH-116274): InputEvent now includes device identifiers
+# for keyboard and mouse events. Useful for multi-device setups.
+
+# Access device ID on input events:
+func _input(event: InputEvent) -> void:
+    if event is InputEventKey:
+        var key_event = event as InputEventKey
+        print("Key from device: ", key_event.device)
+
+    if event is InputEventMouseButton:
+        var mouse_event = event as InputEventMouseButton
+        print("Mouse from device: ", mouse_event.device)
+
+# Use case: Distinguish between multiple input devices
+# in a two-player local game on the same machine
+```
+
 ### Mobile-Specific Features
 
 ```gdscript
@@ -803,7 +895,7 @@ func check_battery() -> void:
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-12-22
-**Godot Version**: 4.6.0-beta2
-**AI Optimization**: Maximum (D3D12 default, SAF support, Wayland parity, 2D batching, profiler integration)
+**Document Version**: 1.2
+**Last Updated**: 2026-03-30
+**Godot Version**: 4.7-dev3
+**AI Optimization**: Maximum (HDR Apple/Linux, Android PiP, wasm64, Device IDs, Tracy on-demand, D3D12 default, SAF support, Wayland parity, 2D batching)
