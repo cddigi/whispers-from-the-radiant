@@ -138,8 +138,8 @@ func _physics_process(delta: float) -> void:
 # Thread group safety improvements mean fewer race conditions
 # when animations interact with signals or property changes.
 
-# For card games: Multiple card animations running simultaneously
-# (dealing, playing, shuffling) will have lower CPU overhead.
+# Games with many simultaneous animations (crowds, scripted sequences,
+# UI/menu transitions, particle-driven effects) will have lower CPU overhead.
 ```
 
 ### Animation Blending

@@ -45,7 +45,7 @@
 - **Tracing Profilers**: Tracy, Perfetto, Apple Instruments integration
 
 ### Godot 4.7-dev3 (Current Target)
-- **Transform Offset for Controls** (GH-87081): Translate, rotate, or scale Control nodes independently without affecting container layout — ideal for card animations and UI effects
+- **Transform Offset for Controls** (GH-87081): Translate, rotate, or scale Control nodes independently without affecting container layout — ideal for hover, tilt, and UI animation effects
 - **Animation System Optimized** (GH-116394, GH-117277): Optimized Animation Resource, Library, Mixer, Player, and AnimationTree internals with improved thread group safety
 - **Signal Thread Safety** (GH-117511): Enhanced thread-safety of Object signals
 - **Polygon2D Fast Path** (GH-117334): Rendering optimization for Polygon2D nodes

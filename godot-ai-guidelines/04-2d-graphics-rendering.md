@@ -657,9 +657,9 @@ func transition_to_camera(target_camera: Camera2D, duration: float) -> void:
 
 # No code changes needed — automatic optimization
 # Particularly useful for:
-# - Custom card shapes drawn with Polygon2D
-# - Prime Radiant equation particle effects
-# - Mental shield visual overlays
+# - Custom UI/HUD shapes drawn with Polygon2D
+# - Procedural decorative effects (auras, fields, glow shapes)
+# - Stylized vector-art overlays
 # - Any 2D scene with multiple polygon-based visuals
 ```
 
@@ -670,7 +670,7 @@ func transition_to_camera(target_camera: Camera2D, duration: float) -> void:
 # Previously, atlas textures could not tile — only full textures could
 
 # Useful for:
-# - Repeating card back patterns from an atlas
+# - Repeating decorative patterns from an atlas
 # - Tiled backgrounds extracted from sprite sheets
 # - Repeating UI borders from atlas textures
 

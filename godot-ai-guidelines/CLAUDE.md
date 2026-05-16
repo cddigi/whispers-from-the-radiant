@@ -4,13 +4,35 @@
 **Document Purpose**: Automatically loaded context for Claude Code when working in this directory. Provides a navigation map to the detailed guideline files plus the highest-leverage version-specific facts inline.
 **Last Updated**: 2026-05-16
 
-> This file is the **entry point**. For depth on any topic, follow the links into the numbered guideline files. The README in this directory is a human-readable navigation index; this CLAUDE.md is the AI-optimized counterpart.
+> This file is the **entry point**. For depth on any topic, follow the links into the numbered guideline files. The `README.md` in this directory is a human-readable navigation index; this `CLAUDE.md` is the AI-optimized counterpart.
+
+---
+
+## Maintenance Rule — Keep These Guidelines Generic
+
+**This directory is portable across projects.** Every file in `godot-ai-guidelines/` must remain generic Godot reference material — applicable to any genre, art style, or game type. Do **not** add narrative, character names, mechanics, screen mockups, or feature lists that are tied to one specific project.
+
+When tempted to add a project-specific example:
+
+- ❌ Don't write: "Useful for *Prime Radiant* glow effects" / "Card fan spread in hand" / "Mental shield pierce animation".
+- ✅ Do write: "Useful for HDR-aware bloom" / "Fan/spread arrangements" / "Attention-getting effects (shake, pulse, glow)".
+
+If a concrete example helps a reader understand a feature, choose one that could appear in any game: an `inventory` slot, a `menu button`, a `tile`, an `enemy`, a `pickup`. Avoid genre-bound vocabulary (cards, suits, decks, hands, tricks, spells, dice, etc.) unless the Godot feature itself is genre-specific (it never is).
+
+**When a new Godot version lands or a new pattern is added:** scan the diff for project-narrative terms and genre-bound examples before committing. Run something like:
+
+```bash
+grep -niE 'whisper|radiant|mentalic|foundation|seldon|asimov|<your-project-terms>' *.md
+grep -niE '\bcard[s]?\b|\bdeal(ing)?\b|\bsuit\b|<your-mechanics>' *.md
+```
+
+…to surface anything that crept in. This file (`CLAUDE.md`) is part of the rule's scope — it must remain generic too.
 
 ---
 
 ## How to Use These Guidelines
 
-When you (Claude) start a task in this project, decide which numbered guideline file is most relevant based on the task type, then read that file before generating code. The matrix below is the routing table.
+When you (Claude) start a task in a Godot project, decide which numbered guideline file is most relevant based on the task type, then read that file before generating code. The matrix below is the routing table.
 
 ### Routing Table by Task Type
 
@@ -57,7 +79,7 @@ These are the highest-leverage facts. Memorize them; everything else is in the d
 
 4. **Glow renders before tonemapping.** Default blend mode is now "screen" (was additive). Projects with significant glow effects must re-tune.
 
-5. **Quaternion in Variant defaults to identity** `(0,0,0,1)`. Don't rely on uninitialized values.
+5. **Quaternion in Variant defaults to identity** `(0, 0, 0, 1)`. Don't rely on uninitialized values.
 
 ### Platform Floors (4.5+ baseline)
 
@@ -76,17 +98,15 @@ These are the highest-leverage facts. Memorize them; everything else is in the d
 - `D3D12` is the default RenderingDevice driver on Windows.
 - AgX tonemapper with white balance, contrast, and HDR support.
 
-### New in 4.7-dev3 (Worth Knowing for This Project)
+### New in 4.7-dev3
 
-This game is tablet-focused and card-game heavy, so these 4.7-dev3 additions are especially relevant:
-
-1. **Transform Offset for Controls** (GH-87081) — Translate, rotate, or scale a `Control` independently without disturbing container layout. **Directly useful** for card hover/play animations and the mental-shield reveal effect described in the project narrative.
+1. **Transform Offset for Controls** (GH-87081) — Translate, rotate, or scale a `Control` independently without disturbing container layout. Useful for any hover, tilt, or lift effect on Controls inside containers.
 
 2. **PopupMenu Search Bar** (GH-114236) — Visible search field for long popup menus.
 
 3. **RichTextLabel** — Triple-click paragraph selection (GH-116868); improved table rendering (GH-116277).
 
-4. **AtlasTexture Tiling in TextureRect** (GH-113808) — Tiles can now repeat from atlas textures, useful for backgrounds composed from sprite sheets.
+4. **AtlasTexture Tiling in TextureRect** (GH-113808) — Tiles can now repeat from atlas textures.
 
 5. **Animation system optimization** (GH-116394, GH-117277) — Optimized `Animation` resource, `AnimationLibrary`, `AnimationMixer`, `AnimationPlayer`, and `AnimationTree` internals with improved thread group safety.
 
@@ -98,7 +118,7 @@ This game is tablet-focused and card-game heavy, so these 4.7-dev3 additions are
 
 9. **Android Picture-in-Picture** (GH-114505) — `DisplayServer.pip_mode_enter()` and auto-enter.
 
-10. **Device IDs in input events** (GH-116274) — Keyboard/mouse events now carry a `device` identifier — relevant if you ever add local multiplayer with multiple keyboards/mice.
+10. **Device IDs in input events** (GH-116274) — Keyboard/mouse events now carry a `device` identifier (useful for local multiplayer with multiple keyboards/mice).
 
 11. **Tracy on-demand by default** (GH-117583) — Lighter profiling overhead.
 
@@ -172,7 +192,7 @@ For the full list, see `00-version-and-migration.md` § "BETA 2 SPECIFIC FIXES".
 
 ---
 
-## Workflow Recipes
+## Workflow Recipes (Generic)
 
 ### Starting a New Feature
 
@@ -181,11 +201,11 @@ For the full list, see `00-version-and-migration.md` § "BETA 2 SPECIFIC FIXES".
 3. If migrating or porting older code, pre-read `00-version-and-migration.md`.
 4. Apply the "Features You Should Reach For (4.6+)" list when relevant.
 
-### Implementing a Card Animation (project-relevant)
+### Animating Controls Inside Containers (4.7+)
 
-1. Use `Transform Offset for Controls` (4.7-dev3) so animations don't break container layout — see `06-ui-and-controls.md`.
+1. Use `transform_offset` properties so animations don't disturb container layout — see `06-ui-and-controls.md` § Transform Offset for Controls.
 2. Drive the animation via `AnimationPlayer` or `Tween` — patterns in `05-animation-physics-3d.md` (despite the name, 2D animation idioms are covered).
-3. For mental-shield equation flow effects, consider `Polygon2D` (now with a fast path) or shader-driven approaches in `04-2d-graphics-rendering.md`.
+3. For procedural decorative effects, consider `Polygon2D` (now with a fast path in 4.7) or shader-driven approaches in `04-2d-graphics-rendering.md`.
 
 ### Fixing a Performance Regression
 
@@ -256,7 +276,8 @@ func _ready() -> void:
 
 ## Document Metadata
 
-- **Document Version**: 1.0
+- **Document Version**: 1.1
 - **Combines**: `README.md` (navigation, 4.6.0-beta2 baseline) + `00-version-and-migration.md` (extended through 4.7-dev3)
+- **Scope Rule**: Generic Godot reference only — no project-specific narrative, mechanics, or examples (see "Maintenance Rule" at top).
 - **Maintenance**: Update this file whenever (a) a new guideline file is added, (b) a new minor/dev Godot version lands with breaking changes, or (c) the routing tables become inaccurate.
 - **AI Optimization Level**: High — designed for quick routing and inline answers to the most common version questions.

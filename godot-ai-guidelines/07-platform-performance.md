@@ -172,8 +172,8 @@ func enter_pip() -> void:
 # Auto-enter PiP when app goes to background:
 # Project Settings → Display → Window → Android → Auto Enter PiP: ON
 
-# Use cases for card games:
-# - Player can briefly check another app during opponent's turn
+# Use cases:
+# - Player can briefly check another app during downtime
 # - Game state remains visible in small window
 # - Returns to full screen on tap
 ```
@@ -248,10 +248,11 @@ func enter_pip() -> void:
 # across ALL Apple platforms — macOS, iOS, visionOS
 # Enables HDR rendering output on supported displays
 
-# Relevant for this project:
-# - iPad Pro and newer iPads support EDR
-# - Prime Radiant glow effects could leverage HDR for enhanced visuals
-# - Mathematical equation particles with true HDR brightness
+# Devices with EDR support include iPad Pro / newer iPads, MacBook Pro
+# (Liquid Retina XDR), and recent iPhone Pro models. HDR is useful for:
+# - Bloom and glow effects with true HDR brightness
+# - Particle systems with HDR-aware emission
+# - High-contrast cinematic scenes
 
 # No code changes needed for basic HDR output
 # Environment settings control HDR rendering pipeline
