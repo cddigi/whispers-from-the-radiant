@@ -1,6 +1,6 @@
 # 2D Graphics and Rendering
 
-**Purpose**: Comprehensive 2D rendering patterns for Godot 4.7-dev3, optimized for AI code generation
+**Purpose**: Comprehensive 2D rendering patterns for Godot 4.7-beta2, optimized for AI code generation
 **Focus**: Sprite management, TileMapLayer architecture (4.3+), animation, Camera2D, rendering optimization, 4.6 batching improvements, 4.7 Polygon2D fast path and AtlasTexture tiling
 
 ---
@@ -853,5 +853,5 @@ func _process(delta: float) -> void:
 
 **Document Version**: 1.2
 **Last Updated**: 2026-03-30
-**Godot Version**: 4.7-dev3
+**Godot Version**: 4.7-beta2
 **AI Optimization**: Maximum (TileMapLayer migration, Polygon2D fast path, AtlasTexture tiling, 4.6 batching improvements, rendering patterns, camera recipes)

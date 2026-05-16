@@ -1,6 +1,6 @@
 # GDScript Modern Patterns
 
-**Purpose**: Comprehensive GDScript patterns for Godot 4.7-dev3, optimized for AI code generation
+**Purpose**: Comprehensive GDScript patterns for Godot 4.7-beta2, optimized for AI code generation
 **Focus**: Type safety, performance, modern idioms, 4.6-specific features (profiler support), and 4.7 improvements (signal thread safety, animation optimizations)
 
 ---
@@ -861,5 +861,5 @@ func documented_function() -> void:
 
 **Document Version**: 1.2
 **Last Updated**: 2026-03-30
-**Godot Version**: 4.7-dev3
+**Godot Version**: 4.7-beta2
 **AI Optimization Level**: Maximum (pattern templates, decision trees, quick reference tables)

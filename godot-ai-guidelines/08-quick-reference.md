@@ -1,6 +1,6 @@
 # Quick Reference Guide
 
-**Purpose**: Fast lookup tables, common patterns, and decision trees for Godot 4.7-dev3
+**Purpose**: Fast lookup tables, common patterns, and decision trees for Godot 4.7-beta2
 **Focus**: Rapid reference for AI code generation, pattern matching, common gotchas
 
 ---
@@ -660,5 +660,5 @@ project/
 
 **Document Version**: 1.1
 **Last Updated**: 2026-03-30
-**Godot Version**: 4.7-dev3
+**Godot Version**: 4.7-beta2
 **AI Optimization**: Maximum (quick lookup, decision trees, pattern matching, gotcha prevention)

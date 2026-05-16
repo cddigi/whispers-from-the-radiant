@@ -1,6 +1,6 @@
 # Godot AI Guidelines — Claude Code Entry Point
 
-**Target Engine**: Godot 4.7-dev3 (built atop 4.6.0-beta2 baseline)
+**Target Engine**: Godot 4.7-beta2 (built atop 4.6.0-stable baseline; 4.7 cycle has now entered beta — API surface is frozen)
 **Document Purpose**: Automatically loaded context for Claude Code when working in this directory. Provides a navigation map to the detailed guideline files plus the highest-leverage version-specific facts inline.
 **Last Updated**: 2026-05-16
 
@@ -52,15 +52,15 @@ When you (Claude) start a task in a Godot project, decide which numbered guideli
 
 | File | Focus | Anchor Version |
 |------|-------|----------------|
-| [00-version-and-migration.md](00-version-and-migration.md) | Version timeline, breaking changes, migration checklist | 4.5 → 4.6 → **4.7-dev3** |
-| [01-gdscript-modern-patterns.md](01-gdscript-modern-patterns.md) | Language idioms, typing, abstract classes, `reserve()` | 4.6.0-beta2 |
-| [02-scene-architecture.md](02-scene-architecture.md) | Scene composition, signals, autoloads, resources | 4.6.0-beta2 |
-| [03-core-systems.md](03-core-systems.md) | Memory, pooling, groups, SceneTree, globals | 4.6.0-beta2 |
-| [04-2d-graphics-rendering.md](04-2d-graphics-rendering.md) | Sprites, TileMapLayer, Camera2D, batching | 4.6.0-beta2 |
-| [05-animation-physics-3d.md](05-animation-physics-3d.md) | IKModifier3D, AnimationTree, Jolt Physics | 4.6.0-beta2 |
-| [06-ui-and-controls.md](06-ui-and-controls.md) | Control nodes, containers, theming, FileDialog | 4.6.0-beta2 |
-| [07-platform-performance.md](07-platform-performance.md) | Platforms, mobile/web, profiling, optimization | 4.6.0-beta2 |
-| [08-quick-reference.md](08-quick-reference.md) | Pattern templates, decision trees, gotchas | 4.6.0-beta2 |
+| [00-version-and-migration.md](00-version-and-migration.md) | Version timeline, breaking changes, migration checklist | 4.5 → 4.6 → **4.7-beta2** |
+| [01-gdscript-modern-patterns.md](01-gdscript-modern-patterns.md) | Language idioms, typing, abstract classes, `reserve()` | 4.7-beta2 |
+| [02-scene-architecture.md](02-scene-architecture.md) | Scene composition, signals, autoloads, resources | 4.7-beta2 |
+| [03-core-systems.md](03-core-systems.md) | Memory, pooling, groups, SceneTree, globals | 4.7-beta2 |
+| [04-2d-graphics-rendering.md](04-2d-graphics-rendering.md) | Sprites, TileMapLayer, Camera2D, batching | 4.7-beta2 |
+| [05-animation-physics-3d.md](05-animation-physics-3d.md) | IKModifier3D, AnimationTree, Jolt Physics | 4.7-beta2 |
+| [06-ui-and-controls.md](06-ui-and-controls.md) | Control nodes, containers, theming, FileDialog | 4.7-beta2 |
+| [07-platform-performance.md](07-platform-performance.md) | Platforms, mobile/web, profiling, optimization | 4.7-beta2 |
+| [08-quick-reference.md](08-quick-reference.md) | Pattern templates, decision trees, gotchas | 4.7-beta2 |
 
 ---
 
@@ -98,35 +98,67 @@ These are the highest-leverage facts. Memorize them; everything else is in the d
 - `D3D12` is the default RenderingDevice driver on Windows.
 - AgX tonemapper with white balance, contrast, and HDR support.
 
-### New in 4.7-dev3
+### New in the 4.7 Cycle (dev3 → beta2)
+
+The 4.7 cycle has now entered **beta** — the API surface is frozen and remaining work is regression fixing. As of beta1, **1,265 fixes from 309 contributors** have landed since 4.6-stable.
+
+#### Headline features (carry from dev3, still current)
 
 1. **Transform Offset for Controls** (GH-87081) — Translate, rotate, or scale a `Control` independently without disturbing container layout. Useful for any hover, tilt, or lift effect on Controls inside containers.
+2. **PopupMenu Search Bar** (GH-114236) — Visible search field for long popup menus. ⚠ Beta2 known issue: item tooltips don't render while the search bar is enabled (GH-119407).
+3. **RichTextLabel** — Triple-click paragraph selection (GH-116868); improved table rendering (GH-116277); `em`-unit `[img]` scaling (GH-112617, **breaking**) since dev5.
+4. **AtlasTexture tiling in `TextureRect`** (GH-113808).
+5. **Animation system optimization** (GH-116394, GH-117277) — `Animation`, `AnimationLibrary`, `AnimationMixer`, `AnimationPlayer`, `AnimationTree`.
+6. **Signal thread safety** (GH-117511).
+7. **`Polygon2D` fast path** (GH-117334).
+8. **HDR output** — Apple (GH-106814) and Linux/Wayland (GH-102987) since dev3; **Windows** added in beta1 (GH-94496). Beta2 added per-surface HDR detection (GH-119091) and fixed Wayland HDR support reporting (GH-117913).
+9. **Android Picture-in-Picture** (GH-114505); embedded game window is now moveable/resizable (GH-118417 in dev5).
+10. **Device IDs in input events** (GH-116274) — useful for local multiplayer with multiple keyboards/mice.
+11. **Tracy on-demand by default** (GH-117583).
+12. **Editor additions** — 3D vertex snapping with B-key (GH-117235) extended to subgizmo points (GH-117922) in dev5; MeshLibrary editor (GH-117376); Scene Painter (GH-109360); autocomplete-no-longer-eats-words (GH-117464); remote inspector improvements (GH-115738, GH-117357).
+13. **`wasm64` web builds** (GH-102378).
 
-2. **PopupMenu Search Bar** (GH-114236) — Visible search field for long popup menus.
+#### Added in dev4 (April 9, 2026 — 188 fixes / 88 contributors)
 
-3. **RichTextLabel** — Triple-click paragraph selection (GH-116868); improved table rendering (GH-116277).
+14. **Nearest-neighbor 3D viewport scaling** (GH-79731) — Crisp pixel-art and low-res 3D without performance compromise.
+15. **`custom_maximum_size` on Controls** (GH-116640) — Symmetric with `custom_minimum_size`.
+16. **Improved Tree drag-and-drop** (GH-112993) — Cursor x-position picks parent depth (vector-design-software style).
+17. **3D Ruler with vector components** (GH-106785) — Per-axis distance display.
+18. **GDExtension reload from editor** (GH-118063); GDExtension viewer in project settings.
+19. **Particles** — Angular velocity direction corrected (GH-117861, ⚠ **breaking**); timescale=0 no longer drifts (GH-109911).
+20. **Windows** — OneCore TTS (GH-116349); emoji picker integration (GH-116351).
 
-4. **AtlasTexture Tiling in TextureRect** (GH-113808) — Tiles can now repeat from atlas textures.
+#### Added in dev5 (April 17, 2026 — 135 fixes / 71 contributors)
 
-5. **Animation system optimization** (GH-116394, GH-117277) — Optimized `Animation` resource, `AnimationLibrary`, `AnimationMixer`, `AnimationPlayer`, and `AnimationTree` internals with improved thread group safety.
+21. **Asset Library new API** (GH-112992) — Improved item display, metadata, single-click version switching.
+22. **Per-platform export-template download** (GH-117072) — No more bulk-only.
+23. **`AreaLight3D`** (GH-108219) — Real-time rectangular area lights.
+24. **Inline shader previews** (GH-117726) — In-editor visual feedback while editing shaders.
+25. **Audio bus UI revamp** (GH-118266).
+26. **Wayland touch support** (GH-113886).
+27. **Android splash screen customization** (GH-114671).
 
-6. **Signal thread safety** (GH-117511) — Enhanced thread-safety of `Object` signals.
+#### Added in beta1 (April 24, 2026 — 85 fixes / 47 contributors; cumulative: 1,265 since 4.6-stable)
 
-7. **Polygon2D fast path** (GH-117334) — Rendering optimization for `Polygon2D`.
+28. **`AwaitTweener`** (GH-79712) — Tweens can `await` specific signals.
+29. **VirtualJoystick control** (GH-110933) — FIXED / DYNAMIC / FOLLOWING modes for touch input.
+30. **2D one-way collision in all directions** (GH-104736) — Previously "up" only.
+31. **Vulkan raytracing groundwork** (GH-99119); **`DrawableTexture`** for direct drawing (GH-105701).
+32. **Accessibility landmark roles** (GH-114449); **conic gradient** in `GradientTexture2D` (GH-115394).
+33. **Animation track group collapse** (GH-113479) and Path3D collider snapping (GH-102085).
+34. **Joypad motion sensors** (GH-111679); SDL3 joystick on iOS (GH-114316); long-press haptic feedback (GH-117198); `DisplayServer` device-orientation signal (GH-115434).
+35. **Windows HDR via WinRT** (GH-94496); per-pass environment UBOs (GH-115177); Metal acyclic render graph (GH-114484); Vulkan SDK 1.4.335.0 (GH-114075).
+36. ⚠ **Multiple breaking changes** — see [00-version-and-migration.md § 4.7 BETA 1 BREAKING CHANGES](00-version-and-migration.md#47-beta-1-breaking-changes). Audit: `RichTextLabel` `[img]` sizing, particle angular velocity, Android `.obb` removal, shader preprocessor grammar, Jolt soft body / area detection, GDExtension `ConnectFlags` as bitfield.
 
-8. **HDR output on Apple platforms** (GH-106814) and **Linux/Wayland** (GH-102987) — Full EDR display support.
+#### Added in beta2 (May 11, 2026 — 153 fixes / 74 contributors; 100+ regressions resolved)
 
-9. **Android Picture-in-Picture** (GH-114505) — `DisplayServer.pip_mode_enter()` and auto-enter.
-
-10. **Device IDs in input events** (GH-116274) — Keyboard/mouse events now carry a `device` identifier (useful for local multiplayer with multiple keyboards/mice).
-
-11. **Tracy on-demand by default** (GH-117583) — Lighter profiling overhead.
-
-12. **Editor additions** — 3D vertex snapping (B-key, GH-117235), MeshLibrary editor (GH-117376), Scene Painter (GH-109360), autocomplete-no-longer-eats-words (GH-117464), remote inspector improvements (GH-115738, GH-117357).
-
-13. **wasm64 web builds** (GH-102378) — Extended WebAssembly compatibility.
-
-14. **Statistics** — dev2: 248 fixes / 105 contributors; dev3: 297 fixes / 113 contributors.
+37. **3D Pilot Mode undo/redo** (GH-119349) — Camera moves are now undoable.
+38. **`ResourceLoader::load_threaded_request()` race condition fixed** (GH-118824).
+39. **Material inheritance for internal children** (GH-115637) — Built-in node internals now use parent's material.
+40. **Android Gradle build de-experimentalized** (GH-119172) — No longer carries the "experimental" warning.
+41. **GDExtension API tidy** (GH-119254) — `object_cast_to` and `classdb_get_class_tag` deprecated in favor of `is_class` casts.
+42. **OpenXR default action map updated** (GH-118975).
+43. **Animation signal parameter rename** (GH-119316) — Audit any callbacks that relied on a parameter literally named `name`.
 
 ---
 
@@ -134,32 +166,55 @@ These are the highest-leverage facts. Memorize them; everything else is in the d
 
 A condensed version of the table in `00-version-and-migration.md`. Use this for quick "is X available in version Y?" lookups.
 
-| Feature | 4.5.0 | 4.6.0 | 4.7-dev3 |
-|---------|:-----:|:-----:|:--------:|
-| Abstract classes (`@abstract`) | ✅ | ✅ | ✅ |
-| Variadic functions | ✅ | ✅ | ✅ |
-| Const Array/Dict constructors | ✅ | ✅ | ✅ |
-| String implicit conversion of math types | ❌ | ❌ | ❌ |
-| `Array/Dictionary/String.reserve()` | ❌ | ✅ | ✅ |
-| `IKModifier3D` (+ 8 subclasses) | ❌ | ✅ | ✅ |
-| Jolt Physics default for 3D | ❌ | ✅ | ✅ |
-| LibGodot (engine as library) | ❌ | ✅ | ✅ |
-| D3D12 default on Windows | ❌ | ✅ | ✅ |
-| 2D batching 1.1–7× GPU gains | ❌ | ✅ | ✅ |
-| Tracy / Perfetto / Instruments profilers | ❌ | ✅ | ✅ |
-| Transform Offset for Controls | ❌ | ❌ | ✅ |
-| Animation system optimizations | ❌ | ❌ | ✅ |
-| `AnimationTree` thread safety | ❌ | ❌ | ✅ |
-| Signal thread safety | ❌ | ❌ | ✅ |
-| `Polygon2D` fast path | ❌ | ❌ | ✅ |
-| HDR on Apple platforms | ❌ | ❌ | ✅ |
-| HDR on Linux/Wayland | ❌ | ❌ | ✅ |
-| Android Picture-in-Picture | ❌ | ❌ | ✅ |
-| Device IDs in input events | ❌ | ❌ | ✅ |
-| `wasm64` web builds | ❌ | ❌ | ✅ |
-| PopupMenu search bar | ❌ | ❌ | ✅ |
-| `AtlasTexture` tiling in `TextureRect` | ❌ | ❌ | ✅ |
-| Tracy on-demand default | ❌ | ❌ | ✅ |
+| Feature | 4.5.0 | 4.6.0 | 4.7-beta2 | Landed |
+|---------|:-----:|:-----:|:---------:|:------:|
+| Abstract classes (`@abstract`) | ✅ | ✅ | ✅ | 4.5 |
+| Variadic functions | ✅ | ✅ | ✅ | 4.5 |
+| Const Array/Dict constructors | ✅ | ✅ | ✅ | 4.5 |
+| String implicit conversion of math types | ❌ | ❌ | ❌ | removed 4.5 |
+| `Array/Dictionary/String.reserve()` | ❌ | ✅ | ✅ | 4.6 |
+| `IKModifier3D` (+ 8 subclasses) | ❌ | ✅ | ✅ | 4.6 |
+| Jolt Physics default for 3D | ❌ | ✅ | ✅ | 4.6 |
+| LibGodot (engine as library) | ❌ | ✅ | ✅ | 4.6 |
+| D3D12 default on Windows | ❌ | ✅ | ✅ | 4.6 |
+| 2D batching 1.1–7× GPU gains | ❌ | ✅ | ✅ | 4.6 |
+| Tracy / Perfetto / Instruments profilers | ❌ | ✅ | ✅ | 4.6 |
+| Transform Offset for Controls | ❌ | ❌ | ✅ | dev3 |
+| Animation system optimizations | ❌ | ❌ | ✅ | dev3 |
+| `AnimationTree` thread safety | ❌ | ❌ | ✅ | dev3 |
+| Signal thread safety | ❌ | ❌ | ✅ | dev3 |
+| `Polygon2D` fast path | ❌ | ❌ | ✅ | dev3 |
+| HDR on Apple platforms | ❌ | ❌ | ✅ | dev3 |
+| HDR on Linux/Wayland | ❌ | ❌ | ✅ | dev3 |
+| HDR on Windows | ❌ | ❌ | ✅ | beta1 |
+| Android Picture-in-Picture | ❌ | ❌ | ✅ | dev3 |
+| Device IDs in input events | ❌ | ❌ | ✅ | dev3 |
+| `wasm64` web builds | ❌ | ❌ | ✅ | dev3 |
+| PopupMenu search bar | ❌ | ❌ | ✅ | dev3 |
+| `AtlasTexture` tiling in `TextureRect` | ❌ | ❌ | ✅ | dev3 |
+| Tracy on-demand default | ❌ | ❌ | ✅ | dev3 |
+| Nearest-neighbor 3D scaling | ❌ | ❌ | ✅ | dev4 |
+| Control `custom_maximum_size` | ❌ | ❌ | ✅ | dev4 |
+| 3D Ruler vector components | ❌ | ❌ | ✅ | dev4 |
+| GDExtension hot-reload | ❌ | ❌ | ✅ | dev4 |
+| Asset Library new API | ❌ | ❌ | ✅ | dev5 |
+| Per-platform export-template download | ❌ | ❌ | ✅ | dev5 |
+| `AreaLight3D` rectangular area lights | ❌ | ❌ | ✅ | dev5 |
+| Inline shader previews | ❌ | ❌ | ✅ | dev5 |
+| Audio bus UI revamp | ❌ | ❌ | ✅ | dev5 |
+| Wayland touch support | ❌ | ❌ | ✅ | dev5 |
+| RichTextLabel `em`-unit `[img]` (⚠ breaking) | ❌ | ❌ | ✅ | dev5 |
+| `AwaitTweener` | ❌ | ❌ | ✅ | beta1 |
+| VirtualJoystick control | ❌ | ❌ | ✅ | beta1 |
+| 2D one-way collision (all directions) | ❌ | ❌ | ✅ | beta1 |
+| Vulkan raytracing groundwork | ❌ | ❌ | ✅ | beta1 |
+| `DrawableTexture` | ❌ | ❌ | ✅ | beta1 |
+| Accessibility landmark roles | ❌ | ❌ | ✅ | beta1 |
+| Conic gradient in `GradientTexture2D` | ❌ | ❌ | ✅ | beta1 |
+| Joypad motion sensors | ❌ | ❌ | ✅ | beta1 |
+| 3D Pilot Mode undo/redo | ❌ | ❌ | ✅ | beta2 |
+| Per-surface HDR detection | ❌ | ❌ | ✅ | beta2 |
+| Android Gradle build (stable) | ❌ | ❌ | ✅ | beta2 |
 
 ---
 
@@ -181,14 +236,22 @@ A condensed version of the table in `00-version-and-migration.md`. Use this for 
 
 ---
 
-## Beta 2 Known Issues (Inherited Baseline)
+## Known Issues — 4.7-beta2 (Current Cycle)
 
-These were live in 4.6.0-beta2 and may still surface in 4.7-dev3 builds:
+- **macOS XR crash on editor exit** (GH-119146) — Editor crashes when exiting an XR project on macOS. Workaround: don't run XR scenes from the editor on macOS until fixed.
+- **PopupMenu tooltips suppressed when search bar enabled** (GH-119407) — When a `PopupMenu` has its 4.7 search bar enabled, individual item tooltips fail to display. Workaround: embed the hint in the menu item label, or disable the search bar for tooltip-critical menus.
+
+Inherited from beta1 (verify before relying on workarounds — beta2 fixed 100+ regressions):
+
+- Asset Store API: cached-URL load failure (GH-118755)
+- Vulkan renderer: system hang on project open in specific configurations (GH-116414)
+- Android: VisualShader crash with `vertex_lighting` enabled (GH-116990)
+
+Inherited from the 4.6 baseline (may still surface in 4.7 builds):
 
 - **Motion vectors broken in Compatibility renderer** — geometry can render mostly black. Workaround: use Forward+ or Mobile, or disable motion vectors.
-- Beta 2 already fixed several Beta 1 regressions (Tool button, shader editor sizing, FileSystem UID search, TextEdit auto-scroll, X11 input delay).
 
-For the full list, see `00-version-and-migration.md` § "BETA 2 SPECIFIC FIXES".
+For the full list including beta1 breaking changes, see `00-version-and-migration.md` § "4.7-BETA 2 KNOWN ISSUES" and § "4.7 BETA 1 BREAKING CHANGES".
 
 ---
 
@@ -209,7 +272,7 @@ For the full list, see `00-version-and-migration.md` § "BETA 2 SPECIFIC FIXES".
 
 ### Fixing a Performance Regression
 
-1. Profile with Tracy/Perfetto/Instruments (Tracy is on-demand by default in 4.7-dev3).
+1. Profile with Tracy/Perfetto/Instruments (Tracy is on-demand by default in 4.7).
 2. Code-level wins: `reserve()`, typed arrays, cached node references — see `01-gdscript-modern-patterns.md`.
 3. System-level wins: object pooling, group iteration — see `03-core-systems.md`.
 4. Rendering wins: 2D batching, visibility culling — see `04-2d-graphics-rendering.md` and `07-platform-performance.md`.
@@ -238,11 +301,21 @@ func _ready() -> void:
         # 4.6+
         pass
 
-    # For 4.7-dev3 Control transform offset, check the property exists:
+    # For the 4.7 Control transform offset, check the property exists:
     var probe := Control.new()
     if "transform_offset" in probe:  # placeholder name — verify in 4.7 docs
         pass
     probe.free()
+
+    # For 4.7-dev5+ rectangular area lights:
+    if ClassDB.class_exists("AreaLight3D"):
+        # 4.7-dev5+
+        pass
+
+    # For 4.7-beta1+ awaitable tweens:
+    if ClassDB.class_exists("AwaitTweener"):
+        # 4.7-beta1+
+        pass
 ```
 
 > Feature detection (`ClassDB.class_exists(...)`, property lookup) is more robust than `Engine.get_version_info()` comparisons because dev/beta builds can land features mid-cycle.
@@ -276,8 +349,9 @@ func _ready() -> void:
 
 ## Document Metadata
 
-- **Document Version**: 1.1
-- **Combines**: `README.md` (navigation, 4.6.0-beta2 baseline) + `00-version-and-migration.md` (extended through 4.7-dev3)
+- **Document Version**: 1.2
+- **Combines**: `README.md` (navigation) + `00-version-and-migration.md` (extended through 4.7-beta2)
 - **Scope Rule**: Generic Godot reference only — no project-specific narrative, mechanics, or examples (see "Maintenance Rule" at top).
 - **Maintenance**: Update this file whenever (a) a new guideline file is added, (b) a new minor/dev Godot version lands with breaking changes, or (c) the routing tables become inaccurate.
+- **Coverage**: 4.5.0 → 4.6.0 → 4.7-dev1..dev5 → 4.7-beta1 → **4.7-beta2 (target)**.
 - **AI Optimization Level**: High — designed for quick routing and inline answers to the most common version questions.

@@ -1,7 +1,7 @@
 # Godot Version Information and Migration Guide
 
-**Target Version**: Godot 4.7-dev3
-**Previous Baseline**: Godot 4.5.0 → 4.6.0 → 4.7-dev
+**Target Version**: Godot 4.7-beta2
+**Previous Baseline**: Godot 4.5.0 → 4.6.0 → 4.7-dev1..dev5 → 4.7-beta1 → 4.7-beta2
 **Document Purpose**: AI-optimized reference for version-specific changes and migration patterns
 
 ---
@@ -44,24 +44,111 @@
 - **Performance**: Decreased RAM use, faster array sorting, accelerated Object casts
 - **Tracing Profilers**: Tracy, Perfetto, Apple Instruments integration
 
-### Godot 4.7-dev3 (Current Target)
-- **Transform Offset for Controls** (GH-87081): Translate, rotate, or scale Control nodes independently without affecting container layout — ideal for hover, tilt, and UI animation effects
-- **Animation System Optimized** (GH-116394, GH-117277): Optimized Animation Resource, Library, Mixer, Player, and AnimationTree internals with improved thread group safety
+### Godot 4.7-dev3
+- **Transform Offset for Controls** (GH-87081): Translate, rotate, or scale Control nodes independently without affecting container layout
+- **Animation System Optimized** (GH-116394, GH-117277): Optimized Animation Resource/Library/Mixer/Player and AnimationTree internals with improved thread group safety
 - **Signal Thread Safety** (GH-117511): Enhanced thread-safety of Object signals
 - **Polygon2D Fast Path** (GH-117334): Rendering optimization for Polygon2D nodes
 - **CSG Automatic Smoothing** (GH-116749): Automatic smoothing for CSG nodes
 - **PopupMenu Search Bar** (GH-114236): Visible search for long popup menus
 - **RichTextLabel Improvements** (GH-116868, GH-116277): Triple-click paragraph selection and enhanced table rendering
 - **AtlasTexture Tiling in TextureRect** (GH-113808): Support for tiling atlas textures
-- **HDR Output on Apple Platforms** (GH-106814): Full EDR display support across all Apple platforms
-- **HDR Output on Linux/BSD** (GH-102987): HDR support for Wayland display server
-- **Android Picture-in-Picture** (GH-114505): PiP mode with `DisplayServer.pip_mode_enter()` and auto-enter
-- **Android Joypad Unfocus** (GH-115119): New project setting to ignore joypad events when app unfocused
-- **Device IDs for Input** (GH-116274): Keyboard/mouse input events now include device identifiers
+- **HDR Output on Apple Platforms** (GH-106814) and **Linux/Wayland** (GH-102987): Full EDR display support
+- **Android Picture-in-Picture** (GH-114505): `DisplayServer.pip_mode_enter()` with auto-enter
+- **Android Joypad Unfocus** (GH-115119): Project setting to ignore joypad when unfocused
+- **Device IDs for Input** (GH-116274): Keyboard/mouse events now include device identifiers
 - **wasm64 Web Builds** (GH-102378): Extended WebAssembly compatibility
-- **Tracy On-Demand** (GH-117583): Changed to `TRACY_ON_DEMAND` by default for lighter profiling overhead
+- **Tracy On-Demand** (GH-117583): `TRACY_ON_DEMAND` by default for lighter profiling overhead
 - **Editor**: 3D vertex snapping (GH-117235), MeshLibrary editor (GH-117376), Scene Painter (GH-109360), autocomplete fix (GH-117464), remote inspector improvements (GH-115738, GH-117357)
-- **Statistics**: dev2 had 248 fixes from 105 contributors; dev3 had 297 fixes from 113 contributors
+- **Statistics**: 297 fixes from 113 contributors (dev2: 248 / 105)
+
+### Godot 4.7-dev4 (April 9, 2026)
+- **Nearest-Neighbor 3D Viewport Scaling** (GH-79731): Three-year refinement — crisp pixel-art and low-resolution 3D rendering without performance compromise
+- **Control `custom_maximum_size`** (GH-116640): Symmetric counterpart to `custom_minimum_size` for tighter layout control
+- **Improved Tree Drag-and-Drop** (GH-112993): Vertical indicator shows the potential parent chain; cursor x-position selects which ancestor to parent into (mirrors vector-design-software behavior)
+- **Array Property Inspector** (GH-118008): Increased available horizontal space (corrected default offset)
+- **Visual Profiler Tree Folding** (GH-118120)
+- **Type Filters in Create Dialog** (GH-111518)
+- **Renderer Selector Hideable** (GH-117754): Via editor setting
+- **Right-Click on Unfocused Scene Tabs** (GH-112919)
+- **TileSet Editor Proxy Objects Rework** (GH-117574)
+- **3D Ruler Tool** (GH-106785): Vector component display added
+- **Particles — Angular Velocity Fix** (GH-117861): ⚠ **Breaking change** — behavior now aligns with documentation
+- **Particles — Timescale Zero Fix** (GH-109911): Particles no longer drift when timescale equals 0
+- **GDExtension Project Settings Visibility** (GH-118063) and **Extension Reload** from editor
+- **GDScript LSP Server-Side String Insertions** (GH-117710)
+- **Android — Java Interface Implementation from GDScript** (GH-115498)
+- **Windows — OneCore TTS via C++/WinRT** (GH-116349); **Emoji Picker Integration** (GH-116351)
+- **Statistics**: 188 fixes from 88 contributors
+
+### Godot 4.7-dev5 (April 17, 2026)
+- **Asset Library — New API** (GH-112992): Ported asset store to new API with improved item display, metadata visibility, changelog access, and single-click version switching
+- **Export Template Dialog Redesign** (GH-117072): Individual platform downloads instead of bulk-only distribution
+- **Android Embedded Game Window** (GH-118417): Moveable and resizable
+- **Remote/Local SceneTreeDock Buttons** (GH-118192): Improved appearance
+- **RichTextLabel `em`-Unit Image Scaling** (GH-112617): `[img]` tags scale relative to font size for responsive rich text
+- **AreaLight3D — Rectangular Area Light Source** (GH-108219): Real-time 3D lighting
+- **Raytracing Pipelines Refactor** (GH-118044)
+- **Inline Shader Previews** (GH-117726): Text-editor previews reduce guesswork during shader development
+- **Vertex Snap for Subgizmo Points** (GH-117922)
+- **Audio Bus UI Revamp** (GH-118266)
+- **Wayland Touch Support** (GH-113886)
+- **Embedded Window Options** (GH-118079): Three-dot menu and HDR information
+- **Android Splash Screen Customization** (GH-114671)
+- **GDExtension — `Variant::get_type_by_name`** (GH-117160): New interface method
+- **Statistics**: 135 fixes from 71 contributors
+
+### Godot 4.7-beta1 (April 24, 2026)
+First beta of the 4.7 cycle — API surface is now frozen; remaining work is regression fixes.
+
+**Cumulative statistics since 4.6-stable**: 1,265 fixes from 309 contributors. Beta1 itself added 85 fixes from 47 contributors.
+
+**Notable additions beyond dev5**:
+- **Vulkan Raytracing Groundwork** (GH-99119) — foundation for future hardware RT features
+- **DrawableTexture** (GH-105701) — direct texture drawing API
+- **VirtualJoystick** (GH-110933) — touchscreen joystick control with FIXED / DYNAMIC / FOLLOWING modes
+- **2D One-Way Collision in All Directions** (GH-104736) — no longer limited to "up" only
+- **AwaitTweener** (GH-79712) — Tweens can `await` specific signals
+- **Animation Track Group Collapse** (GH-113479)
+- **Accessibility Landmark Region Roles** (GH-114449)
+- **Conic Gradient Support in `GradientTexture2D`** (GH-115394)
+- **Path3D Collider Snapping** (GH-102085) — snap path creation to collision surfaces
+- **Joypad Motion Sensor Support** (GH-111679); **SDL3 Joystick on iOS** (GH-114316); **Haptic Long-Press Right-Click** (GH-117198)
+- **DisplayServer Device-Orientation Change Signal** (GH-115434)
+- **Per-Pass Unique Environment Uniform Buffers** (GH-115177); **Metal Dynamic Uniforms + Acyclic Render Graph** (GH-114484); **Vulkan SDK 1.4.335.0** (GH-114075)
+- **Clearcoat Improvements** (GH-111464); **Particle 3D Scale/Rotation in process** (GH-112447)
+- **Windows HDR Output via WinRT** (GH-94496) — joins macOS (GH-106814) and Linux/Wayland (GH-102987)
+- **Android — Native File Picker** (GH-115257); **Gradle Platform Plugin Dependencies** (GH-115888); **Portrait Mode Script Editor** (GH-117109)
+- **Editor — View3DController** (GH-115957), **Script List Navigation** (GH-112796), **OnReady Variable Parent-Type Awareness** (GH-115158), **"Follow Selection" via double-Center** (GH-99499), **Script Documentation Tooltip Shortcut** (GH-115767), **Tree size/filter optimization** (GH-110759)
+- **GDScript Non-Exported Enum Metadata Retention in Remote Play** (GH-115705)
+- **Build — Compilation Time Reduction** (GH-111218); **PCKPacker Buffer File Addition** (GH-108830)
+
+**Known issues introduced in beta1**:
+- Asset Store API fails to load with incorrect cached URL (GH-118755)
+- Vulkan renderer system hang on project open (GH-116414)
+- Android: VisualShader crash with `vertex_lighting` enabled (GH-116990)
+
+> ⚠ Several **breaking changes** land in beta1 — see [§ 4.7 BETA 1 BREAKING CHANGES](#47-beta-1-breaking-changes) below.
+
+### Godot 4.7-beta2 (May 11, 2026) — **Current Target**
+Regression-focused release; 153 fixes from 74 contributors, 100+ regressions resolved.
+
+- **3D — Pilot Mode Undo/Redo** (GH-119349): Camera movement in Pilot Mode is now undoable
+- **Animation — Signal Parameter Renaming** (GH-119316): Various signal parameters previously called `name` were renamed (audit any `connect()` callsites that relied on parameter ordering — unlikely but possible)
+- **Core — ResourceLoader Race Condition Fix** (GH-118824): `ResourceLoader::load_threaded_request()` race resolved
+- **Editor — HDR Screenshot Fix** (GH-119013): Editor screenshots now work correctly with HDR enabled
+- **Editor — "Clear Output" Button Positioning** (GH-118954): Improved placement
+- **Export — Android Gradle Build De-Experimentalized** (GH-119172): Warning removed; feature is now considered stable
+- **GDExtension — API Deprecation** (GH-119254): `object_cast_to` and `classdb_get_class_tag` deprecated in favor of `is_class` casts
+- **GUI — Material Inheritance for Internal Children** (GH-115637): Built-in node internal children now use their parent's material
+- **Rendering — Wayland HDR Behavior** (GH-117913): Fixed `window_is_hdr_output_supported`; warnings adjusted
+- **Rendering — Surface HDR Detection** (GH-119091): Per-surface HDR-support checking implemented
+- **XR — OpenXR Default Action Map Update** (GH-118975)
+- **Documentation — HDR Output Tutorial** (GH-118692): Added tutorial links and platform-specific notes
+
+**Known issues in beta2**:
+- macOS XR crash on editor exit from XR projects (GH-119146)
+- GUI tooltip bug — popup menu tooltips fail to display when a search bar is enabled (GH-119407)
 
 ---
 
@@ -186,6 +273,134 @@ OAHashMap<String, int> my_map;
 
 // AFTER:
 AHashMap<String, int> my_map;  // Use AHashMap instead
+```
+
+---
+
+## 4.7 BETA 1 BREAKING CHANGES
+
+These behavior changes landed when 4.7 entered beta. Audit your project against each item before bumping to a 4.7 build.
+
+### Animation — BlendSpace Point Naming (GH-110369)
+
+**Impact**: Low — affects only code that drives `BlendSpace1D` / `BlendSpace2D` by index or display label.
+
+```gdscript
+# BlendSpace point name/index display and setting changed.
+# If you set or read points by index, re-verify the indexing after upgrade.
+# Prefer named-point lookups when available.
+```
+
+### Audio — Spectrum Analyzer & 3D Volume (GH-114355, GH-114080)
+
+**Impact**: Medium — analyzer-driven visualizations and 3D positional audio levels may now read differently.
+
+```gdscript
+# Spectrum Analyzer jitter fixes (GH-114355): output is now smoother;
+# any normalization tuned to the old jitter may need re-calibration.
+#
+# 3D volume calculation (GH-114080): per-listener attenuation curves can
+# produce slightly different effective volumes. Re-mix scenes that relied
+# on the old behavior.
+```
+
+### Core — Tag-Based `new` Overload Initialization (GH-112035)
+
+**Impact**: Low — primarily affects C++ / GDExtension code.
+
+```cpp
+// `new` overloads now use a tag-based dispatch model.
+// If you author GDExtensions that construct engine objects, follow the
+// updated initialization tags exposed by the GDExtension interface.
+```
+
+### GDExtension — `Object::ConnectFlags` as Bitfield (GH-109892)
+
+**Impact**: Medium — GDExtensions that pass connect flags through typed wrappers.
+
+```cpp
+// BEFORE: ConnectFlags exposed as an enum (single value).
+// AFTER:  ConnectFlags is a bitfield (combineable via |).
+// Update wrapper signatures from `ConnectFlags` to the bitfield type.
+```
+
+### GDScript — Constant Expression Evaluation (GH-113228)
+
+**Impact**: Low — most code is unaffected; rare edge cases where constant folding produced a value the runtime would not.
+
+```gdscript
+# Constant expressions are now evaluated more strictly. If you relied on
+# implicit lossy conversions at compile-time, add explicit conversions:
+const MAX_HEALTH := 100        # was implicitly int even from `100.0`
+const MAX_HEALTH := int(100.0) # explicit
+```
+
+### GUI — RichTextLabel Image Sizing (GH-112617)
+
+**Impact**: Medium — visual regression for `[img]` tags with no explicit size.
+
+```bbcode
+[# `[img]` tags in RichTextLabel now scale relative to font size using
+[# em units rather than raw pixels. Existing rich text with bare [img src]
+[# may render at a different size.]
+
+# Old:  [img]res://icon.png[/img]                      # raw pixel size
+# New:  [img]res://icon.png[/img]                      # scales with font
+# Lock to pixels: [img width=32]res://icon.png[/img]
+```
+
+### Input — Device IDs on Keyboard/Mouse Events (GH-116274)
+
+**Impact**: Low — only affects code that compares `InputEvent` instances structurally.
+
+```gdscript
+# Keyboard and mouse InputEvent objects now carry a `device` field
+# (previously joypad-only). Equality checks across captured replays must
+# include or normalize the device id.
+```
+
+### Particles — Angular Velocity Direction (GH-117861)
+
+**Impact**: High for particle-heavy scenes — sign / direction now matches the documentation.
+
+```gdscript
+# Particles' angular velocity behavior was corrected to align with docs.
+# If existing particle resources rotate the wrong direction after upgrade,
+# negate the angular velocity (or its randomness) on the affected
+# ParticleProcessMaterial resources.
+```
+
+### Physics — Jolt Area / Soft Body Detection & SoftBody3D Tuning (GH-114198, GH-116041)
+
+**Impact**: Medium — soft-body scenes and area sensors may behave differently with Jolt.
+
+```gdscript
+# Jolt now reports area / soft body overlaps more consistently. If your
+# code assumed the old missed-detection cases, audit `body_entered` /
+# `area_entered` handlers.
+#
+# SoftBody3D mass and stiffness ranges changed (GH-116041); re-tune
+# values on existing soft bodies after upgrade.
+```
+
+### Platform — Android OBB Support Removed (GH-118283)
+
+**Impact**: High for Android projects shipping legacy `.obb` expansion files.
+
+```gdscript
+# Android Opaque Binary Blob (.obb) expansion files are no longer
+# supported. Migrate large assets to Play Asset Delivery (PAD) or
+# sparse PCK distribution (see 4.5's sparse PCK support).
+```
+
+### Shaders — Preprocessor Condition Parsing (GH-117173)
+
+**Impact**: Low — affects shaders with non-standard preprocessor expressions.
+
+```glsl
+// Shader preprocessor now restricts the grammar of `#if` conditions.
+// Previously-tolerated odd whitespace or token sequences may now error.
+// Normalize to: `#if defined(FOO)`, `#if X > 0`, `#elif !defined(BAR)`.
 ```
 
 ---
@@ -452,32 +667,60 @@ func check_version() -> void:
 
 ## COMPATIBILITY MATRIX
 
-| Feature | 4.5.0 | 4.6.0 | 4.7-dev | Notes |
-|---------|-------|-------|---------|-------|
-| Abstract classes | ✅ | ✅ | ✅ | Use `@abstract` |
-| Variadic functions | ✅ | ✅ | ✅ | Array parameter |
-| Const constructors | ✅ | ✅ | ✅ | Arrays/Dicts |
-| String implicit conversion | ❌ | ❌ | ❌ | Removed in 4.5 |
-| Array/Dict.reserve() | ❌ | ✅ | ✅ | 4.6+ only |
-| IKModifier3D | ❌ | ✅ | ✅ | 8 subclasses |
-| Jolt Physics default | ❌ | ✅ | ✅ | Production-ready |
-| LibGodot | ❌ | ✅ | ✅ | Engine as library |
-| D3D12 default (Windows) | ❌ | ✅ | ✅ | More stable than Vulkan |
-| 2D batching 1.1-7x | ❌ | ✅ | ✅ | GPU performance gains |
-| Tracy/Perfetto profilers | ❌ | ✅ | ✅ | Native tracing support |
-| Transform Offset Controls | ❌ | ❌ | ✅ | Animate Controls without layout impact |
-| Animation Resource Opt. | ❌ | ❌ | ✅ | Optimized Player/Mixer/Library |
-| AnimationTree Thread Safety | ❌ | ❌ | ✅ | Improved thread group safety |
-| Signal Thread Safety | ❌ | ❌ | ✅ | Enhanced Object signal threading |
-| Polygon2D Fast Path | ❌ | ❌ | ✅ | Rendering optimization |
-| HDR on Apple Platforms | ❌ | ❌ | ✅ | Full EDR display support |
-| HDR on Linux Wayland | ❌ | ❌ | ✅ | Wayland HDR output |
-| Android PiP | ❌ | ❌ | ✅ | Picture-in-Picture mode |
-| Device IDs for Input | ❌ | ❌ | ✅ | Keyboard/mouse device IDs |
-| wasm64 Web Builds | ❌ | ❌ | ✅ | Extended WASM compat |
-| PopupMenu Search | ❌ | ❌ | ✅ | Search bar in popups |
-| AtlasTexture Tiling | ❌ | ❌ | ✅ | Tiling in TextureRect |
-| Tracy On-Demand | ❌ | ❌ | ✅ | Lighter profiling default |
+| Feature | 4.5.0 | 4.6.0 | 4.7-beta2 | First Landed | Notes |
+|---------|:-----:|:-----:|:---------:|:------------:|-------|
+| Abstract classes | ✅ | ✅ | ✅ | 4.5 | Use `@abstract` |
+| Variadic functions | ✅ | ✅ | ✅ | 4.5 | Array parameter |
+| Const constructors | ✅ | ✅ | ✅ | 4.5 | Arrays/Dicts |
+| String implicit conversion | ❌ | ❌ | ❌ | — | Removed in 4.5 |
+| Array/Dict.reserve() | ❌ | ✅ | ✅ | 4.6 | Pre-allocate capacity |
+| IKModifier3D | ❌ | ✅ | ✅ | 4.6 | 8 subclasses |
+| Jolt Physics default | ❌ | ✅ | ✅ | 4.6 | Production-ready |
+| LibGodot | ❌ | ✅ | ✅ | 4.6 | Engine as library |
+| D3D12 default (Windows) | ❌ | ✅ | ✅ | 4.6 | More stable than Vulkan |
+| 2D batching 1.1–7× | ❌ | ✅ | ✅ | 4.6 | GPU performance gains |
+| Tracy/Perfetto profilers | ❌ | ✅ | ✅ | 4.6 | Native tracing support |
+| Transform Offset for Controls | ❌ | ❌ | ✅ | 4.7-dev3 | Animate Controls without layout impact |
+| Animation system optimization | ❌ | ❌ | ✅ | 4.7-dev3 | Resource/Library/Mixer/Player |
+| `AnimationTree` thread safety | ❌ | ❌ | ✅ | 4.7-dev3 | Improved thread group safety |
+| Signal thread safety | ❌ | ❌ | ✅ | 4.7-dev3 | Enhanced Object signal threading |
+| Polygon2D fast path | ❌ | ❌ | ✅ | 4.7-dev3 | Rendering optimization |
+| HDR on Apple platforms | ❌ | ❌ | ✅ | 4.7-dev3 | Full EDR display support |
+| HDR on Linux/Wayland | ❌ | ❌ | ✅ | 4.7-dev3 | Wayland HDR output |
+| HDR on Windows | ❌ | ❌ | ✅ | 4.7-beta1 | C++/WinRT isolation (GH-94496) |
+| Android Picture-in-Picture | ❌ | ❌ | ✅ | 4.7-dev3 | `DisplayServer.pip_mode_enter()` |
+| Device IDs in input events | ❌ | ❌ | ✅ | 4.7-dev3 | Keyboard/mouse device IDs |
+| `wasm64` web builds | ❌ | ❌ | ✅ | 4.7-dev3 | Extended WASM compat |
+| PopupMenu search bar | ❌ | ❌ | ✅ | 4.7-dev3 | Search field in popups |
+| `AtlasTexture` tiling in `TextureRect` | ❌ | ❌ | ✅ | 4.7-dev3 | Tiling in TextureRect |
+| Tracy on-demand default | ❌ | ❌ | ✅ | 4.7-dev3 | Lighter profiling overhead |
+| Nearest-neighbor 3D scaling | ❌ | ❌ | ✅ | 4.7-dev4 | Pixel-art 3D rendering |
+| Control `custom_maximum_size` | ❌ | ❌ | ✅ | 4.7-dev4 | Symmetric with `custom_minimum_size` |
+| Improved Tree drag-and-drop | ❌ | ❌ | ✅ | 4.7-dev4 | Vector-design-style parenting |
+| 3D Ruler vector components | ❌ | ❌ | ✅ | 4.7-dev4 | Per-axis distance |
+| Extension reload from editor | ❌ | ❌ | ✅ | 4.7-dev4 | GDExtension hot-reload |
+| Asset Library new API | ❌ | ❌ | ✅ | 4.7-dev5 | Improved metadata, version switching |
+| Per-platform export-template download | ❌ | ❌ | ✅ | 4.7-dev5 | Individual platform installs |
+| RichTextLabel `em`-unit image scaling | ❌ | ❌ | ✅ | 4.7-dev5 | Responsive `[img]` tags (breaking) |
+| `AreaLight3D` (rectangular) | ❌ | ❌ | ✅ | 4.7-dev5 | Real-time area lights |
+| Inline shader previews | ❌ | ❌ | ✅ | 4.7-dev5 | In-editor visual feedback |
+| Vertex snap for subgizmo points | ❌ | ❌ | ✅ | 4.7-dev5 | Sub-component snapping |
+| Audio bus UI revamp | ❌ | ❌ | ✅ | 4.7-dev5 | Clearer routing display |
+| Wayland touch support | ❌ | ❌ | ✅ | 4.7-dev5 | Native touch events on Wayland |
+| Android splash screen options | ❌ | ❌ | ✅ | 4.7-dev5 | Customizable boot screen |
+| `AwaitTweener` | ❌ | ❌ | ✅ | 4.7-beta1 | `await` signals inside tweens |
+| VirtualJoystick control | ❌ | ❌ | ✅ | 4.7-beta1 | FIXED / DYNAMIC / FOLLOWING |
+| 2D one-way collision (all directions) | ❌ | ❌ | ✅ | 4.7-beta1 | No longer "up" only |
+| Vulkan raytracing groundwork | ❌ | ❌ | ✅ | 4.7-beta1 | Foundation for hardware RT |
+| `DrawableTexture` | ❌ | ❌ | ✅ | 4.7-beta1 | Direct texture drawing |
+| Accessibility landmark roles | ❌ | ❌ | ✅ | 4.7-beta1 | Screen-reader regions |
+| Conic gradient in `GradientTexture2D` | ❌ | ❌ | ✅ | 4.7-beta1 | New gradient mode |
+| Animation track group collapse | ❌ | ❌ | ✅ | 4.7-beta1 | Editor folding |
+| Path3D collider snapping | ❌ | ❌ | ✅ | 4.7-beta1 | Snap path to surfaces |
+| Joypad motion sensors | ❌ | ❌ | ✅ | 4.7-beta1 | Gyro / accelerometer |
+| 3D Pilot Mode undo/redo | ❌ | ❌ | ✅ | 4.7-beta2 | Camera moves are undoable |
+| Surface HDR detection | ❌ | ❌ | ✅ | 4.7-beta2 | Per-surface HDR query |
+| Android Gradle build (stable) | ❌ | ❌ | ✅ | 4.7-beta2 | "Experimental" tag removed |
 
 ---
 
@@ -693,7 +936,9 @@ var uid = node.get_instance_id()  # Existing method
 
 ---
 
-## BETA 2 SPECIFIC FIXES
+## 4.6.0-BETA 2 SPECIFIC FIXES (Baseline Reference)
+
+> Historical reference — these fixes shipped in the 4.6 cycle's beta2 and are part of the inherited baseline. The current 4.7-beta2 fixes are listed in the "Godot 4.7-beta2" entry of the Version Timeline above.
 
 ### Regressions Fixed from Beta 1
 
@@ -716,18 +961,40 @@ var uid = node.get_instance_id()  # Existing method
 - **iOS**: Automatically enables `iphone-ipad-minimum-performance-a12` for Forward+/Mobile
 - **Linux**: X11 input responsiveness restored
 
-### Known Issues (Beta 2)
+### Known Issues (4.6-Beta 2)
 
 ```gdscript
 # Motion vectors currently broken in Compatibility renderer
 # Geometry may render predominantly black
 # Workaround: Use Forward+/Mobile renderer or disable motion vectors
-# Expected fix in Beta 3 or stable release
+# Expected fix in a later release
 ```
 
 ---
 
-**Document Version**: 1.2
-**Last Updated**: 2026-03-30
-**Target Godot Version**: 4.7-dev3
+## 4.7-BETA 2 KNOWN ISSUES (Current Cycle)
+
+```gdscript
+# macOS XR crash (GH-119146):
+#   Editor crashes when exiting an XR project on macOS.
+#   Workaround: avoid running XR scenes from the editor on macOS until fixed.
+#
+# GUI tooltip + popup-menu search bar (GH-119407):
+#   When a PopupMenu has its new search bar enabled, individual item
+#   tooltips fail to display.
+#   Workaround: encode the same hint in the menu item label, or disable
+#   the search bar for menus where tooltips are load-bearing.
+#
+# Inherited from beta1 (verify status before relying on these as workarounds):
+#   - Asset Store API: cached URL load failure (GH-118755)
+#   - Vulkan renderer: system hang on project open in specific configs (GH-116414)
+#   - Android: VisualShader crash with vertex_lighting enabled (GH-116990)
+```
+
+---
+
+**Document Version**: 1.3
+**Last Updated**: 2026-05-16
+**Target Godot Version**: 4.7-beta2
+**Coverage**: 4.5.0 → 4.6.0 → 4.7-dev1..dev5 → 4.7-beta1 → 4.7-beta2
 **AI Optimization**: High (structured for rapid lookup and pattern matching)

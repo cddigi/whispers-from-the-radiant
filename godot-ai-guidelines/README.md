@@ -1,9 +1,11 @@
-# Godot 4.6 AI Guidelines - Navigation Index
+# Godot 4.7 AI Guidelines - Navigation Index
 
-**Purpose**: Comprehensive, AI-optimized reference for Godot 4.6 game development
+**Purpose**: Comprehensive, AI-optimized reference for Godot 4.6 → 4.7 game development
 **Target**: Claude Code (AI-assisted development)
-**Version**: Godot 4.6.0-beta2
-**Last Updated**: 2025-12-22
+**Version**: Godot 4.7-beta2 (built atop 4.6.0-stable baseline)
+**Last Updated**: 2026-05-16
+
+> The 4.7 cycle has entered **beta** as of 4.7-beta1 (2026-04-24). The API surface is now frozen and remaining work is regression fixing. See [00-version-and-migration.md](00-version-and-migration.md) for the full timeline through 4.7-beta2.
 
 ---
 
@@ -87,14 +89,14 @@ Use this index to quickly locate relevant guidelines for your current task.
 
 ---
 
-## Critical 4.6 Changes
+## Critical 4.6 → 4.7 Changes
 
 ### BREAKING CHANGES (Immediate Action Required)
 
-1. **String Conversions** - `String(vector)` → `str(vector)`
+1. **String Conversions** (4.5+) - `String(vector)` → `str(vector)`
    - See: [00-version-and-migration.md#string-conversion-changes](00-version-and-migration.md#string-conversion-changes)
 
-2. **Platform Requirements**
+2. **Platform Requirements** (4.5+)
    - Windows 10+ (7/8/8.1 dropped)
    - Android API 24+ (was 21)
    - .NET 8.0 (was 6.0)
@@ -105,12 +107,26 @@ Use this index to quickly locate relevant guidelines for your current task.
    - Separate TileMapLayer nodes
    - See: [04-2d-graphics-rendering.md#tilemaplayer-architecture](04-2d-graphics-rendering.md#tilemaplayer-architecture)
 
-4. **Glow Rendering** (NEW in Beta 1)
+4. **Glow Rendering** (4.6 NEW)
    - Default blend mode changed to "screen"
    - Glow now renders before tonemapping
    - See: [00-version-and-migration.md#glow-rendering-changes](00-version-and-migration.md#glow-rendering-changes)
 
-### NEW FEATURES (4.6 Beta 2 Enhancements)
+5. **4.7-beta1 Breaking Changes** (NEW)
+   - Particle angular velocity direction corrected (re-tune resources)
+   - RichTextLabel `[img]` tags now scale relative to font size (em-units)
+   - Android OBB expansion files removed (migrate to PAD or sparse PCK)
+   - Jolt area/soft-body detection consistency; SoftBody3D ranges retuned
+   - GDExtension `ConnectFlags` is now a bitfield (was enum)
+   - Shader preprocessor `#if` grammar tightened
+   - 3D positional audio volume calculation revised
+   - See: [00-version-and-migration.md#47-beta-1-breaking-changes](00-version-and-migration.md#47-beta-1-breaking-changes)
+
+### NEW FEATURES (4.6 → 4.7-beta2 Highlights)
+
+> 4.7 cycle additions (dev3 → beta2) are listed inline in [CLAUDE.md § New in the 4.7 Cycle](CLAUDE.md#new-in-the-47-cycle-dev3--beta2) and [00-version-and-migration.md](00-version-and-migration.md). Examples: Transform Offset for Controls, AreaLight3D, AwaitTweener, VirtualJoystick, Vulkan raytracing groundwork, HDR across all three desktop platforms, Pilot Mode undo/redo.
+
+#### 4.6 Baseline Additions
 
 1. **IKModifier3D** - Complete IK system
    - 8 subclasses: CCDIK3D, FABRIK3D, JacobianIK3D, BoneTwistDisperser3D, etc.
@@ -382,8 +398,8 @@ Each guideline file follows this structure:
 
 ---
 
-**Document Version**: 1.1
-**Guidelines Version**: 4.6.0-beta2
-**Last Updated**: 2025-12-22
-**Total Documentation**: ~180KB across 9 files
+**Document Version**: 1.2
+**Guidelines Version**: 4.7-beta2 (baseline: 4.6.0-stable)
+**Last Updated**: 2026-05-16
+**Total Documentation**: ~200KB across 10 files (+ CLAUDE.md AI entry point)
 **Maintained By**: Claude Code (AI-assisted development system)

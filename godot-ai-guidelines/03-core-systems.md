@@ -1,6 +1,6 @@
 # Core Systems: Memory, Resources, and Global Utilities
 
-**Purpose**: Core system patterns for memory management, resource handling, and global utilities in Godot 4.7-dev3
+**Purpose**: Core system patterns for memory management, resource handling, and global utilities in Godot 4.7-beta2
 **Focus**: Reference counting, object pooling, resource caching, groups, SceneTree utilities, signal thread safety (4.7)
 
 ---
@@ -892,5 +892,5 @@ func on_enemy_defeated() -> void:
 
 **Document Version**: 1.1
 **Last Updated**: 2026-03-30
-**Godot Version**: 4.7-dev3
+**Godot Version**: 4.7-beta2
 **AI Optimization**: Maximum (memory patterns, pooling templates, group strategies, signal thread safety)

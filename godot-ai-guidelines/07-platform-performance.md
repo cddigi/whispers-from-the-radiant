@@ -1,6 +1,6 @@
 # Platform Requirements and Performance Optimization
 
-**Purpose**: Platform-specific requirements and performance patterns for Godot 4.7-dev3
+**Purpose**: Platform-specific requirements and performance patterns for Godot 4.7-beta2
 **Focus**: Platform minimums, D3D12 default (Windows), Android SAF/PiP (4.7), Wayland parity, HDR Apple/Linux (4.7), 2D batching, wasm64 (4.7), profiler integration
 
 ---
@@ -209,17 +209,26 @@ func enter_pip() -> void:
 # Input responsiveness restored on X11
 ```
 
-### HDR Output on Linux/BSD (NEW in 4.7)
+### HDR Output Across Desktop Platforms (4.7)
+
+All three desktop platforms gained HDR output during the 4.7 cycle:
 
 ```gdscript
-# 4.7 (GH-102987): HDR support for Wayland display server on Linux
-# Complements the Windows HDR support added in 4.6
-# and Apple HDR support added in 4.7-dev2
+# Apple platforms (4.7-dev3, GH-106814) — full EDR display support
+# Linux/Wayland   (4.7-dev3, GH-102987) — Wayland HDR output
+# Windows         (4.7-beta1, GH-94496) — C++/WinRT isolation
+#
+# 4.7-beta2 refinements:
+#   GH-117913 — fixed window_is_hdr_output_supported reporting on Wayland
+#   GH-119091 — per-surface HDR-support detection
+#   GH-119013 — editor screenshots now work with HDR enabled
+#   GH-118692 — official HDR output tutorial docs added
 
 # No code changes needed — automatic when:
-# 1. Running on Wayland (not X11)
-# 2. HDR-capable display connected
-# 3. Compositor supports HDR (e.g., KDE 6+)
+# 1. HDR-capable display connected
+# 2. Platform/compositor supports HDR (Wayland: KDE 6+, GNOME w/ HDR;
+#    macOS: EDR; Windows: HDR enabled in Display Settings)
+# 3. (Wayland only) Running on Wayland, not X11
 ```
 
 ---
@@ -903,5 +912,5 @@ func check_battery() -> void:
 
 **Document Version**: 1.2
 **Last Updated**: 2026-03-30
-**Godot Version**: 4.7-dev3
+**Godot Version**: 4.7-beta2
 **AI Optimization**: Maximum (HDR Apple/Linux, Android PiP, wasm64, Device IDs, Tracy on-demand, D3D12 default, SAF support, Wayland parity, 2D batching)

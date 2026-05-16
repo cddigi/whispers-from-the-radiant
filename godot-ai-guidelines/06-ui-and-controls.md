@@ -1,6 +1,6 @@
 # UI and Control Nodes
 
-**Purpose**: Comprehensive UI development patterns for Godot 4.7-dev3
+**Purpose**: Comprehensive UI development patterns for Godot 4.7-beta2
 **Focus**: Control node hierarchy, layout containers, theming, Transform Offset (NEW 4.7), focus state decoupling (4.6), PopupMenu search (4.7), joypad customization
 
 ---
@@ -914,5 +914,5 @@ func set_player_team_color(device_id: int, team: int) -> void:
 
 **Document Version**: 1.2
 **Last Updated**: 2026-03-30
-**Godot Version**: 4.7-dev3
+**Godot Version**: 4.7-beta2
 **AI Optimization**: Maximum (Transform Offset for Controls, PopupMenu search, RichTextLabel, focus state decoupling, joypad LED support)
