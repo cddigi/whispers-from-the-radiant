@@ -156,39 +156,39 @@ func pulse_button() -> void:
 # INDEPENDENTLY from container layout. The layout system sees the
 # original rect, but the visual transform is applied on top.
 #
-# This is transformative for card game UIs — you can animate cards
-# (fan, tilt, hover lift) without breaking container arrangements.
+# This solves a long-standing UI problem — you can apply hover, tilt,
+# or lift effects to Controls inside containers without breaking layout.
 
-@onready var card: Control = $Card
+@onready var item: Control = $Item
 
-# Animate a card lifting/tilting on hover without disrupting hand layout:
-func _on_card_mouse_entered() -> void:
+# Animate a Control lifting/tilting on hover without disrupting layout:
+func _on_item_mouse_entered() -> void:
     var tween = create_tween().set_parallel(true)
-    tween.tween_property(card, "transform_offset:position", Vector2(0, -20), 0.15)
-    tween.tween_property(card, "transform_offset:rotation", deg_to_rad(-5), 0.15)
-    tween.tween_property(card, "transform_offset:scale", Vector2(1.1, 1.1), 0.15)
+    tween.tween_property(item, "transform_offset:position", Vector2(0, -20), 0.15)
+    tween.tween_property(item, "transform_offset:rotation", deg_to_rad(-5), 0.15)
+    tween.tween_property(item, "transform_offset:scale", Vector2(1.1, 1.1), 0.15)
 
-func _on_card_mouse_exited() -> void:
+func _on_item_mouse_exited() -> void:
     var tween = create_tween().set_parallel(true)
-    tween.tween_property(card, "transform_offset:position", Vector2.ZERO, 0.15)
-    tween.tween_property(card, "transform_offset:rotation", 0.0, 0.15)
-    tween.tween_property(card, "transform_offset:scale", Vector2.ONE, 0.15)
+    tween.tween_property(item, "transform_offset:position", Vector2.ZERO, 0.15)
+    tween.tween_property(item, "transform_offset:rotation", 0.0, 0.15)
+    tween.tween_property(item, "transform_offset:scale", Vector2.ONE, 0.15)
 
 # Key properties:
 # - transform_offset.position: Visual offset (does NOT affect layout)
 # - transform_offset.rotation: Visual rotation (does NOT affect layout)
 # - transform_offset.scale: Visual scale (does NOT affect layout)
 
-# Use cases for card games:
-# - Card fan spread in hand (rotate each card differently)
-# - Hover/select lift effect
-# - Card play animation (fly to table)
-# - Mental shield pierce animation (shake/glow card)
-# - Dealing animation (cards slide in from deck)
+# Common use cases:
+# - Fan/spread arrangements (rotate each child differently)
+# - Hover or selection lift effects
+# - Play/transition animations (fly across the screen)
+# - Attention-getting effects (shake, pulse, glow)
+# - Entry animations (elements slide in from off-screen)
 
 # IMPORTANT: Container layout still uses the ORIGINAL rect.
-# This means cards in an HBoxContainer stay properly spaced
-# while each card independently rotates/translates/scales visually.
+# This means children in an HBoxContainer stay properly spaced
+# while each independently rotates/translates/scales visually.
 ```
 
 ### PopupMenu Search Bar (NEW in 4.7)
@@ -199,7 +199,7 @@ func _on_card_mouse_exited() -> void:
 # Enabled automatically when menu has many items
 
 # No code changes needed — this is automatic for PopupMenu nodes
-# Improves UX for card selection menus or aspect/suit filters
+# Improves UX for any long menu (filter lists, command palettes, asset pickers)
 ```
 
 ### RichTextLabel Improvements (NEW in 4.7)
@@ -209,8 +209,8 @@ func _on_card_mouse_exited() -> void:
 # - Triple-click paragraph selection (GH-116868)
 # - Enhanced table rendering (GH-116277)
 #
-# Useful for game rules display, card descriptions, or
-# narrative text with complex formatting
+# Useful for in-game documentation, item descriptions, tooltips,
+# or any narrative text with complex formatting
 ```
 
 ---
